@@ -1,0 +1,9 @@
+syntax = "proto3";
+package Param;
+
+message PrivateKeyStoreImportParam {
+    string privateKey = 1;
+    string password = 2;
+    string name = 3;
+    string encoding = 4;
+}
