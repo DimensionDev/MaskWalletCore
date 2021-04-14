@@ -2,5 +2,6 @@
 members = [
     "cli",
     "interface",
-    "wallet"
+    "wallet",
+    "crypto"
 ]

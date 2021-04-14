@@ -3,10 +3,12 @@ use prost::EncodeError;
 
 pub mod api;
 pub mod param;
+pub mod handler;
 
 use bytes::BytesMut;
 use api::{ MwRequest, MwResponse};
-use api::mw_request::Request::*;
+
+use handler::dispatch_request;
 
 use wasm_bindgen::prelude::*;
 
@@ -39,23 +41,10 @@ pub fn call_api(input: &str) -> String {
     return String::from(std::str::from_utf8(&encoded_result).unwrap_or(""));
 }
 
-fn dispatch_request(request: api::mw_request::Request) -> MwResponse {
-    match request {
-        ParamImportPrivateKey(param) => {
-            
-        }
-    }
-    return MwResponse {
-        is_success: true, 
-        error: String::from(""),
-        data: String::from("")
-    };
-}
-
 #[cfg(test)]
 mod tests {
     #[test]
-    fn it_works() {
+    fn test_import_private_key() {
         assert_eq!(2 + 2, 4);
     }
 }

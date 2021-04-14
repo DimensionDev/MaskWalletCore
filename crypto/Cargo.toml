@@ -1,5 +1,5 @@
 [package]
-name = "wallet"
+name = "crypto"
 version = "0.1.0"
 authors = ["jk234ert <handan0524@gmail.com>"]
 edition = "2018"
@@ -7,6 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-crypto = { path = "../crypto" }
+rand = "0.8.3"
 hex = "0.4.3"
-uuid = { version = "0.8", features = ["v4", "wasm-bindgen"] }
+aes = "0.6.0"
+aes-ctr = "0.6.0"
+scrypt = { version = "0.6.5", default-features = false }
