@@ -14,17 +14,19 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
     };
     return MwResponse {
         is_success: true, 
-        error: String::from(""),
-        data: String::from("")
+        error_code: "".to_owned(),
+        error_msg: "".to_owned(),
+        data: "".to_owned(),
     };
 }
 
-fn create_stored_key(parma: PrivateKeyStoreImportParam) -> MwResponse {
+fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
     // let stored_key = StoredKey::<ScryptParameters>::create_with_private_key("test1", "password", "tt");
 
     MwResponse {
         is_success: true,
-        error: String::from(""),
-        data: String::from("")
+        error_code: "".to_owned(),
+        error_msg: "".to_owned(),
+        data: "".to_owned(),
     }
 }

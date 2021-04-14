@@ -2,6 +2,8 @@ pub mod kdf_params;
 pub mod scrypt_params;
 pub mod aes_params;
 pub mod aes;
+pub mod hash;
+pub mod curve;
 
 pub mod number_util;
 

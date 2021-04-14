@@ -11,6 +11,7 @@ message MWRequest {
 
 message MWResponse {
     bool isSuccess = 1;
-    string error = 2;
-    string data = 3;
+    string errorCode = 2;
+    string errorMsg = 3;
+    string data = 4;
 }

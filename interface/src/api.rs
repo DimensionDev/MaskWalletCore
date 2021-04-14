@@ -16,7 +16,9 @@ pub struct MwResponse {
     #[prost(bool, tag="1")]
     pub is_success: bool,
     #[prost(string, tag="2")]
-    pub error: ::prost::alloc::string::String,
+    pub error_code: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
+    pub error_msg: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
     pub data: ::prost::alloc::string::String,
 }

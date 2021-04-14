@@ -13,8 +13,8 @@ use handler::dispatch_request;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn request(input: &str) {
-    call_api(input);
+pub fn request(input: &[u8]) -> Vec<u8> {
+    return call_api(input);
 }
 
 fn encode_message(msg: impl Message) -> Result<Vec<u8>, EncodeError> {
@@ -23,9 +23,8 @@ fn encode_message(msg: impl Message) -> Result<Vec<u8>, EncodeError> {
     Ok(buf.to_vec())
 }
 
-pub fn call_api(input: &str) -> String {
-    let input = String::from(input);
-    let mw_request: MwRequest = MwRequest::decode(input.into_bytes().as_slice()).expect("decode api");
+pub fn call_api(input: &[u8]) -> Vec<u8> {
+    let mw_request: MwRequest = MwRequest::decode(input).expect("decode api");
 
     let response: MwResponse;
     if let Some(request) = mw_request.request {
@@ -33,12 +32,13 @@ pub fn call_api(input: &str) -> String {
     } else {
         response = MwResponse { 
             is_success: false, 
-            error: String::from("invalid request"),
-            data: String::from("")
+            error_code: "invalid request".to_owned(),
+            error_msg: "-1".to_owned(),
+            data: "".to_owned(),
         };
     }
     let encoded_result = encode_message(response).expect("");
-    return String::from(std::str::from_utf8(&encoded_result).unwrap_or(""));
+    return encoded_result;
 }
 
 #[cfg(test)]
