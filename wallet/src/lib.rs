@@ -1,7 +1,7 @@
 pub mod stored_key;
 pub mod account;
 pub mod encryption_parameters;
-pub mod coin;
+
 pub mod private_key;
 
 #[cfg(test)]

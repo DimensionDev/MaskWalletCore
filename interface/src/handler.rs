@@ -21,7 +21,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
 }
 
 fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
-    // let stored_key = StoredKey::<ScryptParameters>::create_with_private_key("test1", "password", "tt");
+    let stored_key = StoredKey::create_with_private_key("test1", "password", "tt");
 
     MwResponse {
         is_success: true,

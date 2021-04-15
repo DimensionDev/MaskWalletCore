@@ -1,6 +1,6 @@
 use scrypt::{ scrypt, Params };
 
-use super::kdf_params::KdfParams;
+use super::kdf_params::KdfParamsType;
 
 const CREDENTIAL_LEN: usize = 64usize;
 
@@ -24,7 +24,7 @@ impl Default for ScryptParameters {
     }
 }
 
-impl KdfParams for ScryptParameters {
+impl KdfParamsType for ScryptParameters {
     fn generate_derived_key(&self, password: &[u8]) -> Vec<u8> {
         let log_n = (self.n as f64).log2().round();
         let params = Params::new(log_n as u8, self.r, self.p).expect("invalid scrypt params");

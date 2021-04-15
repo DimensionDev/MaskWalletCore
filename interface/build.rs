@@ -6,7 +6,7 @@ fn main() {
     prost_build::compile_protos(
         &[
             "proto/Api.proto",
-            "proto/Param.proto"
+            "proto/Param.proto",
         ],
         &["proto/"],
     )

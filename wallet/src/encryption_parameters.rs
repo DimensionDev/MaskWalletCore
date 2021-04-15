@@ -1,31 +1,24 @@
 
 use crypto::aes_params::AESParams;
-use crypto::kdf_params::KdfParams;
+use crypto::kdf_params::{ KdfParams, KdfParamsType };
+use crypto::scrypt_params::ScryptParameters;
 use crypto::aes;
 use crypto::hash;
 
-pub struct EncryptionParameters<T: KdfParams> {
+pub struct EncryptionParameters{
     encrypted: Vec<u8>,
     cipher: String,
     pub cipher_params: AESParams,
     mac: String,
-    pub kdf_params: T
+    pub kdf_params: KdfParams
 }
 
-impl<T> EncryptionParameters<T> where T: KdfParams {
-    // fn default() -> EncryptionParameters<T> {
-    //     EncryptionParameters {
-    //         encrypted: vec![],
-    //         cipher: "aes-128-ctr".to_owned(),
-    //         cipher_params: AESParams::default(),
-    //         mac: "".to_owned(),
-    //         kdf_params: T::default()
-    //     }
-    // }
+impl EncryptionParameters {
 
-    pub fn new(password: &[u8], data: &[u8]) -> EncryptionParameters<T> {
-        let kdf_params = T::default();
-        let derived_key = kdf_params.generate_derived_key(password);
+    pub fn new(password: &[u8], data: &[u8]) -> EncryptionParameters {
+        let kdf_param_type = ScryptParameters::default();
+        let derived_key = kdf_param_type.generate_derived_key(password);
+        let kdf_params = KdfParams::ScryptParam(Box::new(kdf_param_type));
         let cipher_params = AESParams::default();
         let hex_iv = hex::encode(&cipher_params.iv);
         let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], hex_iv.as_bytes()).expect("ASE_CTR encrypt failed");
