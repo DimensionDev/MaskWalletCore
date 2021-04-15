@@ -1,5 +1,7 @@
+use crate::Error;
+
 pub trait KdfParamsType {
-    fn generate_derived_key(&self, password: &[u8]) -> Vec<u8>;
+    fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error>;
 }
 
 pub enum KdfParams {
@@ -7,7 +9,7 @@ pub enum KdfParams {
 }
 
 impl KdfParamsType for KdfParams {
-    fn generate_derived_key(&self, password: &[u8]) -> Vec<u8> {
+    fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error> {
         match self {
             Self::ScryptParam(algo) => algo.generate_derived_key(password)
         }

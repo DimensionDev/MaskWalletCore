@@ -1,4 +1,5 @@
 
+use crate::Error;
 use crypto::aes_params::AESParams;
 use crypto::kdf_params::{ KdfParams, KdfParamsType };
 use crypto::scrypt_params::ScryptParameters;
@@ -15,23 +16,23 @@ pub struct EncryptionParameters{
 
 impl EncryptionParameters {
 
-    pub fn new(password: &[u8], data: &[u8]) -> EncryptionParameters {
+    pub fn new(password: &[u8], data: &[u8]) -> Result<EncryptionParameters, Error> {
         let kdf_param_type = ScryptParameters::default();
-        let derived_key = kdf_param_type.generate_derived_key(password);
+        let derived_key = kdf_param_type.generate_derived_key(password).map_err(|e| Error::CryptoError(e))?;
         let kdf_params = KdfParams::ScryptParam(Box::new(kdf_param_type));
         let cipher_params = AESParams::default();
         let hex_iv = hex::encode(&cipher_params.iv);
-        let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], hex_iv.as_bytes()).expect("ASE_CTR encrypt failed");
+        let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], hex_iv.as_bytes()).map_err(|e| Error::CryptoError(e))?;
         let mac = hash::compute_mac(&derived_key[16..32], &encrypted);
         let mac_hex = hex::encode(mac);
 
-        EncryptionParameters {
+        Ok(EncryptionParameters {
             encrypted: encrypted,
             cipher: "aes-128-ctr".to_owned(),
             cipher_params: cipher_params,
             mac: mac_hex,
             kdf_params: kdf_params,
-        }
+        })
     }
 }
 

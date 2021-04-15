@@ -13,3 +13,4 @@ aes = "0.6.0"
 aes-ctr = "0.6.0"
 tiny-keccak = { version = "2.0", features = ["keccak"] }
 scrypt = { version = "0.6.5", default-features = false }
+secp256k1 = {version ="0.20.1" }

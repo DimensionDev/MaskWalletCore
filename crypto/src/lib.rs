@@ -4,6 +4,7 @@ pub mod aes_params;
 pub mod aes;
 pub mod hash;
 pub mod curve;
+pub mod public_key;
 
 pub mod number_util;
 
@@ -19,6 +20,8 @@ pub enum Error {
     InvalidKeyIvLength,
     
     InvalidCiphertext,
+
+    InvalidPrivateKey,
     
     CachedDkFeatureNotSupport,
 }

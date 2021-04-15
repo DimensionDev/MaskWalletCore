@@ -1,6 +1,7 @@
 use scrypt::{ scrypt, Params };
 
 use super::kdf_params::KdfParamsType;
+use crate::Error;
 
 const CREDENTIAL_LEN: usize = 64usize;
 
@@ -25,12 +26,12 @@ impl Default for ScryptParameters {
 }
 
 impl KdfParamsType for ScryptParameters {
-    fn generate_derived_key(&self, password: &[u8]) -> Vec<u8> {
+    fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error> {
         let log_n = (self.n as f64).log2().round();
-        let params = Params::new(log_n as u8, self.r, self.p).expect("invalid scrypt params");
+        let params = Params::new(log_n as u8, self.r, self.p).or(Err(Error::KdfParamsInvalid))?;
 
         let mut output: [u8; CREDENTIAL_LEN] = [0; CREDENTIAL_LEN];
-        scrypt(password, self.salt.as_bytes(), &params, &mut output).expect("can not execute scrypt");
-        return output[0..self.dklen].to_vec();
+        scrypt(password, self.salt.as_bytes(), &params, &mut output).or(Err(Error::PasswordIncorrect))?;
+        Ok(output[0..self.dklen].to_vec())
     }
 }
