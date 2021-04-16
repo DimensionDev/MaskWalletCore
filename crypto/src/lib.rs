@@ -22,6 +22,10 @@ pub enum Error {
     InvalidCiphertext,
 
     InvalidPrivateKey,
+
+    NotSupportedPublicKeyType,
+
+    NotSupportedCurve,
     
     CachedDkFeatureNotSupport,
 }

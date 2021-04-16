@@ -1,9 +1,10 @@
 use std::str::FromStr;
-use crate::Error;
 use crypto::curve::Curve;
 use crypto::Error as CryptoError;
 use crypto::public_key::PublicKeyType;
 use super::public_key::PublicKey;
+
+type Error = CryptoError;
 
 // The number of bytes in a private key.
 const VALID_SIZE: u8 = 32;
@@ -28,14 +29,14 @@ impl PrivateKey {
 
     pub fn is_valid(data: &[u8], curve: &str) -> Result<(), Error> {
         if !Self::is_valid_data(data) {
-            return Err(Error::CryptoError(CryptoError::InvalidPrivateKey));
+            return Err(CryptoError::InvalidPrivateKey);
         }
-        return Curve::from_str(curve).map_err(|_| Error::NotSupportedCurve).map(|_| {});
+        return Curve::from_str(curve).map_err(|_| CryptoError::NotSupportedCurve).map(|_| {});
     }
 
     fn new_extended(data: &[u8], ext: &[u8], chain_code: &[u8]) -> Result<PrivateKey, Error> {
         if !Self::is_valid_data(data) || !Self::is_valid_data(ext) || !Self::is_valid_data(chain_code) {
-            return Err(Error::CryptoError(CryptoError::InvalidPrivateKey));
+            return Err(CryptoError::InvalidPrivateKey);
         }
         Ok(PrivateKey {
             data: data.to_vec(),
@@ -46,7 +47,7 @@ impl PrivateKey {
 
     pub fn new(data: &[u8]) -> Result<PrivateKey, Error> {
         if !Self::is_valid_data(data) {
-            return Err(Error::CryptoError(CryptoError::InvalidPrivateKey));
+            return Err(CryptoError::InvalidPrivateKey);
         }
         if data.len() == VALID_EXTENDED_SIZE as usize {
             Self::new_extended(&data[0..32], &data[32..64], &data[64..96])
@@ -61,10 +62,7 @@ impl PrivateKey {
 
     pub fn get_public_key(&self, public_key_type_str: &str) -> Result<PublicKey, Error> {
         let public_key_type = PublicKeyType::from_str(public_key_type_str).map_err(|_| Error::NotSupportedPublicKeyType)?;
-
-        match public_key_type {
-            PublicKeyType::SECP256k1Extended => Err(Error::NotSupportedPublicKeyType),
-            _ => Err(Error::NotSupportedPublicKeyType)
-        }
+        let pub_key_data = crypto::public_key::get_public_key(public_key_type_str, &self.data, &self.extends_data, &self.chain_code_bytes)?;
+        Ok(PublicKey::new(public_key_type, &pub_key_data))
     }
 }

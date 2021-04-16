@@ -3,5 +3,7 @@ members = [
     "cli",
     "interface",
     "wallet",
-    "crypto"
+    "crypto",
+    "chain-common",
+    "chain/*"
 ]

@@ -10,3 +10,6 @@ edition = "2018"
 crypto = { path = "../crypto" }
 hex = "0.4.3"
 uuid = { version = "0.8", features = ["v4", "wasm-bindgen"] }
+
+chain-common = { path = "../chain-common" }
+ethereum = { path = "../chain/ethereum" }
