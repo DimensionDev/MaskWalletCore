@@ -1,6 +1,7 @@
 pub mod stored_key;
 pub mod account;
-pub mod encryption_parameters;
+pub mod encryption_params;
+mod coin_dispatcher;
 
 use crypto::Error as CryptoError;
 

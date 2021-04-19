@@ -1,32 +1,33 @@
 
+use serde::{ Serialize, Deserialize };
 use crate::Error;
 use crypto::aes_params::AESParams;
 use crypto::kdf_params::{ KdfParams, KdfParamsType };
-use crypto::scrypt_params::ScryptParameters;
+use crypto::scrypt_params::ScryptParams;
 use crypto::aes;
 use crypto::hash;
 
-pub struct EncryptionParameters {
+#[derive(Serialize, Deserialize)]
+pub struct EncryptionParams {
     encrypted: Vec<u8>,
     cipher: String,
     pub cipher_params: AESParams,
     mac: String,
-    pub kdf_params: KdfParams
+    kdf_params: KdfParams
 }
 
-impl EncryptionParameters {
+impl EncryptionParams {
 
-    pub fn new(password: &[u8], data: &[u8]) -> Result<EncryptionParameters, Error> {
-        let kdf_param_type = ScryptParameters::default();
-        let derived_key = kdf_param_type.generate_derived_key(password)?;
-        let kdf_params = KdfParams::ScryptParam(Box::new(kdf_param_type));
+    pub fn new(password: &[u8], data: &[u8]) -> Result<EncryptionParams, Error> {
+        let kdf_params = KdfParams::ScryptParam(ScryptParams::default());
+        let derived_key = kdf_params.generate_derived_key(password)?;
         let cipher_params = AESParams::default();
         let hex_iv = hex::encode(&cipher_params.iv);
         let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], hex_iv.as_bytes())?;
         let mac = hash::compute_mac(&derived_key[16..32], &encrypted);
         let mac_hex = hex::encode(mac);
 
-        Ok(EncryptionParameters {
+        Ok(EncryptionParams {
             encrypted: encrypted,
             cipher: "aes-128-ctr".to_owned(),
             cipher_params: cipher_params,

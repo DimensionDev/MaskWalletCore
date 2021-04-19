@@ -1,9 +1,13 @@
+use serde::{ Serialize, Deserialize };
+
 use super::public_key::PublicKey;
 use super::private_key::PrivateKey;
+use super::entry::Entry;
 use crypto::Error as CryptoError;
 
 type Error = CryptoError;
 
+#[derive(Serialize, Deserialize)]
 pub struct Coin {
     
     pub id: String,
@@ -23,16 +27,4 @@ pub struct Coin {
     pub curve: String,
     
     pub public_key_type: String,
-}
-
-impl Coin {
-    pub fn derive_address(&self, private_key: &PrivateKey) -> Result<String, Error> {
-        let public_key = private_key.get_public_key(&self.public_key_type)?;
-        self.derive_address_from_pub(&public_key)
-    }
-
-    pub fn derive_address_from_pub(&self, public_key: &PublicKey) -> Result<String, Error> {
-        
-        Ok("".to_owned())
-    }
 }

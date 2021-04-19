@@ -23,6 +23,8 @@ pub enum Error {
 
     InvalidPrivateKey,
 
+    InvalidPublicKey,
+
     NotSupportedPublicKeyType,
 
     NotSupportedCurve,

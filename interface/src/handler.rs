@@ -1,32 +1,38 @@
 use super::api::{ MwResponse, mw_request};
 use super::api::mw_request::Request::*;
-
 use super::param::*;
+use super::coin::prost_coin_to_chain_coin;
 
 use wallet::stored_key::*;
-// use wallet::encryption::scrypt_parameters::ScryptParameters;
 
 pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
-    let response = match request {
+    match request {
         ParamImportPrivateKey(param) => {
             create_stored_key(param)
         }
-    };
-    return MwResponse {
-        is_success: true, 
-        error_code: "".to_owned(),
-        error_msg: "".to_owned(),
-        data: "".to_owned(),
-    };
+    }
 }
 
 fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
-    let stored_key = StoredKey::create_with_private_key("test1", "password", "tt");
-
-    MwResponse {
-        is_success: true,
-        error_code: "".to_owned(),
-        error_msg: "".to_owned(),
-        data: "".to_owned(),
+    let coin = prost_coin_to_chain_coin(param.coin.unwrap());
+    let stored_key = StoredKey::create_with_private_key_and_default_address(&param.name, &param.password, &param.private_key, coin);
+    match stored_key {
+        Ok(key) => {
+            let json = serde_json::to_string(&key).unwrap();
+            MwResponse {
+                is_success: true,
+                error_code: "".to_owned(),
+                error_msg: "".to_owned(),
+                data: json
+            }
+        },
+        Err(error) => {
+            MwResponse {
+                is_success: true,
+                error_code: "".to_owned(), //TODO: error to error code
+                error_msg: "".to_owned(),  //TODO: error to error msg
+                data: "".to_owned(),
+            }
+        }
     }
 }

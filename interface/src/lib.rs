@@ -4,6 +4,7 @@ use prost::EncodeError;
 pub mod api;
 pub mod param;
 pub mod handler;
+mod coin;
 
 use bytes::BytesMut;
 use api::{ MwRequest, MwResponse};

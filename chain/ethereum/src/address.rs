@@ -1,17 +1,67 @@
-use chain_common::address::Address;
-use chain_common::coin::Coin;
+use std::string::ToString;
 use chain_common::public_key::PublicKey;
 use crypto::Error;
 use crypto::public_key::PublicKeyType;
-use super::address_checksum;
+use crypto::hash::Keccak256;
+use super::address_checksum::{ ChecksumType, checksum };
 
-pub struct EthereumAddress;
+const ADDRESS_SIZE: usize = 20;
 
-impl Address for EthereumAddress {
-    fn derive_address(coin: &Coin, public_key: &PublicKey, p2pkh: &[u8], hrp: &[u8]) -> Result<String, Error> {
+pub struct EthereumAddress {
+    pub data: Vec<u8>,
+}
+
+impl EthereumAddress {
+    pub fn new(public_key: &PublicKey) -> Result<Self, Error> {
         if public_key.r#type != PublicKeyType::SECP256k1Extended {
             return Err(Error::NotSupportedPublicKeyType);
         }
-        Ok("".to_owned())
+        let hash = public_key.hash(&[], Keccak256, true)?;
+        let begin = hash.len() - ADDRESS_SIZE;
+        Ok(EthereumAddress {
+            data: hash[begin..].to_vec()
+        })
+    }
+}
+
+impl ToString for EthereumAddress {
+    fn to_string(&self) -> String {
+        checksum(&self, ChecksumType::EIP55).to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chain_common::coin::Coin;
+    use chain_common::public_key::PublicKey;
+    use crypto::public_key::PublicKeyType;
+    use crate::address::EthereumAddress;
+    #[test]
+    fn test_derive_from_pub_key() {
+        
+        let pub_key_str = "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91";
+        
+        let coin = Coin {
+            id: "1".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 1,
+            symbol: "ETH".to_owned(),
+            decimal: 18,
+            blockchain: "ethereum".to_owned(),
+            derivation_path: "".to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+        };
+
+        let pub_key_data = hex::decode(pub_key_str).unwrap();
+
+        let public_key = PublicKey {
+            r#type: PublicKeyType::SECP256k1Extended,
+            data: pub_key_data.to_vec(),
+        };
+        let address = EthereumAddress::new(&public_key);
+        assert_eq!(address.is_ok(), true);
+        let address_str = address.unwrap().to_string();
+        assert_eq!(address_str, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
     }
 }

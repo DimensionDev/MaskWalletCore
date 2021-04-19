@@ -1,6 +1,31 @@
-use tiny_keccak::{Hasher, Keccak};
+use crate::Error;
+
+pub trait Hashable {
+    fn hash(&self, input: &[u8]) -> Result<Vec<u8>, Error>;
+}
+
+pub struct Hasher;
+
+impl Hasher {
+    pub fn hash<T: Hashable>(h: T, input: &[u8])  -> Result<Vec<u8>, Error> {
+        h.hash(&input)
+    }
+}
+
+pub struct Keccak256;
+impl Hashable for Keccak256 {
+    fn hash(&self, input: &[u8]) -> Result<Vec<u8>, Error> {
+        use tiny_keccak::{ Hasher as KeccakHasher, Keccak };
+        let mut hasher = Keccak::v256();
+        hasher.update(&input);
+        let mut output = [0u8; 32];
+        hasher.finalize(&mut output);
+        Ok(output.to_vec())
+    }
+}
 
 pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
+    use tiny_keccak::{ Hasher as KeccakHasher, Keccak };
     let result = [&derived_key, encrypted_text].concat();
     let mut hasher = Keccak::v256();
     hasher.update(&result);

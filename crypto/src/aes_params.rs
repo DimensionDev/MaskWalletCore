@@ -1,6 +1,8 @@
 use hex::ToHex;
+use serde::{ Serialize, Deserialize };
 use super::number_util::random_iv;
 
+#[derive(Serialize, Deserialize)]
 pub struct AESParams {
     pub iv: String,
 }

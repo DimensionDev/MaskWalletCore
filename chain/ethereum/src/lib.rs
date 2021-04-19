@@ -1,4 +1,5 @@
 pub mod address;
+pub mod entry;
 mod address_checksum;
 
 #[cfg(test)]
