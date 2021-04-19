@@ -23,6 +23,41 @@ The supported requests could be found from the proto definition files `Api.proto
 
 The corresponding responses could be found from the proto definition files `Api.proto` and `Respons.proto` in the `interface/proto` directory.
 
+## New Chain Integration Checklist
+
+- [ ] Add chain and coin info to `interface/resource/coin.json`
+- [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory
+- [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
+- [ ] Add new enum value to `enum Coin` in `interface/proto/Param.proto` 
+- [ ] Add the newly added chain to following location in `interface/src/coin.rs` 
+
+```
+impl ToString for CoinType {
+    fn to_string(&self) -> String {
+        match self {
+            CoinType::Ethereum => "ethereum".to_owned(),
+            CoinType::Polkadot => "polkadot".to_owned(),
+            // Add the new chain here to return the `id`
+        }
+    }
+}
+```
+
+- [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs ` as following
+
+```
+pub fn get_dispatcher(coin: &Coin) -> Box<dyn Entry> {
+    match coin.name.as_str() {
+        "ethereum" => Box::new(EthereumEntry{}),
+        // Add "${NEW_CHAIN_ID}" to the Box::new(${NEW_CHAIN_ENTRY})
+    }
+}
+```
+
+
+
+
+
 ## Build WebAssembly Instruction
 
 **!!IMPORTANT**: Please notice that you could not build WebAssembly of this library on **MacOS** due to this [issue](https://github.com/DimensionDev/MaskWallet/issues/1) of compiling Secp256k1 Wasm on mac.
