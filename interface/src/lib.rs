@@ -6,6 +6,9 @@ pub mod param;
 pub mod handler;
 mod coin;
 
+#[macro_use]
+extern crate lazy_static;
+
 use bytes::BytesMut;
 use api::{ MwRequest, MwResponse};
 

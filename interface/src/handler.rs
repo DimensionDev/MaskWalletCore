@@ -1,7 +1,7 @@
 use super::api::{ MwResponse, mw_request};
 use super::api::mw_request::Request::*;
 use super::param::*;
-use super::coin::prost_coin_to_chain_coin;
+use super::coin::get_coin_info;
 
 use wallet::stored_key::*;
 
@@ -14,8 +14,20 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
 }
 
 fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
-    let coin = prost_coin_to_chain_coin(param.coin.unwrap());
-    let stored_key = StoredKey::create_with_private_key_and_default_address(&param.name, &param.password, &param.private_key, coin);
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                is_success: false,
+                error_code: "".to_owned(),
+                error_msg: "".to_owned(),
+                data: "".to_owned(),
+            };
+        }
+    };
+    
+    let stored_key = StoredKey::create_with_private_key_and_default_address(&param.name, &param.password, &param.private_key, coin.clone());
     match stored_key {
         Ok(key) => {
             let json = serde_json::to_string(&key).unwrap();

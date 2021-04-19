@@ -1,33 +1,46 @@
+
+use std::collections::HashMap;
+use std::string::ToString;
 use chain_common::coin::Coin;
 
-use super::param::Coin as ProtoCoin;
+use super::param::Coin as CoinType;
 
-pub fn prost_coin_to_chain_coin(prost_coin: ProtoCoin) -> Coin {
-    Coin {
-        id: prost_coin.id,
-        name: prost_coin.name,
-        coin_id: prost_coin.coin_id,
-        symbol: prost_coin.symbol,
-        decimal: prost_coin.decimal,
-        blockchain: prost_coin.blockchain,
-        derivation_path: prost_coin.derivation_path,
-        curve: prost_coin.curve,
-        public_key_type: prost_coin.public_key_type
+lazy_static! {
+    static ref COINS_MAP: HashMap<String, Coin> = {
+        let coin_json = include_str!("../resource/coin.json");
+        let coins: Vec<Coin> = serde_json::from_str(coin_json).expect("fail to get coins info from json");
+        let mut coins_map: HashMap<String, Coin> = HashMap::new();
+        coins.into_iter().for_each(|coin| {
+            coins_map.insert(coin.name.to_owned(), coin);
+        });
+        coins_map
+    };
+}
+
+impl ToString for CoinType {
+    fn to_string(&self) -> String {
+        match self {
+            CoinType::Ethereum => "ethereum".to_owned(),
+            CoinType::Polkadot => "polkadot".to_owned()
+        }
     }
 }
 
-// impl ProtoCoin {
-//     pub fn to_chain_coin(&mut self) -> Coin {
-//         Coin {
-//             id: self.id,
-//             name: self.name,
-//             coin_id: self.coin_id,
-//             symbol: self.symbol,
-//             decimal: self.decimal,
-//             blockchain: self.blockchain,
-//             derivation_path: self.derivation_path,
-//             curve: self.curve,
-//             public_key_type: self.public_key_type
-//         }
-//     }
-// }
+pub fn get_coin_info<'a>(coin_type: i32) -> Option<&'a Coin> {
+    match CoinType::from_i32(coin_type) {
+        Some(coin) => COINS_MAP.get(&coin.to_string()),
+        None => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::coin::COINS_MAP;
+    #[test]
+    fn test_get_coin_info() {
+        assert_eq!(COINS_MAP.len(), 2);
+        let coin_info = COINS_MAP.get("Ethereum").unwrap();
+        
+        assert_eq!(coin_info.curve, "secp256k1");
+    }
+}

@@ -7,7 +7,7 @@ use crypto::Error as CryptoError;
 
 type Error = CryptoError;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Coin {
     
     pub id: String,
@@ -18,7 +18,7 @@ pub struct Coin {
     
     pub symbol: String,
     
-    pub decimal: i32,
+    pub decimals: i32,
     
     pub blockchain: String,
     

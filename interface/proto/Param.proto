@@ -1,17 +1,9 @@
 syntax = "proto3";
 package Param;
 
-message Coin {
-    string id = 1;
-    string name = 2;
-    int32 coin_id = 3;
-    string symbol = 4;
-    int32 decimal = 5;
-    string blockchain = 6;
-    string derivationPath = 7;
-    string curve = 8;
-    string public_key_type = 9;
-    
+enum Coin {
+    Ethereum = 0;
+    Polkadot = 1;
 }
 
 message PrivateKeyStoreImportParam {

@@ -1,0 +1,48 @@
+[
+    {
+        "id": "ethereum",
+        "name": "Ethereum",
+        "coin_id": 60,
+        "symbol": "ETH",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivation_path": "m/44'/60'/0'/0/0",
+        "curve": "secp256k1",
+        "public_key_type": "secp256k1Extended",
+        "explorer": {
+          "url": "https://etherscan.io",
+          "txPath": "/tx/",
+          "accountPath": "/address/",
+          "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f",
+          "sampleAccount": "0x5bb497e8d9fe26e92dd1be01e32076c8e024d167"
+        },
+        "info": {
+          "url": "https://ethereum.org",
+          "client": "https://github.com/ethereum/go-ethereum",
+          "clientPublic": "https://mainnet.infura.io",
+          "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
+      },
+      {
+        "id": "polkadot",
+        "name": "Polkadot",
+        "coin_id": 354,
+        "symbol": "DOT",
+        "decimals": 10,
+        "blockchain": "Polkadot",
+        "derivation_path": "m/44'/354'/0'/0'/0'",
+        "curve": "ed25519",
+        "public_key_type": "ed25519",
+        "explorer": {
+          "url": "https://polkadot.subscan.io",
+          "txPath": "/extrinsic/",
+          "accountPath": "/account/"
+        },
+        "info": {
+          "url": "https://polkadot.network/",
+          "client": "https://github.com/paritytech/polkadot",
+          "clientPublic": "",
+          "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
+        }
+      }
+]
