@@ -20,10 +20,10 @@ impl PublicKey {
         let size = data.len();
         match r#type {
             PublicKeyType::SECP256k1 => {
-                return size == SECP256K1_SIZE && (data[0] == 0x02 || data[0] == 0x03)
+                size == SECP256K1_SIZE && (data[0] == 0x02 || data[0] == 0x03)
             },
             PublicKeyType::SECP256k1Extended => {
-                return size == SECP256K1EXTENDED_SIZE && data[0] == 0x04
+                size == SECP256K1EXTENDED_SIZE && data[0] == 0x04
             }
         }
     }
@@ -33,7 +33,7 @@ impl PublicKey {
             return Err(CryptoError::InvalidPublicKey);
         }
         Ok(PublicKey {
-            r#type: r#type,
+            r#type,
             data: data.to_vec()
         })
     }

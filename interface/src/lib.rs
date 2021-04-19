@@ -18,7 +18,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub fn request(input: &[u8]) -> Vec<u8> {
-    return call_api(input);
+    call_api(input)
 }
 
 fn encode_message(msg: impl Message) -> Result<Vec<u8>, EncodeError> {
@@ -41,8 +41,7 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
             data: "".to_owned(),
         };
     }
-    let encoded_result = encode_message(response).expect("");
-    return encoded_result;
+    encode_message(response).expect("invalid request")
 }
 
 #[cfg(test)]

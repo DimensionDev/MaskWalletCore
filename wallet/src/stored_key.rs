@@ -36,7 +36,7 @@ impl StoredKey {
             r#type: StoredKeyType::PrivateKey,
             name: String::from(name),
             id: uuid.to_string(),
-            payload: payload,
+            payload,
             accounts: vec![]
         })
     }
@@ -52,9 +52,9 @@ impl StoredKey {
         let address = get_dispatcher(&coin).derive_address(&coin, &public_key, &[], &[])?;
         
         stored_key.accounts.push(Account {
-            address: address,
-            coin: coin,
-            derivationPath: "".to_owned(),
+            address,
+            coin,
+            derivation_path: "".to_owned(),
         });
         Ok(stored_key)
     }

@@ -13,7 +13,7 @@ pub mod ctr {
 
     pub fn encrypt(data: &[u8], key: &[u8], iv: &[u8]) -> CryptoResult<Vec<u8>> {
         if key.len() != 16 || iv.len() != 16 {
-            return Err(Error::InvalidKeyIvLength.into());
+            return Err(Error::InvalidKeyIvLength);
         }
         let key = GenericArray::from_slice(key);
         let iv = GenericArray::from_slice(iv);
@@ -26,7 +26,7 @@ pub mod ctr {
 
     pub fn decrypt(data: &[u8], key: &[u8], iv: &[u8]) -> CryptoResult<Vec<u8>> {
         if key.len() != 16 || iv.len() != 16 {
-            return Err(Error::InvalidKeyIvLength.into());
+            return Err(Error::InvalidKeyIvLength);
         }
         let key = GenericArray::from_slice(key);
         let iv = GenericArray::from_slice(iv);

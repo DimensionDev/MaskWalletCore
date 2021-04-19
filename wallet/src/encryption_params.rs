@@ -28,11 +28,11 @@ impl EncryptionParams {
         let mac_hex = hex::encode(mac);
 
         Ok(EncryptionParams {
-            encrypted: encrypted,
+            encrypted,
             cipher: "aes-128-ctr".to_owned(),
-            cipher_params: cipher_params,
+            cipher_params,
             mac: mac_hex,
-            kdf_params: kdf_params,
+            kdf_params,
         })
     }
 }

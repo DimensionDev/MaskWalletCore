@@ -29,7 +29,7 @@ impl PrivateKey {
         if !Self::is_valid_data(data) {
             return Err(CryptoError::InvalidPrivateKey);
         }
-        return Curve::from_str(curve).map_err(|_| CryptoError::NotSupportedCurve).map(|_| {});
+        Curve::from_str(curve).map_err(|_| CryptoError::NotSupportedCurve).map(|_| {})
     }
 
     fn new_extended(data: &[u8], ext: &[u8], chain_code: &[u8]) -> Result<PrivateKey, CryptoError> {

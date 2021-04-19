@@ -26,13 +26,12 @@ impl EthereumAddress {
 
 impl ToString for EthereumAddress {
     fn to_string(&self) -> String {
-        checksum(&self, ChecksumType::EIP55).to_owned()
+        checksum(&self, ChecksumType::EIP55)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use chain_common::coin::Coin;
     use chain_common::public_key::PublicKey;
     use crypto::public_key::PublicKeyType;
     use crate::address::EthereumAddress;
@@ -40,18 +39,6 @@ mod tests {
     fn test_derive_from_pub_key() {
         
         let pub_key_str = "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91";
-        
-        let coin = Coin {
-            id: "1".to_owned(),
-            name: "ethereum".to_owned(),
-            coin_id: 1,
-            symbol: "ETH".to_owned(),
-            decimal: 18,
-            blockchain: "ethereum".to_owned(),
-            derivation_path: "".to_owned(),
-            curve: "secp256k1".to_owned(),
-            public_key_type: "secp256k1Extended".to_owned(),
-        };
 
         let pub_key_data = hex::decode(pub_key_str).unwrap();
 

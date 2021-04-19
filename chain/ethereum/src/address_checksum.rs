@@ -1,4 +1,3 @@
-use hex;
 use super::address::EthereumAddress;
 
 use crypto::hash::{ Hasher, Keccak256 };
@@ -19,9 +18,9 @@ pub fn checksum(address: &EthereumAddress, r#type: ChecksumType) -> String {
         let a = address_string.chars().nth(i).unwrap();
         let h = hash_hex.chars().nth(i).unwrap();
 
-        if a >= '0' && a <= '9' {
+        if ('0'..='9').contains(&a) {
             prefix.push(a);
-        } else if (h >= '8' && h <= '9') || (h >= 'a' && h <= 'f') {
+        } else if ('8'..='9').contains(&h) || ('a'..='f').contains(&h) {
             match r#type {
                 ChecksumType::EIP55 => prefix.push(a.to_uppercase().next().unwrap()),
                 ChecksumType::WanChain => prefix.push(a.to_lowercase().next().unwrap()),
@@ -34,5 +33,5 @@ pub fn checksum(address: &EthereumAddress, r#type: ChecksumType) -> String {
         }
     }
 
-    prefix.to_owned()
+    prefix
 }

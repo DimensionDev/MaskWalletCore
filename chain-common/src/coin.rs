@@ -1,12 +1,5 @@
 use serde::{ Serialize, Deserialize };
 
-use super::public_key::PublicKey;
-use super::private_key::PrivateKey;
-use super::entry::Entry;
-use crypto::Error as CryptoError;
-
-type Error = CryptoError;
-
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Coin {
     

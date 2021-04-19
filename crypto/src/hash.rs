@@ -31,7 +31,7 @@ pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
     hasher.update(&result);
     let mut output = [0u8; 32];
     hasher.finalize(&mut output);
-    return output.to_vec();
+    output.to_vec()
 }
 
 #[cfg(test)]
