@@ -7,6 +7,7 @@ use super::account::Account;
 use super::encryption_params::{ EncryptionParams };
 use super::derivation_path::DerivationPath;
 use super::coin_dispatcher::get_dispatcher;
+use super::hd_wallet::HdWallet;
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
 
@@ -30,16 +31,22 @@ pub struct StoredKey {
 }
 
 impl StoredKey {
-    pub fn create_with_private_key(name: &str, password: &str, private_key: &str) -> Result<StoredKey, Error> {
+
+    fn create_with_data(r#type: StoredKeyType, name: &str, password: &str, data: &[u8]) -> Result<StoredKey, Error> {
         let uuid = Uuid::new_v4();
-        let payload = EncryptionParams::new(password.as_bytes(), private_key.as_bytes())?;
+        let payload = EncryptionParams::new(password.as_bytes(), &data)?;
         Ok(StoredKey {
-            r#type: StoredKeyType::PrivateKey,
+            r#type,
             name: String::from(name),
             id: uuid.to_string(),
             payload,
             accounts: vec![]
         })
+    }
+
+    pub fn create_with_private_key(name: &str, password: &str, private_key: &str) -> Result<StoredKey, Error> {
+        let priv_key_bytes = hex::decode(private_key).map_err(|_| CryptoError::InvalidPrivateKey)?;
+        Self::create_with_data(StoredKeyType::PrivateKey, &name, &password, &priv_key_bytes)
     }
 
     pub fn create_with_private_key_and_default_address(name: &str, password: &str, private_key: &str, coin: Coin) -> Result<StoredKey, Error> {
@@ -61,6 +68,18 @@ impl StoredKey {
         });
         Ok(stored_key)
     }
+
+    pub fn create_with_mnemonic(name: &str, password: &str, mnemonic: &str) -> Result<StoredKey, Error> {
+        if !HdWallet::is_valid(mnemonic) {
+            return Err(Error::InvalidMnemonic);
+        }
+        Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &mnemonic.as_bytes())
+    }
+
+    pub fn create_with_mnemonic_random(name: &str, password: &str) -> Result<StoredKey, Error> {
+        let wallet = HdWallet::new(128, "")?;
+        Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &wallet.mnemonic.as_bytes())
+    }
 }
 
 impl StoredKey {
@@ -74,7 +93,16 @@ impl StoredKey {
             return Err(Error::IndexOutOfBounds);
         }
         Ok(&self.accounts[index as usize])
-    }
+    }   
+}
+
+impl StoredKey {
+    // pub fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
+    //     if self.r#type != StoredKeyType::Mnemonic {
+    //         return Err(Error::InvalidAccountRequested);
+    //     }
+    //     Ok(HdWallet::new())
+    // }
 }
 
 #[cfg(test)]

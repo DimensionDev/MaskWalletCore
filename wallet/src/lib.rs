@@ -1,7 +1,8 @@
 pub mod stored_key;
 pub mod account;
-mod derivation_path;
+pub mod hd_wallet;
 pub mod encryption_params;
+mod derivation_path;
 mod coin_dispatcher;
 
 use std::fmt::Debug;
@@ -12,6 +13,9 @@ pub enum Error {
     CryptoError(CryptoError),
     InvalidDerivationpath,
     IndexOutOfBounds,
+    InvalidMnemonic,
+    InvalidWalletStrength,
+    InvalidAccountRequested,
 }
 
 impl From<CryptoError> for Error {

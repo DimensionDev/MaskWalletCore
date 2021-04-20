@@ -6,6 +6,9 @@ pub mod hash;
 pub mod curve;
 pub mod public_key;
 
+pub mod bip39;
+pub mod bip32;
+
 pub mod number_util;
 
 #[derive(Debug, PartialOrd, PartialEq)]
@@ -24,6 +27,10 @@ pub enum Error {
     InvalidPrivateKey,
 
     InvalidPublicKey,
+
+    InvalidMnemonic,
+
+    InvalidSeed,
 
     NotSupportedPublicKeyType,
 
