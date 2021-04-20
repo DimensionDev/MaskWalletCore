@@ -3,7 +3,7 @@ use super::address::EthereumAddress;
 use crypto::hash::{ Hasher, Keccak256 };
 
 pub enum ChecksumType {
-    EIP55,
+    Eip55,
     WanChain,
 }
 
@@ -22,12 +22,12 @@ pub fn checksum(address: &EthereumAddress, r#type: ChecksumType) -> String {
             prefix.push(a);
         } else if ('8'..='9').contains(&h) || ('a'..='f').contains(&h) {
             match r#type {
-                ChecksumType::EIP55 => prefix.push(a.to_uppercase().next().unwrap()),
+                ChecksumType::Eip55 => prefix.push(a.to_uppercase().next().unwrap()),
                 ChecksumType::WanChain => prefix.push(a.to_lowercase().next().unwrap()),
             };
         } else {
             match r#type {
-                ChecksumType::EIP55 => prefix.push(a.to_lowercase().next().unwrap()),
+                ChecksumType::Eip55 => prefix.push(a.to_lowercase().next().unwrap()),
                 ChecksumType::WanChain => prefix.push(a.to_uppercase().next().unwrap()),
             };
         }

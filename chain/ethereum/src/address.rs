@@ -13,7 +13,7 @@ pub struct EthereumAddress {
 
 impl EthereumAddress {
     pub fn new(public_key: &PublicKey) -> Result<Self, Error> {
-        if public_key.r#type != PublicKeyType::SECP256k1Extended {
+        if public_key.r#type != PublicKeyType::Secp256k1Extended {
             return Err(Error::NotSupportedPublicKeyType);
         }
         let hash = public_key.hash(&[], Keccak256, true)?;
@@ -26,7 +26,7 @@ impl EthereumAddress {
 
 impl ToString for EthereumAddress {
     fn to_string(&self) -> String {
-        checksum(&self, ChecksumType::EIP55)
+        checksum(&self, ChecksumType::Eip55)
     }
 }
 
@@ -43,7 +43,7 @@ mod tests {
         let pub_key_data = hex::decode(pub_key_str).unwrap();
 
         let public_key = PublicKey {
-            r#type: PublicKeyType::SECP256k1Extended,
+            r#type: PublicKeyType::Secp256k1Extended,
             data: pub_key_data.to_vec(),
         };
         let address = EthereumAddress::new(&public_key);

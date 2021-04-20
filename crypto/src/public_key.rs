@@ -4,8 +4,8 @@ use crate::Error;
 
 #[derive(PartialEq)]
 pub enum PublicKeyType {
-    SECP256k1,
-    SECP256k1Extended
+    Secp256k1,
+    Secp256k1Extended
 }
 
 impl FromStr for PublicKeyType {
@@ -13,8 +13,8 @@ impl FromStr for PublicKeyType {
 
     fn from_str(input: &str) -> Result<PublicKeyType, Self::Err> {
         match input.to_lowercase().as_str() {
-            "secp256k1" => Ok(Self::SECP256k1),
-            "secp256k1extended" => Ok(Self::SECP256k1Extended),
+            "secp256k1" => Ok(Self::Secp256k1),
+            "secp256k1extended" => Ok(Self::Secp256k1Extended),
             _  => Err(()),
         }
     }
@@ -56,12 +56,11 @@ pub fn get_public_key(pub_key_type: &str, private_key: &[u8], extend_bytes: &[u8
     let public_key_type = PublicKeyType::from_str(pub_key_type).map_err(|_| Error::NotSupportedPublicKeyType)?;
 
         match public_key_type {
-            PublicKeyType::SECP256k1 => {
+            PublicKeyType::Secp256k1 => {
                 PublickKeyConvertter::convert(Secp256k1Converter, private_key)
             },
-            PublicKeyType::SECP256k1Extended => {
+            PublicKeyType::Secp256k1Extended => {
                 PublickKeyConvertter::convert(Secp256k1ExtendConverter, private_key)
             },
-            _ => Err(Error::NotSupportedPublicKeyType)
         }
 }

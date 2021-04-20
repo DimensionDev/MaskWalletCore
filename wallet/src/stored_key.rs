@@ -5,6 +5,7 @@ use crate::Error;
 use crypto::Error as CryptoError;
 use super::account::Account;
 use super::encryption_params::{ EncryptionParams };
+use super::derivation_path::DerivationPath;
 use super::coin_dispatcher::get_dispatcher;
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
@@ -49,12 +50,13 @@ impl StoredKey {
         let private_key_struct = PrivateKey::new(&priv_key_bytes)?;
 
         let public_key = private_key_struct.get_public_key(&coin.public_key_type)?;
+        let derivation_path = DerivationPath::new(&coin.derivation_path)?;
         let address = get_dispatcher(&coin).derive_address(&coin, &public_key, &[], &[])?;
         
         stored_key.accounts.push(Account {
             address,
             coin,
-            derivation_path: "".to_owned(),
+            derivation_path,
         });
         Ok(stored_key)
     }

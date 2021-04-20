@@ -3,15 +3,15 @@ use serde::{ Serialize, Deserialize };
 use super::number_util::random_iv;
 
 #[derive(Serialize, Deserialize)]
-pub struct AESParams {
+pub struct AesParams {
     pub iv: String,
 }
 
-impl Default for AESParams {
+impl Default for AesParams {
     fn default() -> Self {
         let random = random_iv(16);
         let iv_hex = random.encode_hex::<String>();
-        AESParams {
+        AesParams {
             iv: iv_hex
         }
     }
