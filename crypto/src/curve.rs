@@ -1,16 +1,29 @@
 use std::str::FromStr;
+use crate::Error;
 
 pub enum Curve {
     Secp256k1,
+    Ed25519,
+    Ed25519hd,
+    Ed25519Blake2bNano,
+    Curve25519,
+    Nist256p1,
+    ED25519Extended,
 }
 
 impl FromStr for Curve {
-    type Err = ();
-
-    fn from_str(input: &str) -> Result<Curve, Self::Err> {
+    type Err = Error;
+    
+    fn from_str(input: &str) -> Result<Curve, Error> {
         match input.to_lowercase().as_str() {
             "secp256k1" => Ok(Self::Secp256k1),
-            _  => Err(()),
+            "ed25519" => Ok(Self::Ed25519),
+            "ed25519-hd" => Ok(Self::Ed25519hd),
+            "ed25519-blake2b-nano" => Ok(Self::Ed25519Blake2bNano),
+            "curve25519" => Ok(Self::Curve25519),
+            "nist256p1" => Ok(Self::Nist256p1),
+            "ed25519-cardano-seed" => Ok(Self::ED25519Extended),
+            _  => Err(Error::NotSupportedCurve),
         }
     }
 }
