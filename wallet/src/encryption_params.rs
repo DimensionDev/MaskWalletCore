@@ -12,7 +12,7 @@ pub struct EncryptionParams {
     encrypted: Vec<u8>,
     cipher: String,
     pub cipher_params: AesParams,
-    mac: String,
+    mac: Vec<u8>,
     kdf_params: KdfParams
 }
 
@@ -22,25 +22,16 @@ impl EncryptionParams {
         let kdf_params = KdfParams::ScryptParam(ScryptParams::default());
         let derived_key = kdf_params.generate_derived_key(password)?;
         let cipher_params = AesParams::default();
-        let hex_iv = hex::encode(&cipher_params.iv);
-        let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], hex_iv.as_bytes())?;
+        let iv = hex::decode(&cipher_params.iv).expect("fail to decode iv");
+        let encrypted = aes::ctr::encrypt(data, &derived_key[0..16], &iv)?;
         let mac = hash::compute_mac(&derived_key[16..32], &encrypted);
-        let mac_hex = hex::encode(mac);
 
         Ok(EncryptionParams {
             encrypted,
             cipher: "aes-128-ctr".to_owned(),
             cipher_params,
-            mac: mac_hex,
+            mac,
             kdf_params,
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
     }
 }

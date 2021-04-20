@@ -18,7 +18,7 @@ pub struct ScryptParams {
 impl Default for ScryptParams {
     fn default() -> ScryptParams {
         ScryptParams {
-            n: 262144,
+            n: 4096,
             p: 1,
             r: 8,
             dklen: 32,
@@ -35,5 +35,19 @@ impl KdfParamsType for ScryptParams {
         let mut output: [u8; CREDENTIAL_LEN] = [0; CREDENTIAL_LEN];
         scrypt(password, self.salt.as_bytes(), &params, &mut output).or(Err(Error::PasswordIncorrect))?;
         Ok(output[0..self.dklen].to_vec())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::scrypt_params::ScryptParams;
+    use scrypt::{ scrypt, Params };
+    #[test]
+    fn it_works() {
+        let log_n = (4096 as f64).log2().round();
+        let params = Params::new(log_n as u8, 8, 1).unwrap();
+        let mut output: [u8; 64] = [0; 64];
+        let password = "mask";
+        scrypt(password.as_bytes(), "".as_bytes(), &params, &mut output).unwrap();
     }
 }

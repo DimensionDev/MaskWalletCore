@@ -6,12 +6,22 @@ import "Param.proto";
 message MWRequest {
     oneof request {
         Param.PrivateKeyStoreImportParam param_import_private_key = 1;
+        Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 2;
+        Param.GetStoredKeyAccountParam param_get_stored_key_account = 3;
     }
 }
 
 message MWResponse {
     bool isSuccess = 1;
-    string errorCode = 2;
-    string errorMsg = 3;
-    string data = 4;
+    oneof response {
+        MWResponseError error = 2;
+        Param.PrivateKeyStoreImportResp resp_import_private_key = 3;
+        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 4;
+        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 5;
+    }
+}
+
+message MWResponseError {
+    string errorCode = 1;
+    string errorMsg = 2;
 }

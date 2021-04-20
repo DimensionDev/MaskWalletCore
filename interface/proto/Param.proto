@@ -10,6 +10,29 @@ message PrivateKeyStoreImportParam {
     string privateKey = 1;
     string password = 2;
     string name = 3;
-    string encoding = 4;
-    Coin coin = 5;
+    Coin coin = 4;
+}
+
+message PrivateKeyStoreImportResp {
+    string data = 1;
+}
+
+message GetStoredKeyAccountCountParam {
+    string data = 1;
+}
+
+message GetStoredKeyAccountCountResp {
+    uint32 count = 1;
+}
+
+message GetStoredKeyAccountParam {
+    string data = 1;
+    uint32 index = 2;
+}
+
+message GetStoredKeyAccountResp {
+    string address = 1;
+    string derivationPath = 2;
+    string coin = 3;
+    string extendedPublicKey = 4;
 }

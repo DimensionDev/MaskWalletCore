@@ -5,12 +5,14 @@ pub mod api;
 pub mod param;
 pub mod handler;
 mod coin;
+pub mod response_util;
 
 #[macro_use]
 extern crate lazy_static;
 
 use bytes::BytesMut;
-use api::{ MwRequest, MwResponse};
+use api::{ MwRequest, MwResponse, MwResponseError };
+use api::mw_response::Response;
 
 use handler::dispatch_request;
 
@@ -34,11 +36,12 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
     if let Some(request) = mw_request.request {
         response = dispatch_request(request)
     } else {
-        response = MwResponse { 
-            is_success: false, 
-            error_code: "invalid request".to_owned(),
-            error_msg: "-1".to_owned(),
-            data: "".to_owned(),
+        response = MwResponse {
+            is_success: false,
+            response: Some(Response::Error(MwResponseError{
+                error_code: "-1".to_owned(),
+                error_msg: "Invalid Coin Type".to_owned(),
+            }))
         };
     }
     encode_message(response).expect("invalid request")

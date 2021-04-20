@@ -57,7 +57,55 @@ impl StoredKey {
             address,
             coin,
             derivation_path,
+            extended_public_key: "".to_owned(),
         });
         Ok(stored_key)
+    }
+}
+
+impl StoredKey {
+    pub fn get_accounts_count(&self) -> u32 {
+        self.accounts.len() as u32
+    }
+
+    pub fn get_account(&self, index: u32) -> Result<&Account, Error> {
+        let index = index as usize;
+        if index >= self.accounts.len() {
+            return Err(Error::IndexOutOfBounds);
+        }
+        Ok(&self.accounts[index as usize])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::stored_key::StoredKey;
+    use chain_common::coin::Coin;
+    use crate::encryption_params::{ EncryptionParams };
+    use chain_common::private_key::PrivateKey;
+    use hex;
+    #[test]
+    fn test_create_stored_key_with_private_key() {
+        let priv_key_str = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
+        let password = "mask wallet";
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+        };
+        
+        let stored_key = StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, coin).unwrap();
+        assert_eq!(stored_key.get_accounts_count(), 1);
+        let account = stored_key.get_account(0).unwrap();
+        assert_eq!(account.address, "0xC2D7CF95645D33006175B78989035C7c9061d3F9");
+        assert_eq!(account.derivation_path.to_string(), derivation_path);
+        assert_eq!(account.extended_public_key, "");
     }
 }

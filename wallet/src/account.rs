@@ -7,4 +7,5 @@ pub struct Account {
     pub address: String,
     pub coin: Coin,
     pub derivation_path: DerivationPath,
+    pub extended_public_key: String,
 }
