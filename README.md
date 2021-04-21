@@ -62,11 +62,11 @@ pub fn get_dispatcher(coin: &Coin) -> Box<dyn Entry> {
 
 **!!IMPORTANT**: Please notice that you could not build WebAssembly of this library on **MacOS** due to this [issue](https://github.com/DimensionDev/MaskWallet/issues/1) of compiling Secp256k1 Wasm on mac.
 
-### Build on Ubuntu
+### Build on Ubuntu 20
 
 #### Prerequisites
 
-Following below steps to install all the required dependencies.
+To build the wasm using `wasm-pack` on Ubuntu, please ensure you are using Ubuntu **20**, not Ubuntu 18. Following below steps to install all the required dependencies.
 
 ```
 sudo apt-get update && sudo apt install cmake
