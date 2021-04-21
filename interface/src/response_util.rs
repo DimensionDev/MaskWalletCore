@@ -11,7 +11,6 @@ pub fn get_json_response_error() -> Option<Response> {
 
 pub fn get_json_error_response() -> MwResponse {
     MwResponse {
-        is_success: false,
         response: get_json_response_error()
     }
 }
@@ -25,7 +24,6 @@ fn get_error_response(error: Error) -> Response {
 
 pub fn get_error_response_by_error(error: Error) -> MwResponse {
     MwResponse {
-        is_success: false,
         response: Some(get_error_response(error))
     }
 }

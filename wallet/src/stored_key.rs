@@ -3,6 +3,7 @@ use serde::{ Serialize, Deserialize };
 
 use crate::Error;
 use crypto::Error as CryptoError;
+use crypto::bip39::Mnemonic;
 use super::account::Account;
 use super::encryption_params::{ EncryptionParams };
 use super::derivation_path::DerivationPath;
@@ -31,7 +32,6 @@ pub struct StoredKey {
 }
 
 impl StoredKey {
-
     fn create_with_data(r#type: StoredKeyType, name: &str, password: &str, data: &[u8]) -> Result<StoredKey, Error> {
         let uuid = Uuid::new_v4();
         let payload = EncryptionParams::new(password.as_bytes(), &data)?;
@@ -70,15 +70,24 @@ impl StoredKey {
     }
 
     pub fn create_with_mnemonic(name: &str, password: &str, mnemonic: &str) -> Result<StoredKey, Error> {
-        if !HdWallet::is_valid(mnemonic) {
+        if !Mnemonic::is_valid(mnemonic) {
             return Err(Error::InvalidMnemonic);
         }
         Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &mnemonic.as_bytes())
     }
 
     pub fn create_with_mnemonic_random(name: &str, password: &str) -> Result<StoredKey, Error> {
-        let wallet = HdWallet::new(128, "")?;
+        let wallet = HdWallet::new(12, "")?;
         Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &wallet.mnemonic.as_bytes())
+    }
+
+    pub fn create_with_mnemonic_random_add_default_address(name: &str, password: &str, mnemonic: &str, coin: Coin) -> Result<StoredKey, Error> {
+        let stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
+
+        let wallet = HdWallet::new_with_mnemonic(mnemonic, "")?;
+        let derivation_path = DerivationPath::new(&coin.derivation_path)?;
+        let address = wallet.get_address_for_coin(&coin)?;
+
     }
 }
 
@@ -96,14 +105,6 @@ impl StoredKey {
     }   
 }
 
-impl StoredKey {
-    // pub fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
-    //     if self.r#type != StoredKeyType::Mnemonic {
-    //         return Err(Error::InvalidAccountRequested);
-    //     }
-    //     Ok(HdWallet::new())
-    // }
-}
 
 #[cfg(test)]
 mod tests {

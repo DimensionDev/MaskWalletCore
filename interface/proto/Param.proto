@@ -6,33 +6,61 @@ enum Coin {
     Polkadot = 1;
 }
 
+//// Create a stored_key with private key 
 message PrivateKeyStoreImportParam {
-    string privateKey = 1;
+    string privateKey = 1; // Hex encoded private key string
     string password = 2;
     string name = 3;
     Coin coin = 4;
 }
 
 message PrivateKeyStoreImportResp {
-    string data = 1;
+    string id = 1;  // Uuid identifier of the created stored key
+    bytes data = 2;
 }
 
+//// Get count of accounts of a stored_key
 message GetStoredKeyAccountCountParam {
-    string data = 1;
+    bytes data = 1; // Stored key data returned from other response
 }
 
 message GetStoredKeyAccountCountResp {
     uint32 count = 1;
 }
 
+//// Get the account of specific index of a stored_key
 message GetStoredKeyAccountParam {
-    string data = 1;
-    uint32 index = 2;
+    bytes data = 1;   // Stored key data returned from other response
+    uint32 index = 2; // Index of the account, begin from zero
 }
 
 message GetStoredKeyAccountResp {
     string address = 1;
     string derivationPath = 2;
-    string coin = 3;
+    string coin = 3;  // Coin id
     string extendedPublicKey = 4;
+}
+
+//// Create a new stored_key with random generated mnemonic
+message CreateKeyStoreParam {
+    string name = 1;
+    string password = 2;
+}
+
+message CreateKeyStoreResp {
+    string id = 1;  // Uuid identifier of the created stored key
+    bytes data = 2;
+}
+
+//// Create a new stored_key with mnemonic
+message MnemonicKeyStoreImportParam {
+    string mnemonic = 1;
+    string name = 2;
+    string password = 3;
+    Coin coin = 4;
+}
+
+message MnemonicKeyStoreImportResp {
+    string id = 1;  // Uuid identifier of the created stored key
+    bytes data = 2;
 }

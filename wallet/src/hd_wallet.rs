@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use crypto::curve::Curve;
 use crypto::Error as CryptoError;
-use crypto::bip39;
+use crypto::bip39::Mnemonic;
 use crypto::bip32;
 use chain_common::coin::Coin;
 use chain_common::private_key::{ PrivateKey, PrivateKeyType };
@@ -17,15 +17,18 @@ pub struct HdWallet {
 }
 
 impl HdWallet {
-    pub fn is_valid(mnemonic: &str) -> bool {
-        bip39::check_mnemonic(mnemonic)
+    pub fn new(word_count: u32, passphrase: &str) -> Result<HdWallet, Error> {
+        let mnemonic = Mnemonic::generate(word_count, passphrase)?;
+        Ok(HdWallet {
+            seed: mnemonic.seed,
+            mnemonic: mnemonic.words,
+            passphrase: passphrase.to_owned(),
+            entropy: mnemonic.entropy
+        })
     }
 
-    pub fn new(strength: u32, passphrase: &str) -> Result<HdWallet, Error> {
-        if strength % 32 != 0 || strength < 128 || strength > 256 {
-            return Err(Error::InvalidWalletStrength);
-        }
-        let mnemonic = bip39::generate(strength / 8, passphrase)?;
+    pub fn new_with_mnemonic(mnemonic: &str, passphrase: &str) -> Result<HdWallet, Error> {
+        let mnemonic = Mnemonic::new(&mnemonic, &passphrase)?;
         Ok(HdWallet {
             seed: mnemonic.seed,
             mnemonic: mnemonic.words,
@@ -61,6 +64,7 @@ impl HdWallet {
 
 #[cfg(test)]
 mod tests {
+    use chain_common::coin::Coin;
     use super::*;
     #[test]
     fn test_mnemonic_is_valid() {
@@ -71,7 +75,40 @@ mod tests {
     }
     #[test]
     fn test_create_new_hd_wallet() {
-        let wallet = HdWallet::new(128, "").unwrap();
+        let word_count = 12;
+        let wallet = HdWallet::new(word_count, "").unwrap();
+        assert_eq!(wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(), word_count as usize);
+        assert_eq!(HdWallet::is_valid(&wallet.mnemonic), true);
+
+        let word_count = 18;
+        let wallet = HdWallet::new(word_count, "").unwrap();
+        assert_eq!(wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(), word_count as usize);
+        assert_eq!(HdWallet::is_valid(&wallet.mnemonic), true);
+
+        let word_count = 24;
+        let wallet = HdWallet::new(word_count, "").unwrap();
+        assert_eq!(wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(), word_count as usize);
+        assert_eq!(HdWallet::is_valid(&wallet.mnemonic), true);
+    }
+
+    #[test]
+    fn test_get_address_for_coin() {
+        let wallet = HdWallet::new(12, "").unwrap();
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+        };
+        let address1 = wallet.get_address_for_coin(&coin).unwrap();
+        let address2 = wallet.get_address_for_coin(&coin).unwrap();
+        assert_eq!(address1, address2);
     }
 
 }

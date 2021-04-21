@@ -8,16 +8,19 @@ message MWRequest {
         Param.PrivateKeyStoreImportParam param_import_private_key = 1;
         Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 2;
         Param.GetStoredKeyAccountParam param_get_stored_key_account = 3;
+        Param.CreateKeyStoreParam param_create_stored_key = 4;
+        Param.MnemonicKeyStoreImportParam param_import_mnemonic = 5;
     }
 }
 
 message MWResponse {
-    bool isSuccess = 1;
     oneof response {
-        MWResponseError error = 2;
-        Param.PrivateKeyStoreImportResp resp_import_private_key = 3;
-        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 4;
-        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 5;
+        MWResponseError error = 1;
+        Param.PrivateKeyStoreImportResp resp_import_private_key = 2;
+        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 3;
+        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 4;
+        Param.CreateKeyStoreResp resp_create_stored_key = 5;
+        Param.MnemonicKeyStoreImportResp resp_create_mnemonic = 6;
     }
 }
 

@@ -37,7 +37,6 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
         response = dispatch_request(request)
     } else {
         response = MwResponse {
-            is_success: false,
             response: Some(Response::Error(MwResponseError{
                 error_code: "-1".to_owned(),
                 error_msg: "Invalid Coin Type".to_owned(),

@@ -10,7 +10,7 @@ use wallet::stored_key::*;
 pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
     match request {
         ParamImportPrivateKey(param) => {
-            create_stored_key(param)
+            create_stored_key_with_private_key(param)
         },
         ParamGetStoredKeyAccountCount(param) => {
             get_stored_key_account_count(param)
@@ -18,16 +18,21 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGetStoredKeyAccount(param) => {
             get_store_key_account(param)
         },
+        ParamCreateStoredKey(param) => {
+            create_stored_key(param)
+        },
+        ParamImportMnemonic(param) => {
+            create_stored_key_with_mnemonic(param)
+        }
     }
 }
 
-fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
+fn create_stored_key_with_private_key(param: PrivateKeyStoreImportParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
         None => {
             return MwResponse {
-                is_success: false,
                 response: Some(Response::Error(MwResponseError{
                     error_code: "-1".to_owned(),
                     error_msg: "Invalid Coin Type".to_owned(),
@@ -39,19 +44,18 @@ fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
     let stored_key = StoredKey::create_with_private_key_and_default_address(&param.name, &param.password, &param.private_key, coin.clone());
     match stored_key {
         Ok(key) => {
-            let json = serde_json::to_string(&key).unwrap();
+            let json = serde_json::to_vec(&key).unwrap();
             MwResponse {
-                is_success: true,
                 response: Some(Response::RespImportPrivateKey(
                     PrivateKeyStoreImportResp {
-                        data: json,
+                        id: key.id,
+                        data: json.to_vec(),
                     }
                 ))
             }
         },
         Err(error) => {
             MwResponse {
-                is_success: false,
                 response: Some(Response::Error(MwResponseError{
                     error_code: "-1".to_owned(),  // TODO: error to error code
                     error_msg: "Invalid Coin Type".to_owned(),  // TODO: error to error msg
@@ -62,14 +66,13 @@ fn create_stored_key(param: PrivateKeyStoreImportParam) -> MwResponse {
 }
 
 fn get_stored_key_account_count(param: GetStoredKeyAccountCountParam) -> MwResponse {
-    let stored_key: StoredKey = match serde_json::from_str(&param.data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
         }
     };
     MwResponse {
-        is_success: true,
         response: Some(Response::RespGetStoredKeyAccountCount(
             GetStoredKeyAccountCountResp {
                 count: stored_key.get_accounts_count(),
@@ -77,8 +80,9 @@ fn get_stored_key_account_count(param: GetStoredKeyAccountCountParam) -> MwRespo
         ))
     }
 }
+
 fn get_store_key_account(param: GetStoredKeyAccountParam) -> MwResponse {
-    let stored_key: StoredKey = match serde_json::from_str(&param.data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
@@ -91,7 +95,6 @@ fn get_store_key_account(param: GetStoredKeyAccountParam) -> MwResponse {
         }
     };
     MwResponse {
-        is_success: true,
         response: Some(Response::RespGetStoredKeyAccount(
             GetStoredKeyAccountResp {
                 address: account.address.clone(),
@@ -101,4 +104,26 @@ fn get_store_key_account(param: GetStoredKeyAccountParam) -> MwResponse {
             }
         ))
     }
+}
+
+fn create_stored_key(param: CreateKeyStoreParam) -> MwResponse {
+    let stored_key: StoredKey = match StoredKey::create_with_mnemonic_random(&param.name, &param.password) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    let json = serde_json::to_vec(&stored_key).unwrap();
+    MwResponse {
+        response: Some(Response::RespCreateStoredKey(
+            CreateKeyStoreResp {
+                id: stored_key.id,
+                data: json.to_vec(),
+            }
+        ))
+    }
+}
+
+fn create_stored_key_with_mnemonic(param: MnemonicKeyStoreImportParam) -> MwResponse {
+    
 }
