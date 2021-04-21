@@ -12,7 +12,7 @@ const VALID_EXTENDED_SIZE: u8 = 3 * VALID_SIZE;
 pub enum PrivateKeyType {
     PrivateKeyTypeDefault32 = 0, // 32-byte private key
     PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
-    PrivateKeyTypeHD = 2,         // 32-byte private key
+    PrivateKeyTypeHd = 2,         // 32-byte private key
 }
 
 pub struct PrivateKey {
@@ -24,8 +24,8 @@ pub struct PrivateKey {
 impl PrivateKey {
     pub fn get_private_key_type(curve: &Curve) -> PrivateKeyType {
         match curve {
-            Curve::ED25519Extended => PrivateKeyType::PrivateKeyTypeExtended96,
-            Curve::Ed25519hd => PrivateKeyType::PrivateKeyTypeHD,
+            Curve::Ed25519Extended => PrivateKeyType::PrivateKeyTypeExtended96,
+            Curve::Ed25519hd => PrivateKeyType::PrivateKeyTypeHd,
             _ => PrivateKeyType::PrivateKeyTypeDefault32
         }
     }

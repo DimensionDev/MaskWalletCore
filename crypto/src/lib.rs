@@ -32,6 +32,8 @@ pub enum Error {
 
     InvalidSeed,
 
+    InvalidDerivationpath,
+
     NotSupportedPublicKeyType,
 
     NotSupportedCurve,

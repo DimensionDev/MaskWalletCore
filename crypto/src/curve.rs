@@ -8,7 +8,7 @@ pub enum Curve {
     Ed25519Blake2bNano,
     Curve25519,
     Nist256p1,
-    ED25519Extended,
+    Ed25519Extended,
 }
 
 impl FromStr for Curve {
@@ -22,7 +22,7 @@ impl FromStr for Curve {
             "ed25519-blake2b-nano" => Ok(Self::Ed25519Blake2bNano),
             "curve25519" => Ok(Self::Curve25519),
             "nist256p1" => Ok(Self::Nist256p1),
-            "ed25519-cardano-seed" => Ok(Self::ED25519Extended),
+            "ed25519-cardano-seed" => Ok(Self::Ed25519Extended),
             _  => Err(Error::NotSupportedCurve),
         }
     }
