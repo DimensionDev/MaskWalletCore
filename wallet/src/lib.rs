@@ -11,10 +11,7 @@ use crypto::Error as CryptoError;
 #[derive(Debug, PartialEq)]
 pub enum Error {
     CryptoError(CryptoError),
-    InvalidDerivationpath,
     IndexOutOfBounds,
-    InvalidMnemonic,
-    InvalidWalletStrength,
     InvalidAccountRequested,
 }
 

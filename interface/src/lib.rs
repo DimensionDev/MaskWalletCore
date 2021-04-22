@@ -13,6 +13,7 @@ extern crate lazy_static;
 use bytes::BytesMut;
 use api::{ MwRequest, MwResponse, MwResponseError };
 use api::mw_response::Response;
+use response_util::get_invalid_proto_resposne;
 
 use handler::dispatch_request;
 
@@ -30,9 +31,14 @@ fn encode_message(msg: impl Message) -> Result<Vec<u8>, EncodeError> {
 }
 
 pub fn call_api(input: &[u8]) -> Vec<u8> {
-    let mw_request: MwRequest = MwRequest::decode(input).expect("decode api");
-
+    let mw_request: MwRequest = match MwRequest::decode(input) {
+        Ok(request) => request,
+        Err(_) => {
+            return encode_message(get_invalid_proto_resposne()).expect("invalid request");
+        }
+    };
     let response: MwResponse;
+    
     if let Some(request) = mw_request.request {
         response = dispatch_request(request)
     } else {

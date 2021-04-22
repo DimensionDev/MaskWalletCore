@@ -45,13 +45,13 @@ mod tests {
     #[test]
     fn test_generate_new_mnenomic() {
         let mnemonic = Mnemonic::generate(12, "").unwrap();
-        assert_eq!(Mnemonic::check_mnemonic(&mnemonic.words), true);
+        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
 
         let mnemonic = Mnemonic::generate(18, "").unwrap();
-        assert_eq!(Mnemonic::check_mnemonic(&mnemonic.words), true);
+        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
 
         let mnemonic = Mnemonic::generate(24, "").unwrap();
-        assert_eq!(Mnemonic::check_mnemonic(&mnemonic.words), true);
+        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
 
         assert_eq!(Mnemonic::generate(25, "").is_err(), true);
         assert_eq!(Mnemonic::generate(11, "").is_err(), true);

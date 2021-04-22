@@ -1,7 +1,7 @@
 use std::string::ToString;
 use std::fmt::Debug;
 use serde::{ Serialize, Deserialize };
-
+use crypto::Error as CryptoError;
 use crate::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -26,7 +26,7 @@ impl DerivationPath {
             }
             let child_index = match child_str.parse::<u32>() {
                 Ok(child_index) => child_index,
-                Err(_) => return Err(Error::InvalidDerivationpath)
+                Err(_) => return Err(Error::CryptoError(CryptoError::InvalidDerivationpath)),
             };
             indices.push(DerivationPathIndex{
                 value: child_index,
@@ -80,7 +80,7 @@ mod tests {
     #[test]
     fn test_derivation_path_parse() {
         let invalid_test_path_str = "m/m44'/60'/0'/0/0";
-        assert_eq!(DerivationPath::new(&invalid_test_path_str).unwrap_err(), Error::InvalidDerivationpath);
+        assert_eq!(DerivationPath::new(&invalid_test_path_str).unwrap_err(), Error::CryptoError(CryptoError::InvalidDerivationpath));
 
         let test_path_str = "m/44'/60'/0'/0/0";
         let derivation_path = DerivationPath::new(&test_path_str).expect("fail to parse test derivation path str");

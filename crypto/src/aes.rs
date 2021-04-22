@@ -1,3 +1,11 @@
+use serde::{ Serialize, Deserialize };
+
+#[derive(Serialize, Deserialize, PartialEq)]
+pub enum AesType {
+    Ctr,
+    Cbc,
+}
+
 pub mod ctr {
     use aes_ctr::Aes128Ctr;
     use aes_ctr::cipher::{

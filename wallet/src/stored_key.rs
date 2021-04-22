@@ -12,7 +12,7 @@ use super::hd_wallet::HdWallet;
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
     PrivateKey = 1,
     Mnemonic,
@@ -71,7 +71,7 @@ impl StoredKey {
 
     pub fn create_with_mnemonic(name: &str, password: &str, mnemonic: &str) -> Result<StoredKey, Error> {
         if !Mnemonic::is_valid(mnemonic) {
-            return Err(Error::InvalidMnemonic);
+            return Err(Error::CryptoError(CryptoError::InvalidMnemonic));
         }
         Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &mnemonic.as_bytes())
     }
@@ -82,12 +82,19 @@ impl StoredKey {
     }
 
     pub fn create_with_mnemonic_random_add_default_address(name: &str, password: &str, mnemonic: &str, coin: Coin) -> Result<StoredKey, Error> {
-        let stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
+        let mut stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
 
         let wallet = HdWallet::new_with_mnemonic(mnemonic, "")?;
         let derivation_path = DerivationPath::new(&coin.derivation_path)?;
         let address = wallet.get_address_for_coin(&coin)?;
-
+        let extended_public_key = wallet.get_extended_public_key(&coin);
+        stored_key.accounts.push(Account {
+            address,
+            coin,
+            derivation_path,
+            extended_public_key: extended_public_key,
+        });
+        Ok(stored_key)
     }
 }
 
@@ -108,11 +115,9 @@ impl StoredKey {
 
 #[cfg(test)]
 mod tests {
-    use crate::stored_key::StoredKey;
+    use std::collections::HashMap;
+    use super::*;
     use chain_common::coin::Coin;
-    use crate::encryption_params::{ EncryptionParams };
-    use chain_common::private_key::PrivateKey;
-    use hex;
     #[test]
     fn test_create_stored_key_with_private_key() {
         let priv_key_str = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
@@ -128,6 +133,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
+            all_info: HashMap::new()
         };
         
         let stored_key = StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, coin).unwrap();
@@ -135,6 +141,36 @@ mod tests {
         let account = stored_key.get_account(0).unwrap();
         assert_eq!(account.address, "0xC2D7CF95645D33006175B78989035C7c9061d3F9");
         assert_eq!(account.derivation_path.to_string(), derivation_path);
+        assert_eq!(account.extended_public_key, "");
+    }
+
+    #[test]
+    fn test_create_with_mnemonic() {
+        let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+        let password = "";
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+            all_info: HashMap::new()
+        };
+        
+        let stored_key = StoredKey::create_with_mnemonic_random_add_default_address("mask", &password, &mnemonic, coin).unwrap();
+        assert_eq!(stored_key.r#type == StoredKeyType::Mnemonic, true);
+        assert_eq!(stored_key.get_accounts_count(), 1);
+        let decrypted = stored_key.payload.decrypt(password.as_bytes()).unwrap();
+        assert_eq!(&decrypted, mnemonic.as_bytes());
+        let account = stored_key.get_account(0).unwrap();
+        assert_eq!(account.address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
+        assert_eq!(account.derivation_path.to_string(), derivation_path);
+        assert_eq!(account.coin.name, "ethereum");
         assert_eq!(account.extended_public_key, "");
     }
 }

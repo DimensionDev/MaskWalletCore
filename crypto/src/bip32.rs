@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use std::convert::TryInto;
 use bitcoin::Network;
-use bitcoin::util::bip32::{ ExtendedPrivKey, DerivationPath, ChildNumber };
+use bitcoin::util::bip32::{ ExtendedPrivKey, ExtendedPubKey, DerivationPath, ChildNumber };
 use secp256k1::Secp256k1;
 use super::curve::Curve;
 use crate::Error;
@@ -33,19 +33,29 @@ impl HdNode {
             curve
         }
     }
+
+    pub fn get_master_node(seed: &[u8], curve: Curve) -> Result<HdNode, Error> {
+        let extended_private_key = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
+        Ok(HdNode::new_from_extended_private_key(extended_private_key, curve))
+    }
+
+    pub fn get_node(seed: &[u8], path: &str, curve: Curve) -> Result<HdNode, Error> {
+        let extended_master_key = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
+        let derivation_path = DerivationPath::from_str(path).map_err(|_| Error::InvalidDerivationpath)?;
+        let extended_private_key = extended_master_key.derive_priv(&Secp256k1::new(), &derivation_path).map_err(|_| Error::InvalidSeed)?;
+        Ok(HdNode::new_from_extended_private_key(extended_private_key, curve))
+    }
 }
 
-pub fn get_master_node(seed: &[u8], curve: Curve) -> Result<HdNode, Error> {
-    let extended_private_key = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
-    Ok(HdNode::new_from_extended_private_key(extended_private_key, curve))
-}
-
-pub fn get_node(seed: &[u8], path: &str, curve: Curve) -> Result<HdNode, Error> {
+pub fn get_extended_public_key(seed: &[u8], path: &str) -> Result<String, Error> {
     let extended_master_key = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
     let derivation_path = DerivationPath::from_str(path).map_err(|_| Error::InvalidDerivationpath)?;
     let extended_private_key = extended_master_key.derive_priv(&Secp256k1::new(), &derivation_path).map_err(|_| Error::InvalidSeed)?;
-    Ok(HdNode::new_from_extended_private_key(extended_private_key, curve))
+    let extended_public_key = ExtendedPubKey::from_private(&Secp256k1::new(), &extended_private_key);
+    std::str::from_utf8(&extended_public_key.encode()[..]).map(|x| x.to_owned()).map_err(|_| Error::InvalidSeed)
 }
+
+
 
 #[cfg(test)]
 mod tests {
@@ -54,14 +64,14 @@ mod tests {
     use bitcoin::util::bip32::{ ExtendedPrivKey, DerivationPath };
     use bitcoin::Network;
     use secp256k1::Secp256k1;
-    use crate::bip32::{ get_master_node, get_node };
+    use crate::bip32::HdNode;
     use crate::curve::Curve;
     #[test]
     fn test_derive_from_seed() {
         let seed = "000102030405060708090a0b0c0d0e0f";
         let curve = Curve::Secp256k1;
         let seed_bytes = hex::decode(seed).unwrap();
-        let master_node = get_master_node(&seed_bytes, curve).unwrap();
+        let master_node = HdNode::get_master_node(&seed_bytes, curve).unwrap();
         assert_eq!(master_node.depth, 0);
         assert_eq!(master_node.child_num, 0);
         
@@ -71,7 +81,7 @@ mod tests {
         
         let derivation_path = "m/0'/1/2'/2";
         let curve = Curve::Secp256k1;
-        let node = get_node(&seed_bytes, &derivation_path, curve).unwrap();
+        let node = HdNode::get_node(&seed_bytes, &derivation_path, curve).unwrap();
         assert_eq!(node.depth, 4);
         assert_eq!(node.child_num, 2);
 

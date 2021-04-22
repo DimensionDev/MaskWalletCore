@@ -125,5 +125,19 @@ fn create_stored_key(param: CreateKeyStoreParam) -> MwResponse {
 }
 
 fn create_stored_key_with_mnemonic(param: MnemonicKeyStoreImportParam) -> MwResponse {
-    
+    let stored_key: StoredKey = match StoredKey::create_with_mnemonic(&param.name, &param.password, &param.mnemonic) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    let json = serde_json::to_vec(&stored_key).unwrap();
+    MwResponse {
+        response: Some(Response::RespCreateMnemonic(
+            MnemonicKeyStoreImportResp {
+                id: stored_key.id,
+                data: json.to_vec(),
+            }
+        ))
+    }
 }

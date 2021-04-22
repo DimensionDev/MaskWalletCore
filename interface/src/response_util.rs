@@ -15,6 +15,15 @@ pub fn get_json_error_response() -> MwResponse {
     }
 }
 
+pub fn get_invalid_proto_resposne() -> MwResponse {
+    MwResponse {
+        response: Some(Response::Error(MwResponseError{
+            error_code: "-1".to_owned(),
+            error_msg: "Invalid Input".to_owned(),
+        }))
+    }
+}
+
 fn get_error_response(error: Error) -> Response {
     Response::Error(MwResponseError{
         error_code: "-1".to_owned(), // TODO: error to error code
