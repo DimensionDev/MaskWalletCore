@@ -64,10 +64,21 @@ message MnemonicStoredKeyImportParam {
     string mnemonic = 1;
     string name = 2;
     string password = 3;
-    Coin coin = 4;
 }
 
 message MnemonicStoredKeyImportResp {
+    StoredKeyInfo StoredKey = 1;
+}
+
+//// 5. Create a new StoredKey with Json
+message JsonStoredKeyImportParam {
+    string json = 1;
+    string name = 2;
+    string password = 3;
+    Coin coin = 4;
+}
+
+message JsonStoredKeyImportResp {
     StoredKeyInfo StoredKey = 1;
 }
 

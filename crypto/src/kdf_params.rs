@@ -6,7 +6,8 @@ pub trait KdfParamsType {
     fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error>;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(untagged)]
 pub enum KdfParams {
     ScryptParam(ScryptParams),
 }

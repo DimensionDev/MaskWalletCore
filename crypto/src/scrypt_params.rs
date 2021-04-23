@@ -6,13 +6,13 @@ use crate::Error;
 
 const CREDENTIAL_LEN: usize = 64usize;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ScryptParams {
-    n: u32,
-    p: u32,
-    r: u32,
-    dklen: usize,
-    salt: String,
+    pub n: u32,
+    pub p: u32,
+    pub r: u32,
+    pub dklen: usize,
+    pub salt: String,
 }
 
 impl Default for ScryptParams {
@@ -22,7 +22,7 @@ impl Default for ScryptParams {
             p: 1,
             r: 8,
             dklen: 32,
-            salt: "".to_string(),
+            salt: "".to_owned(),
         }
     }
 }

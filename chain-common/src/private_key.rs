@@ -16,9 +16,9 @@ pub enum PrivateKeyType {
 }
 
 pub struct PrivateKey {
-    data: Vec<u8>,
-    extends_data: Vec<u8>,
-    chain_code_bytes: Vec<u8>,
+    pub data: Vec<u8>,
+    pub extends_data: Vec<u8>,
+    pub chain_code_bytes: Vec<u8>,
 }
 
 impl PrivateKey {

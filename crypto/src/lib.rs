@@ -5,6 +5,7 @@ pub mod aes;
 pub mod hash;
 pub mod curve;
 pub mod public_key;
+pub mod key_store_json;
 
 pub mod bip39;
 pub mod bip32;
@@ -34,9 +35,13 @@ pub enum Error {
 
     InvalidDerivationpath,
 
+    InvalidKeyStoreJson,
+
     NotSupportedPublicKeyType,
 
     NotSupportedCurve,
+
+    NotSupportedCipher,
     
     CachedDkFeatureNotSupport,
 }

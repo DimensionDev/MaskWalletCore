@@ -1,9 +1,11 @@
+use std::str::FromStr;
 use uuid::Uuid;
 use serde::{ Serialize, Deserialize };
 
 use crate::Error;
 use crypto::Error as CryptoError;
 use crypto::bip39::Mnemonic;
+use crypto::key_store_json::KeyStoreJson;
 use super::account::Account;
 use super::encryption_params::{ EncryptionParams };
 use super::derivation_path::DerivationPath;
@@ -81,7 +83,7 @@ impl StoredKey {
         Self::create_with_data(StoredKeyType::Mnemonic, &name, &password, &wallet.mnemonic.as_bytes())
     }
 
-    pub fn create_with_mnemonic_random_add_default_address(name: &str, password: &str, mnemonic: &str, coin: Coin) -> Result<StoredKey, Error> {
+    pub fn create_with_mnemonic_and_default_address(name: &str, password: &str, mnemonic: &str, coin: Coin) -> Result<StoredKey, Error> {
         let mut stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
 
         let wallet = HdWallet::new_with_mnemonic(mnemonic, "")?;
@@ -95,6 +97,18 @@ impl StoredKey {
             extended_public_key,
         });
         Ok(stored_key)
+    }
+
+    pub fn create_with_json(name: &str, password: &str, json: &str, coin: Coin) -> Result<StoredKey, Error> {
+        let key_store_json_struct = KeyStoreJson::from_str(&json)?;
+        let (_, decrypted) = EncryptionParams::new_from_json_struct(&key_store_json_struct, password.as_bytes())?;
+        let decrypted_str = std::str::from_utf8(&decrypted).map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJson) )?;
+        if Mnemonic::is_valid(&decrypted_str) {
+            return Self::create_with_mnemonic_and_default_address(&name, &password, &decrypted_str, coin);
+        }
+        let private_key = PrivateKey::new(&decrypted)?;
+        let private_key_hex = hex::encode(&private_key.data);
+        Self::create_with_private_key_and_default_address(&name, &password, &private_key_hex, coin)
     }
 }
 
@@ -181,7 +195,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: Some(HashMap::new())
+            all_info: HashMap::new()
         };
         
         let stored_key = StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, coin).unwrap();
@@ -207,10 +221,10 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: Some(HashMap::new())
+            all_info: HashMap::new()
         };
         
-        let stored_key = StoredKey::create_with_mnemonic_random_add_default_address("mask", &password, &mnemonic, coin).unwrap();
+        let stored_key = StoredKey::create_with_mnemonic_and_default_address("mask", &password, &mnemonic, coin).unwrap();
         assert_eq!(stored_key.r#type == StoredKeyType::Mnemonic, true);
         assert_eq!(stored_key.get_accounts_count(), 1);
         let decrypted = stored_key.payload.decrypt(password.as_bytes()).unwrap();

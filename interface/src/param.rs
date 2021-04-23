@@ -83,6 +83,23 @@ pub struct MnemonicStoredKeyImportResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+///// 5. Create a new StoredKey with Json
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct JsonStoredKeyImportParam {
+    #[prost(string, tag="1")]
+    pub json: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub password: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="4")]
+    pub coin: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct JsonStoredKeyImportResp {
+    #[prost(message, optional, tag="1")]
+    pub stored_key: ::core::option::Option<StoredKeyInfo>,
+}
 ///// 5. Get count of accounts of a StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAccountCountParam {

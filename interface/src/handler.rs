@@ -21,7 +21,10 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         },
         ParamImportMnemonic(param) => {
             create_stored_key_with_mnemonic(param)
-        }
+        },
+        ParamImportJson(param) => {
+
+        },
         ParamGetStoredKeyAccountCount(param) => {
             get_stored_key_account_count(param)
         },
@@ -102,6 +105,22 @@ fn create_stored_key_with_private_key(param: PrivateStoredKeyImportParam) -> MwR
 
 fn create_stored_key_with_mnemonic(param: MnemonicStoredKeyImportParam) -> MwResponse {
     let stored_key: StoredKey = match StoredKey::create_with_mnemonic(&param.name, &param.password, &param.mnemonic) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespCreateMnemonic(
+            MnemonicStoredKeyImportResp {
+                stored_key: Some(StoredKeyInfo::from(stored_key))
+            }
+        ))
+    }
+}
+
+fn create_with_json(param: JsonStoredKeyImportParam) -> MwResponse {
+    let stored_key: StoredKey = match StoredKey::create_with_json(&param.name, &param.password, &param.json, coin) {
         Ok(key) => key,
         Err(error) => {
             return get_error_response_by_error(error);

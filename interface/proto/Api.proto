@@ -9,10 +9,11 @@ message MWRequest {
         Param.CreateStoredKeyParam param_create_stored_key = 2;
         Param.PrivateStoredKeyImportParam param_import_private_key = 3;
         Param.MnemonicStoredKeyImportParam param_import_mnemonic = 4;
-        Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 5;
-        Param.GetStoredKeyAccountParam param_get_stored_key_account = 6;
-        Param.GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 7;
-        Param.GetStoredKeyAccountOfCoinParam param_get_stored_key_of_coin = 8;
+        Param.JsonStoredKeyImportParam param_import_json = 5;
+        Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 6;
+        Param.GetStoredKeyAccountParam param_get_stored_key_account = 7;
+        Param.GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
+        Param.GetStoredKeyAccountOfCoinParam param_get_stored_key_of_coin = 9;
     }
 }
 
@@ -23,10 +24,11 @@ message MWResponse {
         Param.CreateStoredKeyResp resp_create_stored_key = 3;
         Param.PrivateStoredKeyImportResp resp_import_private_key = 4;
         Param.MnemonicStoredKeyImportResp resp_create_mnemonic = 5;
-        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 6;
-        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 7;
-        Param.GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 8;
-        Param.GetStoredKeyAccountOfCoinResp resp_get_stored_key_account_of_coin = 9;
+        Param.JsonStoredKeyImportResp resp_import_json = 6;
+        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 7;
+        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 8;
+        Param.GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
+        Param.GetStoredKeyAccountOfCoinResp resp_get_stored_key_account_of_coin = 10;
     }
 }
 

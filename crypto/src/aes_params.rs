@@ -2,7 +2,7 @@ use hex::ToHex;
 use serde::{ Serialize, Deserialize };
 use super::number_util::random_iv;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct AesParams {
     pub iv: String,
 }

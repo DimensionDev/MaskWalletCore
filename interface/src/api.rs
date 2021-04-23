@@ -1,6 +1,6 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -16,18 +16,20 @@ pub mod mw_request {
         #[prost(message, tag="4")]
         ParamImportMnemonic(super::super::param::MnemonicStoredKeyImportParam),
         #[prost(message, tag="5")]
-        ParamGetStoredKeyAccountCount(super::super::param::GetStoredKeyAccountCountParam),
+        ParamImportJson(super::super::param::JsonStoredKeyImportParam),
         #[prost(message, tag="6")]
-        ParamGetStoredKeyAccount(super::super::param::GetStoredKeyAccountParam),
+        ParamGetStoredKeyAccountCount(super::super::param::GetStoredKeyAccountCountParam),
         #[prost(message, tag="7")]
-        ParamGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountParam),
+        ParamGetStoredKeyAccount(super::super::param::GetStoredKeyAccountParam),
         #[prost(message, tag="8")]
+        ParamGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountParam),
+        #[prost(message, tag="9")]
         ParamGetStoredKeyOfCoin(super::super::param::GetStoredKeyAccountOfCoinParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -45,12 +47,14 @@ pub mod mw_response {
         #[prost(message, tag="5")]
         RespCreateMnemonic(super::super::param::MnemonicStoredKeyImportResp),
         #[prost(message, tag="6")]
-        RespGetStoredKeyAccountCount(super::super::param::GetStoredKeyAccountCountResp),
+        RespImportJson(super::super::param::JsonStoredKeyImportResp),
         #[prost(message, tag="7")]
-        RespGetStoredKeyAccount(super::super::param::GetStoredKeyAccountResp),
+        RespGetStoredKeyAccountCount(super::super::param::GetStoredKeyAccountCountResp),
         #[prost(message, tag="8")]
-        RespGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountResp),
+        RespGetStoredKeyAccount(super::super::param::GetStoredKeyAccountResp),
         #[prost(message, tag="9")]
+        RespGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountResp),
+        #[prost(message, tag="10")]
         RespGetStoredKeyAccountOfCoin(super::super::param::GetStoredKeyAccountOfCoinResp),
     }
 }
