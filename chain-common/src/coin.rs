@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use serde::{ Serialize, Deserialize };
-use serde_json;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Coin {
@@ -27,7 +26,18 @@ pub struct Coin {
 }
 
 impl Coin {
+    pub fn get_value(&self, key: &str) -> Option<String> {
+        self.all_info.get(key).map(|x| x.to_string() )
+    }
+
     pub fn get_xpub(&self) -> Option<String> {
         self.all_info.get("xpub").map(|x| x.to_string() )
     }
 }
+
+impl PartialEq for Coin {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+impl Eq for Coin {}

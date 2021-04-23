@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use serde::{ Serialize, Deserialize };
 use crypto::curve::Curve;
 use crypto::Error as CryptoError;
 use crypto::bip39::Mnemonic;
@@ -7,8 +8,9 @@ use chain_common::coin::Coin;
 use chain_common::private_key::{ PrivateKey, PrivateKeyType };
 use crate::Error;
 use super::derivation_path::DerivationPath;
-use super::coin_dispatcher::get_dispatcher;
+use super::coin_dispatcher::*;
 
+#[derive(Serialize, Deserialize)]
 pub struct HdWallet {
     seed: Vec<u8>,
     pub mnemonic: String,
@@ -56,9 +58,8 @@ impl HdWallet {
 
     pub fn get_address_for_coin(&self, coin: &Coin) -> Result<String, Error> {
         let derivation_path = DerivationPath::new(&coin.derivation_path)?;
-        let priv_key = self.get_key(&coin, &derivation_path)?;
-        let public_key = priv_key.get_public_key(&coin.public_key_type)?;
-        Ok(get_dispatcher(&coin).derive_address(&coin, &public_key, &[], &[])?)
+        let private_key = self.get_key(&coin, &derivation_path)?;
+        derive_address_with_private_key(&coin, &private_key)
     }
 
     pub fn get_extended_public_key(&self, coin: &Coin) -> String {

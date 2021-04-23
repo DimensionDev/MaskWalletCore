@@ -92,9 +92,20 @@ impl StoredKey {
             address,
             coin,
             derivation_path,
-            extended_public_key: extended_public_key,
+            extended_public_key,
         });
         Ok(stored_key)
+    }
+}
+
+impl StoredKey {
+    pub fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
+        if self.r#type != StoredKeyType::Mnemonic {
+            return Err(Error::InvalidAccountRequested);
+        }
+        let mnemonic_bytes = self.payload.decrypt(&password.as_bytes())?;
+        let mnemonic = std::str::from_utf8(&mnemonic_bytes).map_err(|_| Error::CryptoError(CryptoError::PasswordIncorrect) )?;
+        HdWallet::new_with_mnemonic(&mnemonic, "")
     }
 }
 
@@ -109,7 +120,44 @@ impl StoredKey {
             return Err(Error::IndexOutOfBounds);
         }
         Ok(&self.accounts[index as usize])
-    }   
+    }
+
+    pub fn get_all_accounts(&self) -> &[Account] {
+        &self.accounts
+    }
+
+    pub fn get_account_of_coin(&self, coin: &Coin) -> Option<&Account> {
+        self.accounts.iter().find(|account| account.coin == *coin )
+    }
+
+    pub fn get_or_create_account_for_coin(&mut self, coin: &Coin, wallet: Option<HdWallet>) -> Result<Option<&Account>, Error> {
+        let hd_wallet = match wallet {
+            Some(wallet) => wallet,
+            None => return Ok(self.get_account_of_coin(&coin)),
+        };
+        
+        for (i, account) in self.accounts.iter_mut().enumerate() {
+            if account.coin == *coin {
+                // Found an account of required coin
+                if account.address.is_empty() {
+                    account.address = hd_wallet.get_address_for_coin(&coin)?;
+                }
+                return Ok(self.accounts.get(i))
+            }
+        } 
+        // No valid account found for the coin, create a new one
+        let derivation_path = DerivationPath::new(&coin.derivation_path)?;
+        let address = hd_wallet.get_address_for_coin(&coin)?;
+        let extended_public_key = hd_wallet.get_extended_public_key(&coin);
+        let account = Account {
+            address,
+            coin: coin.clone(),
+            derivation_path,
+            extended_public_key,
+        };
+        self.accounts.push(account);
+        Ok(self.accounts.last())
+    }
 }
 
 

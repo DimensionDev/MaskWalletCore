@@ -52,7 +52,7 @@ impl PublickKeyConvertter {
     }
 }
 
-pub fn get_public_key(pub_key_type: &str, private_key: &[u8], extend_bytes: &[u8], chain_code_bytes: &[u8]) -> Result<Vec<u8>, Error> {
+pub fn get_public_key(pub_key_type: &str, private_key: &[u8], _extend_bytes: &[u8], _chain_code_bytes: &[u8]) -> Result<Vec<u8>, Error> {
     let public_key_type = PublicKeyType::from_str(pub_key_type).map_err(|_| Error::NotSupportedPublicKeyType)?;
 
         match public_key_type {

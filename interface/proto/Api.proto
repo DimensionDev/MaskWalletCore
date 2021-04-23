@@ -5,22 +5,28 @@ import "Param.proto";
 
 message MWRequest {
     oneof request {
-        Param.PrivateKeyStoreImportParam param_import_private_key = 1;
-        Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 2;
-        Param.GetStoredKeyAccountParam param_get_stored_key_account = 3;
-        Param.CreateKeyStoreParam param_create_stored_key = 4;
-        Param.MnemonicKeyStoreImportParam param_import_mnemonic = 5;
+        Param.StoredKeyLoadParam param_load_stored_key = 1;
+        Param.CreateStoredKeyParam param_create_stored_key = 2;
+        Param.PrivateStoredKeyImportParam param_import_private_key = 3;
+        Param.MnemonicStoredKeyImportParam param_import_mnemonic = 4;
+        Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 5;
+        Param.GetStoredKeyAccountParam param_get_stored_key_account = 6;
+        Param.GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 7;
+        Param.GetStoredKeyAccountOfCoinParam param_get_stored_key_of_coin = 8;
     }
 }
 
 message MWResponse {
     oneof response {
         MWResponseError error = 1;
-        Param.PrivateKeyStoreImportResp resp_import_private_key = 2;
-        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 3;
-        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 4;
-        Param.CreateKeyStoreResp resp_create_stored_key = 5;
-        Param.MnemonicKeyStoreImportResp resp_create_mnemonic = 6;
+        Param.StoredKeyLoadResp resp_load_stored_key = 2;
+        Param.CreateStoredKeyResp resp_create_stored_key = 3;
+        Param.PrivateStoredKeyImportResp resp_import_private_key = 4;
+        Param.MnemonicStoredKeyImportResp resp_create_mnemonic = 5;
+        Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 6;
+        Param.GetStoredKeyAccountResp resp_get_stored_key_account = 7;
+        Param.GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 8;
+        Param.GetStoredKeyAccountOfCoinResp resp_get_stored_key_account_of_coin = 9;
     }
 }
 
