@@ -40,7 +40,6 @@ impl KdfParamsType for ScryptParams {
 
 #[cfg(test)]
 mod tests {
-    use crate::scrypt_params::ScryptParams;
     use scrypt::{ scrypt, Params };
     #[test]
     fn it_works() {

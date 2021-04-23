@@ -16,7 +16,7 @@ lazy_static! {
         let mut coins_map: HashMap<String, Coin> = HashMap::new();
 
         coins.into_iter().for_each(|mut coin| {
-            coin.all_info = coins_info_hashmaps.remove(0);
+            coin.all_info = Some(coins_info_hashmaps.remove(0));
             coins_map.insert(coin.name.to_owned(), coin);
         });
         coins_map

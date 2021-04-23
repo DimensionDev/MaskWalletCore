@@ -115,7 +115,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: HashMap::new()
+            all_info: Some(HashMap::new())
         };
         let address1 = wallet.get_address_for_coin(&coin).unwrap();
         let address2 = wallet.get_address_for_coin(&coin).unwrap();
@@ -137,7 +137,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: HashMap::new()
+            all_info:Some(HashMap::new())
         };
         
         let extended_public_key = wallet.get_extended_public_key(&coin);

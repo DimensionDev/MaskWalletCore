@@ -181,7 +181,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: HashMap::new()
+            all_info: Some(HashMap::new())
         };
         
         let stored_key = StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, coin).unwrap();
@@ -207,7 +207,7 @@ mod tests {
             derivation_path: derivation_path.to_owned(),
             curve: "secp256k1".to_owned(),
             public_key_type: "secp256k1Extended".to_owned(),
-            all_info: HashMap::new()
+            all_info: Some(HashMap::new())
         };
         
         let stored_key = StoredKey::create_with_mnemonic_random_add_default_address("mask", &password, &mnemonic, coin).unwrap();

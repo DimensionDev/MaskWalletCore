@@ -22,16 +22,16 @@ pub struct Coin {
     
     pub public_key_type: String,
 
-    pub all_info: HashMap<String, serde_json::Value>,
+    pub all_info: Option<HashMap<String, serde_json::Value>>,
 }
 
 impl Coin {
     pub fn get_value(&self, key: &str) -> Option<String> {
-        self.all_info.get(key).map(|x| x.to_string() )
+        self.all_info.as_ref().map(|info| info.get(key) ).flatten().map(|x| x.to_string() )
     }
 
     pub fn get_xpub(&self) -> Option<String> {
-        self.all_info.get("xpub").map(|x| x.to_string() )
+        self.all_info.as_ref().map(|info| info.get("xpub") ).flatten().map(|x| x.to_string() )
     }
 }
 

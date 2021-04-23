@@ -41,7 +41,6 @@ impl Mnemonic {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bip39::Mnemonic as CryptoMnemonic;
     #[test]
     fn test_generate_new_mnenomic() {
         let mnemonic = Mnemonic::generate(12, "").unwrap();
