@@ -1,9 +1,10 @@
 
 use std::str::FromStr;
 use serde::{ Serialize, Deserialize };
+use uuid::Uuid;
 use crate::Error;
 use crypto::Error as CryptoError;
-use crypto::key_store_json::KeyStoreJson;
+use crypto::key_store_json::{ KeyStoreJson, Crypto };
 use crypto::aes_params::AesParams;
 use crypto::aes::AesType;
 use crypto::kdf_params::{ KdfParams, KdfParamsType };
@@ -67,6 +68,35 @@ impl EncryptionParams {
                 Err(Error::CryptoError(CryptoError::NotSupportedCipher))
             }
         }
+    }
+
+    pub fn export_to_key_store_json(&self, password: &str, new_password: &str) -> Result<String, Error> {
+        // 1. Check the password by using the decrypt method
+        let decrypted = self.decrypt(&password.as_bytes())?;
+
+        // 2. Generate a temp new EncryptionParam using the new_password
+        let new_encryption_param = Self::new(&new_password.as_bytes(), &decrypted)?;
+        
+        let new_encrypted_text = std::str::from_utf8(&new_encryption_param.encrypted).map_err(|_| CryptoError::PasswordIncorrect )?;
+        let new_mac = std::str::from_utf8(&new_encryption_param.mac).map_err(|_| CryptoError::PasswordIncorrect )?;
+        let kdf = match new_encryption_param.kdf_params {
+            KdfParams::ScryptParam(_) => "scrypt".to_owned()
+        };
+        let crypto = Crypto {
+            cipher: new_encryption_param.cipher.to_string(),
+            cipherparams: new_encryption_param.cipher_params,
+            ciphertext: new_encrypted_text.to_owned(),
+            kdf,
+            kdfparams: new_encryption_param.kdf_params,
+            mac: new_mac.to_owned()
+        };
+        let key_store_json = KeyStoreJson {
+            crypto,
+            version: 3,
+            id: Uuid::new_v4().to_string()
+        };
+        let json_str = serde_json::to_string_pretty(&key_store_json).map_err(|_| Error::JsonSerializationError )?;
+        Ok(json_str)
     }
 }
 

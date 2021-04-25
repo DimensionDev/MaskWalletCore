@@ -33,6 +33,7 @@ pub struct StoredKey {
     accounts: Vec<Account>,
 }
 
+// Create & Import function
 impl StoredKey {
     fn create_with_data(r#type: StoredKeyType, name: &str, password: &str, data: &[u8]) -> Result<StoredKey, Error> {
         let uuid = Uuid::new_v4();
@@ -112,6 +113,53 @@ impl StoredKey {
     }
 }
 
+// Export function
+impl StoredKey {
+    pub fn export_private_key(&mut self, password: &str, coin: &Coin) -> Result<String, Error> {
+        let private_key = self.decrypt_private_key(&password, &coin)?;
+        Ok(private_key.to_string())
+    }
+
+    pub fn export_private_key_of_path(&mut self, password: &str, coin: &Coin, derivation_path: &str) -> Result<String, Error>  {
+        if self.r#type != StoredKeyType::Mnemonic {
+            return Err(Error::InvalidAccountRequested);
+        }
+        let wallet = self.get_wallet(&password)?;
+        let derivation_path = DerivationPath::new(&derivation_path)?;
+        let private_key = wallet.get_key(&coin, &derivation_path)?;
+        Ok(private_key.to_string())
+    }
+
+    pub fn export_mnemonic(&mut self, password: &str) -> Result<String, Error> {
+        if self.r#type != StoredKeyType::Mnemonic {
+            return Err(Error::InvalidAccountRequested);
+        }
+        let mnemonic_bytes = self.payload.decrypt(&password.as_bytes())?;
+        let mnemonic = std::str::from_utf8(&mnemonic_bytes).map_err(|_| Error::CryptoError(CryptoError::PasswordIncorrect) )?;
+        Ok(mnemonic.to_owned())
+    }
+
+    pub fn export_key_store_json(&mut self, password: &str, new_password: &str) -> Result<String, Error> {
+        self.payload.export_to_key_store_json(&password, &new_password)
+    }
+
+    pub fn export_key_store_json_of_path(&mut self, password: &str, new_password: &str, coin: &Coin, derivation_path: &str) -> Result<String, Error> {
+        if self.r#type == StoredKeyType::PrivateKey {
+            // 1. If this StoredKey is created by importing a private key, simply export it
+            return self.payload.export_to_key_store_json(&password, &new_password);
+        }
+        // 2. If this StoredKey is created from a mnemonic, derive to the specific path to get the private key
+        let wallet = self.get_wallet(&password)?;
+        let derivation_path = DerivationPath::new(&derivation_path)?;
+        let private_key = wallet.get_key(&coin, &derivation_path)?;
+
+        // 3. Create a temp EncryptionParam with new password for exporting
+        let temp_encryption_param = EncryptionParams::new(new_password.as_bytes(), &private_key.data)?;
+        temp_encryption_param.export_to_key_store_json(&new_password, &new_password)
+    }
+}
+
+// Get Hd Wallet
 impl StoredKey {
     pub fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
         if self.r#type != StoredKeyType::Mnemonic {
@@ -123,6 +171,7 @@ impl StoredKey {
     }
 }
 
+// Account related function
 impl StoredKey {
     pub fn get_accounts_count(&self) -> u32 {
         self.accounts.len() as u32
@@ -140,16 +189,11 @@ impl StoredKey {
         &self.accounts
     }
 
-    pub fn get_account_of_coin(&self, coin: &Coin) -> Option<&Account> {
-        self.accounts.iter().find(|account| account.coin == *coin )
+    pub fn get_account_of_coin(&self, coin: &Coin) -> Vec<Account> {
+        self.accounts.iter().filter(|account| account.coin == *coin ).map(|account| account.clone() ).collect()
     }
 
-    pub fn get_or_create_account_for_coin(&mut self, coin: &Coin, wallet: Option<HdWallet>) -> Result<Option<&Account>, Error> {
-        let hd_wallet = match wallet {
-            Some(wallet) => wallet,
-            None => return Ok(self.get_account_of_coin(&coin)),
-        };
-        
+    pub fn get_or_create_account_for_coin(&mut self, coin: &Coin, hd_wallet: &HdWallet) -> Result<Option<&Account>, Error> {
         for (i, account) in self.accounts.iter_mut().enumerate() {
             if account.coin == *coin {
                 // Found an account of required coin
@@ -171,6 +215,77 @@ impl StoredKey {
         };
         self.accounts.push(account);
         Ok(self.accounts.last())
+    }
+
+    pub fn add_new_account_of_coin(&mut self, address: &str, coin: Coin, derivation_path: &str, extended_public_key: &str) -> Result<Account, Error> {
+        let account = Account::new(&address, coin, &derivation_path, &extended_public_key)?;
+        self.accounts.push(account);
+        Ok(self.accounts.last().unwrap().clone())
+    }
+
+    pub fn add_new_account_of_coin_and_derivation_path_by_password(&mut self, coin: Coin, derivation_path: &str, password: &str) -> Result<Account, Error> {
+        let derivation_path_struct = DerivationPath::new(&coin.derivation_path)?;
+        if let Some(account) = self.accounts.iter().find(|account| account.coin == coin && account.derivation_path == derivation_path_struct ) {
+            Ok(account.clone())
+        } else {
+            let wallet = self.get_wallet(&password)?;
+            let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
+            let extended_public_key = wallet.get_extended_public_key_of_path(&coin, &derivation_path);
+            let account = Account {
+                address,
+                coin: coin.clone(),
+                derivation_path: derivation_path_struct,
+                extended_public_key,
+            };
+            self.accounts.push(account);
+            Ok(self.accounts.last().unwrap().clone())
+        }
+    }
+
+    pub fn add_new_account_of_coin_and_derivation_path(&mut self, coin: Coin, derivation_path: &str, wallet: &HdWallet) -> Result<Account, Error> {
+        let derivation_path_struct = DerivationPath::new(&coin.derivation_path)?;
+        if let Some(account) = self.accounts.iter().find(|account| account.coin == coin && account.derivation_path == derivation_path_struct ) {
+            Ok(account.clone())
+        } else {
+            let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
+            let extended_public_key = wallet.get_extended_public_key_of_path(&coin, &derivation_path);
+            let account = Account {
+                address,
+                coin: coin.clone(),
+                derivation_path: derivation_path_struct,
+                extended_public_key,
+            };
+            self.accounts.push(account);
+            Ok(self.accounts.last().unwrap().clone())
+        }
+    }
+
+    pub fn remove_accounts_of_coin(&mut self, coin: &Coin) {
+        self.accounts.retain(|account| account.coin != *coin );
+    }
+
+    pub fn remove_account_of_address(&mut self, address: &str, coin: &Coin) {
+        self.accounts.retain(|account| account.address != address && account.coin != *coin );
+    }
+}
+
+// Decrypt function
+impl StoredKey {
+    pub fn decrypt_private_key(&mut self, password: &str, coin: &Coin) -> Result<PrivateKey, Error> {
+        match self.r#type {
+            StoredKeyType::Mnemonic => {
+                let wallet = self.get_wallet(&password)?;
+                let account = self.get_or_create_account_for_coin(&coin, &wallet)?;
+                if account.is_none() {
+                    return Err(Error::CryptoError(CryptoError::PasswordIncorrect));
+                }
+                wallet.get_key(&coin, &account.unwrap().derivation_path)
+            }
+            StoredKeyType::PrivateKey => {
+                let decrypted = self.payload.decrypt(&password.as_bytes())?;
+                Ok(PrivateKey::new(&decrypted)?)
+            }
+        }
     }
 }
 

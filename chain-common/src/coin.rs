@@ -23,6 +23,7 @@ pub struct Coin {
     pub public_key_type: String,
 
     #[serde(skip_serializing)]
+    #[serde(skip_deserializing)]
     pub all_info: HashMap<String, serde_json::Value>,
 }
 

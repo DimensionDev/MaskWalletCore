@@ -83,7 +83,7 @@ message JsonStoredKeyImportResp {
     StoredKeyInfo StoredKey = 1;
 }
 
-//// 5. Get count of accounts of a StoredKey
+//// 6. Get count of accounts of a StoredKey
 message GetStoredKeyAccountCountParam {
     bytes data = 1; // StoredKey data returned from other response
 }
@@ -92,7 +92,7 @@ message GetStoredKeyAccountCountResp {
     uint32 count = 1;
 }
 
-//// 6. Get the account at specific index of a StoredKey
+//// 7. Get the account at specific index of a StoredKey
 message GetStoredKeyAccountParam {
     bytes data = 1;   // StoredKey data returned from other response
     uint32 index = 2; // Index of the account, begin from zero
@@ -102,7 +102,7 @@ message GetStoredKeyAccountResp {
     StoredKeyAccountInfo account = 1;
 }
 
-//// 7. Get all accounts information of a StoredKey
+//// 8. Get all accounts information of a StoredKey
 message GetStoredKeyAllAccountParam {
     bytes data = 1;
 }
@@ -111,18 +111,119 @@ message GetStoredKeyAllAccountResp {
     repeated StoredKeyAccountInfo accounts = 1;
 }
 
-//// 8. Get the coin of specific coin form a StoredKey
-message GetStoredKeyAccountOfCoinParam {
+//// 9. Get the coin of specific coin form a StoredKey
+message GetStoredKeyAccountsOfCoinParam {
     bytes storedKeyData = 1;
     Coin coin = 2;
-    oneof optionalWallet {
-        bytes walletData = 3;
-    }
 }
 
 message GetStoredKeyAccountOfCoinResp {
     StoredKeyInfo StoredKey = 1;
-    oneof optionalAccount {
-        StoredKeyAccountInfo account = 2;
-    }
+    repeated StoredKeyAccountInfo account = 2;
+}
+
+//// 10. Add a new account of specific coin type into a StoredKey
+message AddStoredKeyAccountOfCoinParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+    string extetndedPublicKey = 5;
+}
+
+message AddStoredKeyAccountOfCoinResp {
+    StoredKeyAccountInfo account = 1;
+    StoredKeyInfo storedKey = 2;
+}
+
+//// 11. Remove all accounts of specific coin type into a StoredKey
+message RemoveStoredKeyAccountsOfCoinParam {
+    bytes storedKeyData = 1;
+    Coin coin = 2;
+}
+
+message RemoveStoredKeyAccountsOfCoinResp {
+    StoredKeyInfo storedKey = 1;
+}
+
+//// 12. Remove account of the specific address and coin type
+message RemoveStoredKeyAccountOfAddressParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    Coin coin = 3;
+}
+
+message RemoveStoredKeyAccountOfAddressResp {
+    StoredKeyInfo storedKey = 1;
+}
+
+//// 13. Get the vault of secrects contained in the StoredKey
+message GetVaultOfStoredKeyParam {
+    bytes storedKeyData = 1;
+    string password = 2;
+}
+
+message GetVaultOfStoredKeyResp {
+    bytes vault = 1;
+}
+
+//// 14. Export the private key of StoredKey
+message ExportKeyStorePrivateKeyParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+}
+
+//// 15. Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStorePrivateKeyOfPathParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+}
+
+message ExportKeyStorePrivateKeyResp {
+    string privateKey = 1;
+}
+
+//// 16. Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStoreMnemonicParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+}
+
+message ExportKeyStoreMnemonicResp {
+    string mnemonic = 1;
+}
+
+//// 17. Export the V3 KeyStoreJson string of the StoredKey
+message ExportKeyStoreJsonOfParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+}
+
+//// 18. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStoreJsonOfPathParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+}
+
+message ExportKeyStoreJsonResp {
+    string json = 1;
+}
+
+//// 19. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message CreateStoredKeyNewAccountParam {
+    bytes StoredKeyData = 1;
+    Coin coin = 2;
+    string derivationPath = 3;
+    string password = 4;
+}
+
+message CreateStoredKeyNewAccountResp {
+    StoredKeyAccountInfo account = 1;
+    StoredKeyInfo storedKey = 2;
 }

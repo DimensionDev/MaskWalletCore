@@ -37,6 +37,12 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGetStoredKeyOfCoin(param) => {
             get_stored_key_account_of_coin(param)
         },
+        ParamAddAccountOfCoin(param) => {
+            add_stored_key_account_of_coin(param)
+        },
+        ParamRemoveAccountOfCoin(param) => {
+            remove_stored_key_account_of_coin(param)
+        }
     }
 }
 
@@ -243,7 +249,7 @@ fn get_stored_key_account_of_coin(param: GetStoredKeyAccountOfCoinParam) -> MwRe
         _ => None
     };
 
-    let optional_account = match stored_key.get_or_create_account_for_coin(coin, optional_wallet) {
+    let optional_account = match stored_key.get_or_create_account_for_coin(coin, optional_wallet.as_ref()) {
         Ok(account) => account.map(|x| get_stored_key_account_of_coin_resp::OptionalAccount::Account(StoredKeyAccountInfo::from(x)) ),
         Err(error) => {
             return get_error_response_by_error(error);
@@ -259,3 +265,66 @@ fn get_stored_key_account_of_coin(param: GetStoredKeyAccountOfCoinParam) -> MwRe
     }
 }
 
+fn add_stored_key_account_of_coin(param: AddStoredKeyAccountOfCoinParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let account = match stored_key.add_new_account_of_coin(&param.address, coin.clone(), &param.derivation_path, &param.extetnded_public_key) {
+        Ok(account) => account,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespAddAccountOfCoin(
+            AddStoredKeyAccountOfCoinResp {
+                account: Some(StoredKeyAccountInfo::from(&account)),
+                stored_key: Some(StoredKeyInfo::from(stored_key)),
+            }
+        ))
+    }
+}
+
+fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountOfCoinParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    stored_key.remove_accounts_of_coin(coin);
+    MwResponse {
+        response: Some(Response::RespRemoveAccountOfCoin(
+            RemoveStoredKeyAccountOfCoinResp {
+                stored_key: Some(StoredKeyInfo::from(stored_key)),
+            }
+        ))
+    }
+}

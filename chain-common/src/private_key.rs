@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::string::ToString;
 use crypto::curve::Curve;
 use crypto::Error as CryptoError;
 use crypto::public_key::PublicKeyType;
@@ -76,6 +77,20 @@ impl PrivateKey {
         let public_key_type = PublicKeyType::from_str(public_key_type_str).map_err(|_| CryptoError::NotSupportedPublicKeyType)?;
         let pub_key_data = crypto::public_key::get_public_key(public_key_type_str, &self.data, &self.extends_data, &self.chain_code_bytes)?;
         PublicKey::new(public_key_type, &pub_key_data)
+    }
+}
+
+impl FromStr for PrivateKey {
+    type Err = CryptoError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let bytes = hex::decode(s.as_bytes()).map_err(|_| CryptoError::InvalidPrivateKey )?;
+        Self::new(&bytes)
+    }
+}
+
+impl ToString for PrivateKey {
+    fn to_string(&self) -> String {
+        hex::encode(&self.data)
     }
 }
 

@@ -13,7 +13,11 @@ message MWRequest {
         Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 6;
         Param.GetStoredKeyAccountParam param_get_stored_key_account = 7;
         Param.GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
-        Param.GetStoredKeyAccountOfCoinParam param_get_stored_key_of_coin = 9;
+        Param.GetStoredKeyAccountsOfCoinParam param_get_stored_key_of_coin = 9;
+        Param.AddStoredKeyAccountOfCoinParam param_add_account_of_coin = 10;
+        Param.RemoveStoredKeyAccountsOfCoinParam param_remove_accounts_of_coin = 11;
+        Param.RemoveStoredKeyAccountOfAddressParam param_remove_account_of_address = 12;
+        Param.GetVaultOfStoredKeyParam param_get_stored_key_vault = 13;
     }
 }
 
@@ -29,6 +33,10 @@ message MWResponse {
         Param.GetStoredKeyAccountResp resp_get_stored_key_account = 8;
         Param.GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
         Param.GetStoredKeyAccountOfCoinResp resp_get_stored_key_account_of_coin = 10;
+        Param.AddStoredKeyAccountOfCoinResp resp_add_accounts_of_coin = 11;
+        Param.RemoveStoredKeyAccountsOfCoinResp resp_remove_account_of_coin = 12;
+        Param.RemoveStoredKeyAccountOfAddressResp resp_remove_account_of_address = 13;
+        Param.GetVaultOfStoredKeyResp resp_get_stored_key_vault = 14;
     }
 }
 

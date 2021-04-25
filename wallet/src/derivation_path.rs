@@ -4,7 +4,7 @@ use serde::{ Serialize, Deserialize };
 use crypto::Error as CryptoError;
 use crate::Error;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DerivationPath {
     indices: Vec<DerivationPathIndex>,
 }
@@ -57,7 +57,16 @@ impl ToString for DerivationPath {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+impl PartialEq for DerivationPath {
+    fn eq(&self, other: &DerivationPath) -> bool {
+        (self.indices.len() == other.indices.len()) &&
+        self.indices.iter()
+        .zip(other.indices.iter())
+        .all(|(left, right)| *left == *right )
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 struct DerivationPathIndex {
     value: u32,
     hardened: bool,

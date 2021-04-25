@@ -41,7 +41,7 @@ impl HdWallet {
 }
 
 impl HdWallet {
-    fn get_key(&self, coin: &Coin, derivation_path: &DerivationPath) -> Result<PrivateKey, Error> {
+    pub fn get_key(&self, coin: &Coin, derivation_path: &DerivationPath) -> Result<PrivateKey, Error> {
         let curve = Curve::from_str(&coin.curve)?;
         let private_key_type = PrivateKey::get_private_key_type(&curve);
         let node = bip32::HdNode::get_node(&self.seed, &derivation_path.to_string(), curve)?;
@@ -57,16 +57,24 @@ impl HdWallet {
     }
 
     pub fn get_address_for_coin(&self, coin: &Coin) -> Result<String, Error> {
-        let derivation_path = DerivationPath::new(&coin.derivation_path)?;
+        self.get_address_for_coin_of_path(&coin, &coin.derivation_path)
+    }
+
+    pub fn get_address_for_coin_of_path(&self, coin: &Coin, derivation_path: &str) -> Result<String, Error> {
+        let derivation_path = DerivationPath::new(&derivation_path)?;
         let private_key = self.get_key(&coin, &derivation_path)?;
         derive_address_with_private_key(&coin, &private_key)
     }
 
     pub fn get_extended_public_key(&self, coin: &Coin) -> String {
+        self.get_extended_public_key_of_path(&coin, &coin.derivation_path)
+    }
+
+    pub fn get_extended_public_key_of_path(&self, coin: &Coin, derivation_path: &str) -> String {
         if coin.get_xpub().is_none() {
             return "".to_owned();
         }
-        bip32::get_extended_public_key(&self.seed, &coin.derivation_path).expect("fail to get extended public key")
+        bip32::get_extended_public_key(&self.seed, &derivation_path).expect("fail to get extended public key")
     }
 }
 

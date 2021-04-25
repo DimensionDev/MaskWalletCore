@@ -13,6 +13,7 @@ pub enum Error {
     CryptoError(CryptoError),
     IndexOutOfBounds,
     InvalidAccountRequested,
+    JsonSerializationError,
 }
 
 impl From<CryptoError> for Error {

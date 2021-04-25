@@ -7,8 +7,8 @@ use crate::Error;
 #[derive(Serialize, Deserialize)]
 pub struct KeyStoreJson {
     pub crypto: Crypto,
-    id: String,
-    version: u32,
+    pub id: String,
+    pub version: u32,
 }
 
 #[derive(Serialize, Deserialize)]
