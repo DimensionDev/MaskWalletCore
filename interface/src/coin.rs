@@ -32,7 +32,7 @@ impl ToString for CoinType {
     }
 }
 
-pub fn get_coin_info<'a>(coin_type: i32) -> Option<&'a Coin> {
+pub fn get_coin_info(coin_type: i32) -> Option<&'static Coin> {
     match CoinType::from_i32(coin_type) {
         Some(coin) => COINS_MAP.get(&coin.to_string()),
         None => None,

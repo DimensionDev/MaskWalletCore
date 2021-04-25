@@ -1,6 +1,5 @@
 use std::str::FromStr;
 use serde::{ Serialize, Deserialize };
-use serde_json;
 use super::aes_params::AesParams;
 use super::kdf_params::KdfParams;
 use crate::Error;

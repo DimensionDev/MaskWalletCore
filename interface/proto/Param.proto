@@ -64,6 +64,7 @@ message MnemonicStoredKeyImportParam {
     string mnemonic = 1;
     string name = 2;
     string password = 3;
+    Coin coin = 4;
 }
 
 message MnemonicStoredKeyImportResp {

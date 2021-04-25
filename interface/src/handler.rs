@@ -23,7 +23,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
             create_stored_key_with_mnemonic(param)
         },
         ParamImportJson(param) => {
-
+            create_with_json(param)
         },
         ParamGetStoredKeyAccountCount(param) => {
             get_stored_key_account_count(param)
@@ -104,7 +104,19 @@ fn create_stored_key_with_private_key(param: PrivateStoredKeyImportParam) -> MwR
 }
 
 fn create_stored_key_with_mnemonic(param: MnemonicStoredKeyImportParam) -> MwResponse {
-    let stored_key: StoredKey = match StoredKey::create_with_mnemonic(&param.name, &param.password, &param.mnemonic) {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let stored_key: StoredKey = match StoredKey::create_with_mnemonic_and_default_address(&param.name, &param.password, &param.mnemonic, coin.clone()) {
         Ok(key) => key,
         Err(error) => {
             return get_error_response_by_error(error);
@@ -120,7 +132,19 @@ fn create_stored_key_with_mnemonic(param: MnemonicStoredKeyImportParam) -> MwRes
 }
 
 fn create_with_json(param: JsonStoredKeyImportParam) -> MwResponse {
-    let stored_key: StoredKey = match StoredKey::create_with_json(&param.name, &param.password, &param.json, coin) {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let stored_key: StoredKey = match StoredKey::create_with_json(&param.name, &param.password, &param.json, coin.clone()) {
         Ok(key) => key,
         Err(error) => {
             return get_error_response_by_error(error);

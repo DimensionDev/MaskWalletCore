@@ -43,7 +43,7 @@ impl EncryptionParams {
         let cipher = AesType::from_str(&json_struct.crypto.cipher)?;
         let unverified_encryption_param = Self {
             encrypted: json_struct.crypto.ciphertext.as_bytes().to_vec(),
-            cipher: cipher,
+            cipher,
             cipher_params: json_struct.crypto.cipherparams.clone(),
             mac: json_struct.crypto.mac.as_bytes().to_vec(),
             kdf_params: json_struct.crypto.kdfparams.clone(),
@@ -61,10 +61,10 @@ impl EncryptionParams {
         let iv = hex::decode(&self.cipher_params.iv).expect("fail to decode iv");
         match self.cipher {
             AesType::Ctr(bits) => {
-                return Ok(aes::ctr::decrypt(&self.encrypted, &derived_key[0..16], &iv, bits)?);
+                Ok(aes::ctr::decrypt(&self.encrypted, &derived_key[0..16], &iv, bits)?)
             },
             AesType::Cbc(_) => {
-                return Err(Error::CryptoError(CryptoError::NotSupportedCipher));
+                Err(Error::CryptoError(CryptoError::NotSupportedCipher))
             }
         }
     }
