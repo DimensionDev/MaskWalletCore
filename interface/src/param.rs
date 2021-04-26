@@ -26,12 +26,12 @@ pub struct StoredKeyAccountInfo {
 
 ///// 1. Get information from StoredKey raw data
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct StoredKeyLoadParam {
+pub struct LoadStoredKeyParam {
     #[prost(bytes="vec", repeated, tag="1")]
     pub data: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct StoredKeyLoadResp {
+pub struct LoadStoredKeyResp {
     #[prost(message, repeated, tag="1")]
     pub stored_keys: ::prost::alloc::vec::Vec<StoredKeyInfo>,
 }
@@ -50,7 +50,7 @@ pub struct CreateStoredKeyResp {
 }
 ///// 3. Create a StoredKey with private key 
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct PrivateStoredKeyImportParam {
+pub struct ImportPrivateStoredKeyParam {
     /// Hex encoded private key string
     #[prost(string, tag="1")]
     pub private_key: ::prost::alloc::string::String,
@@ -62,13 +62,13 @@ pub struct PrivateStoredKeyImportParam {
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct PrivateStoredKeyImportResp {
+pub struct ImportPrivateStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
 ///// 4. Create a new StoredKey with given mnemonic
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MnemonicStoredKeyImportParam {
+pub struct ImportMnemonicStoredKeyParam {
     #[prost(string, tag="1")]
     pub mnemonic: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
@@ -79,13 +79,13 @@ pub struct MnemonicStoredKeyImportParam {
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MnemonicStoredKeyImportResp {
+pub struct ImportMnemonicStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
 ///// 5. Create a new StoredKey with Json
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct JsonStoredKeyImportParam {
+pub struct ImportJsonStoredKeyParam {
     #[prost(string, tag="1")]
     pub json: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
@@ -96,7 +96,7 @@ pub struct JsonStoredKeyImportParam {
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct JsonStoredKeyImportResp {
+pub struct ImportJsonStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
@@ -244,12 +244,14 @@ pub struct ExportKeyStoreMnemonicResp {
 }
 ///// 16. Export the V3 KeyStoreJson string of the StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ExportKeyStoreJsonOfParam {
+pub struct ExportKeyStoreJsonParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="2")]
     pub password: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="3")]
+    #[prost(string, tag="3")]
+    pub new_password: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="4")]
     pub coin: i32,
 }
 ///// 17. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
@@ -259,9 +261,11 @@ pub struct ExportKeyStoreJsonOfPathParam {
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="2")]
     pub password: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="3")]
+    #[prost(string, tag="3")]
+    pub new_password: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="4")]
     pub coin: i32,
-    #[prost(string, tag="4")]
+    #[prost(string, tag="5")]
     pub derivation_path: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

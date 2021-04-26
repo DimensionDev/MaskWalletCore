@@ -29,11 +29,11 @@ message StoredKeyAccountInfo {
 
 /* Begin of Requests/Responses definition */
 //// 1. Get information from StoredKey raw data
-message StoredKeyLoadParam {
+message LoadStoredKeyParam {
     repeated bytes data = 1;
 }
 
-message StoredKeyLoadResp {
+message LoadStoredKeyResp {
     repeated StoredKeyInfo StoredKeys = 1;
 }
 
@@ -48,38 +48,38 @@ message CreateStoredKeyResp {
 }
 
 //// 3. Create a StoredKey with private key 
-message PrivateStoredKeyImportParam {
+message ImportPrivateStoredKeyParam {
     string privateKey = 1; // Hex encoded private key string
     string password = 2;
     string name = 3;
     Coin coin = 4;
 }
 
-message PrivateStoredKeyImportResp {
+message ImportPrivateStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
 //// 4. Create a new StoredKey with given mnemonic
-message MnemonicStoredKeyImportParam {
+message ImportMnemonicStoredKeyParam {
     string mnemonic = 1;
     string name = 2;
     string password = 3;
     Coin coin = 4;
 }
 
-message MnemonicStoredKeyImportResp {
+message ImportMnemonicStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
 //// 5. Create a new StoredKey with Json
-message JsonStoredKeyImportParam {
+message ImportJsonStoredKeyParam {
     string json = 1;
     string name = 2;
     string password = 3;
     Coin coin = 4;
 }
 
-message JsonStoredKeyImportResp {
+message ImportJsonStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
@@ -187,18 +187,20 @@ message ExportKeyStoreMnemonicResp {
 }
 
 //// 16. Export the V3 KeyStoreJson string of the StoredKey
-message ExportKeyStoreJsonOfParam {
+message ExportKeyStoreJsonParam {
     bytes StoredKeyData = 1;
     string password = 2;
-    Coin coin = 3;
+    string newPassword = 3;
+    Coin coin = 4;
 }
 
 //// 17. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 message ExportKeyStoreJsonOfPathParam {
     bytes StoredKeyData = 1;
     string password = 2;
-    Coin coin = 3;
-    string derivationPath = 4;
+    string newPassword = 3;
+    Coin coin = 4;
+    string derivationPath = 5;
 }
 
 message ExportKeyStoreJsonResp {

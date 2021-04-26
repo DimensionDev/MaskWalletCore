@@ -46,15 +46,30 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamRemoveAccountOfAddress(param) => {
             remove_account_of_address(param)
         },
+        ParamExportPrivateKey(param) => {
+            export_private_key(param)
+        },
+        ParamExportPrivateKeyOfPath(param) => {
+            export_private_key_of_path(param)
+        },
+        ParamExportMnemonic(param) => {
+            export_mnemonic(param)
+        },
+        ParamExportKeyStoreJson(param) => {
+            export_key_store_json(param)
+        },
+        ParamExportKeyStoreJsonOfPath(param) => {
+            export_key_store_json_of_path(param)
+        },
     }
 }
 
-fn load_stored_keys(param: StoredKeyLoadParam) -> MwResponse {
+fn load_stored_keys(param: LoadStoredKeyParam) -> MwResponse {
     let stored_keys_result: Result<Vec<StoredKey>, _> = param.data.iter().map(|json| serde_json::from_slice(&json) ).collect();
     match stored_keys_result {
         Ok(stored_keys) => MwResponse {
             response: Some(Response::RespLoadStoredKey(
-                StoredKeyLoadResp {
+                LoadStoredKeyResp {
                     stored_keys: stored_keys.into_iter().map(StoredKeyInfo::from).collect()
                 }
             ))
@@ -81,7 +96,7 @@ fn create_stored_key(param: CreateStoredKeyParam) -> MwResponse {
     }
 }
 
-fn create_stored_key_with_private_key(param: PrivateStoredKeyImportParam) -> MwResponse {
+fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -100,7 +115,7 @@ fn create_stored_key_with_private_key(param: PrivateStoredKeyImportParam) -> MwR
         Ok(key) => {
             MwResponse {
                 response: Some(Response::RespImportPrivateKey(
-                    PrivateStoredKeyImportResp {
+                    ImportPrivateStoredKeyResp {
                         stored_key: Some(StoredKeyInfo::from(key))
                     }
                 ))
@@ -112,7 +127,7 @@ fn create_stored_key_with_private_key(param: PrivateStoredKeyImportParam) -> MwR
     }
 }
 
-fn create_stored_key_with_mnemonic(param: MnemonicStoredKeyImportParam) -> MwResponse {
+fn create_stored_key_with_mnemonic(param: ImportMnemonicStoredKeyParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -132,15 +147,15 @@ fn create_stored_key_with_mnemonic(param: MnemonicStoredKeyImportParam) -> MwRes
         }
     };
     MwResponse {
-        response: Some(Response::RespCreateMnemonic(
-            MnemonicStoredKeyImportResp {
+        response: Some(Response::RespImportMnemonic(
+            ImportMnemonicStoredKeyResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key))
             }
         ))
     }
 }
 
-fn create_with_json(param: JsonStoredKeyImportParam) -> MwResponse {
+fn create_with_json(param: ImportJsonStoredKeyParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -160,8 +175,8 @@ fn create_with_json(param: JsonStoredKeyImportParam) -> MwResponse {
         }
     };
     MwResponse {
-        response: Some(Response::RespCreateMnemonic(
-            MnemonicStoredKeyImportResp {
+        response: Some(Response::RespImportJson(
+            ImportJsonStoredKeyResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key))
             }
         ))
@@ -342,6 +357,152 @@ fn remove_account_of_address(param: RemoveStoredKeyAccountOfAddressParam) -> MwR
         response: Some(Response::RespRemoveAccountOfAddress(
             RemoveStoredKeyAccountOfAddressResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
+            }
+        ))
+    }
+}
+
+fn export_private_key(param: ExportKeyStorePrivateKeyParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let private_key = match stored_key.export_private_key(&param.password, coin) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespExportPrivateKey(
+            ExportKeyStorePrivateKeyResp {
+                private_key
+            }
+        ))
+    }
+}
+
+fn export_private_key_of_path(param: ExportKeyStorePrivateKeyOfPathParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let private_key = match stored_key.export_private_key_of_path(&param.password, coin, &param.derivation_path) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespExportPrivateKey(
+            ExportKeyStorePrivateKeyResp {
+                private_key
+            }
+        ))
+    }
+}
+
+fn export_mnemonic(param: ExportKeyStoreMnemonicParam) -> MwResponse {
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let mnemonic = match stored_key.export_mnemonic(&param.password) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespExportMnemonic(
+            ExportKeyStoreMnemonicResp {
+                mnemonic
+            }
+        ))
+    }
+}
+
+fn export_key_store_json(param: ExportKeyStoreJsonParam) -> MwResponse {
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let json = match stored_key.export_key_store_json(&param.password, &param.new_password) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespExportKeyStoreJson(
+            ExportKeyStoreJsonResp {
+                json
+            }
+        ))
+    }
+}
+
+fn export_key_store_json_of_path(param: ExportKeyStoreJsonOfPathParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    let json = match stored_key.export_key_store_json_of_path(&param.password, &param.new_password, coin, &param.derivation_path) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    MwResponse {
+        response: Some(Response::RespExportKeyStoreJson(
+            ExportKeyStoreJsonResp {
+                json
             }
         ))
     }

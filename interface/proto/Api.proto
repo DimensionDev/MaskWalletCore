@@ -5,11 +5,11 @@ import "Param.proto";
 
 message MWRequest {
     oneof request {
-        Param.StoredKeyLoadParam param_load_stored_key = 1;
+        Param.LoadStoredKeyParam param_load_stored_key = 1;
         Param.CreateStoredKeyParam param_create_stored_key = 2;
-        Param.PrivateStoredKeyImportParam param_import_private_key = 3;
-        Param.MnemonicStoredKeyImportParam param_import_mnemonic = 4;
-        Param.JsonStoredKeyImportParam param_import_json = 5;
+        Param.ImportPrivateStoredKeyParam param_import_private_key = 3;
+        Param.ImportMnemonicStoredKeyParam param_import_mnemonic = 4;
+        Param.ImportJsonStoredKeyParam param_import_json = 5;
         Param.GetStoredKeyAccountCountParam param_get_stored_key_account_count = 6;
         Param.GetStoredKeyAccountParam param_get_stored_key_account = 7;
         Param.GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
@@ -17,17 +17,22 @@ message MWRequest {
         Param.AddStoredKeyAccountOfCoinParam param_add_account_of_coin = 10;
         Param.RemoveStoredKeyAccountsOfCoinParam param_remove_accounts_of_coin = 11;
         Param.RemoveStoredKeyAccountOfAddressParam param_remove_account_of_address = 12;
+        Param.ExportKeyStorePrivateKeyParam param_export_private_key = 13;
+        Param.ExportKeyStorePrivateKeyOfPathParam param_export_private_key_of_path = 14;
+        Param.ExportKeyStoreMnemonicParam param_export_mnemonic = 15;
+        Param.ExportKeyStoreJsonParam param_export_key_store_json = 16;
+        Param.ExportKeyStoreJsonOfPathParam param_export_key_store_json_of_path = 17;
     }
 }
 
 message MWResponse {
     oneof response {
         MWResponseError error = 1;
-        Param.StoredKeyLoadResp resp_load_stored_key = 2;
+        Param.LoadStoredKeyResp resp_load_stored_key = 2;
         Param.CreateStoredKeyResp resp_create_stored_key = 3;
-        Param.PrivateStoredKeyImportResp resp_import_private_key = 4;
-        Param.MnemonicStoredKeyImportResp resp_create_mnemonic = 5;
-        Param.JsonStoredKeyImportResp resp_import_json = 6;
+        Param.ImportPrivateStoredKeyResp resp_import_private_key = 4;
+        Param.ImportMnemonicStoredKeyResp resp_import_mnemonic = 5;
+        Param.ImportJsonStoredKeyResp resp_import_json = 6;
         Param.GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 7;
         Param.GetStoredKeyAccountResp resp_get_stored_key_account = 8;
         Param.GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
@@ -35,6 +40,9 @@ message MWResponse {
         Param.AddStoredKeyAccountOfCoinResp resp_add_account_of_coin = 11;
         Param.RemoveStoredKeyAccountsOfCoinResp resp_remove_account_of_coin = 12;
         Param.RemoveStoredKeyAccountOfAddressResp resp_remove_account_of_address = 13;
+        Param.ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
+        Param.ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
+        Param.ExportKeyStoreJsonResp resp_export_key_store_json = 16;
     }
 }
 

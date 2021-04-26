@@ -161,7 +161,7 @@ impl StoredKey {
 
 // Get Hd Wallet
 impl StoredKey {
-    pub fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
+    fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
         if self.r#type != StoredKeyType::Mnemonic {
             return Err(Error::InvalidAccountRequested);
         }
