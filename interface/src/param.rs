@@ -138,7 +138,7 @@ pub struct GetStoredKeyAllAccountResp {
     #[prost(message, repeated, tag="1")]
     pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
 }
-///// 9. Get the coin of specific coin form a StoredKey
+///// 9. Get the accounts of specific coin form a StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAccountsOfCoinParam {
     #[prost(bytes="vec", tag="1")]
@@ -147,11 +147,11 @@ pub struct GetStoredKeyAccountsOfCoinParam {
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountOfCoinResp {
+pub struct GetStoredKeyAccountsOfCoinResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
     #[prost(message, repeated, tag="2")]
-    pub account: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
+    pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
 }
 ///// 10. Add a new account of specific coin type into a StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -202,20 +202,7 @@ pub struct RemoveStoredKeyAccountOfAddressResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
-///// 13. Get the vault of secrects contained in the StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetVaultOfStoredKeyParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag="2")]
-    pub password: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetVaultOfStoredKeyResp {
-    #[prost(bytes="vec", tag="1")]
-    pub vault: ::prost::alloc::vec::Vec<u8>,
-}
-///// 14. Export the private key of StoredKey
+///// 13. Export the private key of StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStorePrivateKeyParam {
     #[prost(bytes="vec", tag="1")]
@@ -225,7 +212,7 @@ pub struct ExportKeyStorePrivateKeyParam {
     #[prost(enumeration="Coin", tag="3")]
     pub coin: i32,
 }
-///// 15. Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+///// 14. Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStorePrivateKeyOfPathParam {
     #[prost(bytes="vec", tag="1")]
@@ -242,7 +229,7 @@ pub struct ExportKeyStorePrivateKeyResp {
     #[prost(string, tag="1")]
     pub private_key: ::prost::alloc::string::String,
 }
-///// 16. Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
+///// 15. Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStoreMnemonicParam {
     #[prost(bytes="vec", tag="1")]
@@ -255,7 +242,7 @@ pub struct ExportKeyStoreMnemonicResp {
     #[prost(string, tag="1")]
     pub mnemonic: ::prost::alloc::string::String,
 }
-///// 17. Export the V3 KeyStoreJson string of the StoredKey
+///// 16. Export the V3 KeyStoreJson string of the StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStoreJsonOfParam {
     #[prost(bytes="vec", tag="1")]
@@ -265,7 +252,7 @@ pub struct ExportKeyStoreJsonOfParam {
     #[prost(enumeration="Coin", tag="3")]
     pub coin: i32,
 }
-///// 18. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+///// 17. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStoreJsonOfPathParam {
     #[prost(bytes="vec", tag="1")]
@@ -282,7 +269,7 @@ pub struct ExportKeyStoreJsonResp {
     #[prost(string, tag="1")]
     pub json: ::prost::alloc::string::String,
 }
-///// 19. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+///// 18. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateStoredKeyNewAccountParam {
     #[prost(bytes="vec", tag="1")]

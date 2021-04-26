@@ -111,15 +111,15 @@ message GetStoredKeyAllAccountResp {
     repeated StoredKeyAccountInfo accounts = 1;
 }
 
-//// 9. Get the coin of specific coin form a StoredKey
+//// 9. Get the accounts of specific coin form a StoredKey
 message GetStoredKeyAccountsOfCoinParam {
     bytes storedKeyData = 1;
     Coin coin = 2;
 }
 
-message GetStoredKeyAccountOfCoinResp {
+message GetStoredKeyAccountsOfCoinResp {
     StoredKeyInfo StoredKey = 1;
-    repeated StoredKeyAccountInfo account = 2;
+    repeated StoredKeyAccountInfo accounts = 2;
 }
 
 //// 10. Add a new account of specific coin type into a StoredKey
@@ -157,24 +157,14 @@ message RemoveStoredKeyAccountOfAddressResp {
     StoredKeyInfo storedKey = 1;
 }
 
-//// 13. Get the vault of secrects contained in the StoredKey
-message GetVaultOfStoredKeyParam {
-    bytes storedKeyData = 1;
-    string password = 2;
-}
-
-message GetVaultOfStoredKeyResp {
-    bytes vault = 1;
-}
-
-//// 14. Export the private key of StoredKey
+//// 13. Export the private key of StoredKey
 message ExportKeyStorePrivateKeyParam {
     bytes StoredKeyData = 1;
     string password = 2;
     Coin coin = 3;
 }
 
-//// 15. Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+//// 14. Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 message ExportKeyStorePrivateKeyOfPathParam {
     bytes StoredKeyData = 1;
     string password = 2;
@@ -186,7 +176,7 @@ message ExportKeyStorePrivateKeyResp {
     string privateKey = 1;
 }
 
-//// 16. Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
+//// 15. Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
 message ExportKeyStoreMnemonicParam {
     bytes StoredKeyData = 1;
     string password = 2;
@@ -196,14 +186,14 @@ message ExportKeyStoreMnemonicResp {
     string mnemonic = 1;
 }
 
-//// 17. Export the V3 KeyStoreJson string of the StoredKey
+//// 16. Export the V3 KeyStoreJson string of the StoredKey
 message ExportKeyStoreJsonOfParam {
     bytes StoredKeyData = 1;
     string password = 2;
     Coin coin = 3;
 }
 
-//// 18. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+//// 17. Export the V3 KeyStoreJson string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 message ExportKeyStoreJsonOfPathParam {
     bytes StoredKeyData = 1;
     string password = 2;
@@ -215,7 +205,7 @@ message ExportKeyStoreJsonResp {
     string json = 1;
 }
 
-//// 19. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+//// 18. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 message CreateStoredKeyNewAccountParam {
     bytes StoredKeyData = 1;
     Coin coin = 2;

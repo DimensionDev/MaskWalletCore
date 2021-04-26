@@ -1,6 +1,6 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -24,20 +24,18 @@ pub mod mw_request {
         #[prost(message, tag="8")]
         ParamGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountParam),
         #[prost(message, tag="9")]
-        ParamGetStoredKeyOfCoin(super::super::param::GetStoredKeyAccountsOfCoinParam),
+        ParamGetStoredKeyAccountsOfCoin(super::super::param::GetStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="10")]
         ParamAddAccountOfCoin(super::super::param::AddStoredKeyAccountOfCoinParam),
         #[prost(message, tag="11")]
         ParamRemoveAccountsOfCoin(super::super::param::RemoveStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="12")]
         ParamRemoveAccountOfAddress(super::super::param::RemoveStoredKeyAccountOfAddressParam),
-        #[prost(message, tag="13")]
-        ParamGetStoredKeyVault(super::super::param::GetVaultOfStoredKeyParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -63,15 +61,13 @@ pub mod mw_response {
         #[prost(message, tag="9")]
         RespGetStoredKeyAllAccounts(super::super::param::GetStoredKeyAllAccountResp),
         #[prost(message, tag="10")]
-        RespGetStoredKeyAccountOfCoin(super::super::param::GetStoredKeyAccountOfCoinResp),
+        RespGetStoredKeyAccountsOfCoin(super::super::param::GetStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="11")]
-        RespAddAccountsOfCoin(super::super::param::AddStoredKeyAccountOfCoinResp),
+        RespAddAccountOfCoin(super::super::param::AddStoredKeyAccountOfCoinResp),
         #[prost(message, tag="12")]
         RespRemoveAccountOfCoin(super::super::param::RemoveStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="13")]
         RespRemoveAccountOfAddress(super::super::param::RemoveStoredKeyAccountOfAddressResp),
-        #[prost(message, tag="14")]
-        RespGetStoredKeyVault(super::super::param::GetVaultOfStoredKeyResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

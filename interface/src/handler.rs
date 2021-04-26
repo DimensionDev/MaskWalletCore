@@ -1,3 +1,4 @@
+use std::convert::From;
 use super::api::{ MwResponse, mw_request, MwResponseError };
 use super::api::mw_request::Request::*;
 use super::api::mw_response::Response;
@@ -6,7 +7,6 @@ use super::coin::get_coin_info;
 use super::response_util::*;
 
 use wallet::stored_key::*;
-use wallet::hd_wallet::HdWallet;
 
 pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
     match request {
@@ -34,15 +34,18 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGetStoredKeyAllAccounts(param) => {
             get_stored_key_all_accounts(param)
         },
-        ParamGetStoredKeyOfCoin(param) => {
-            get_stored_key_account_of_coin(param)
+        ParamGetStoredKeyAccountsOfCoin(param) => {
+            get_stored_key_accounts_of_coin(param)
         },
         ParamAddAccountOfCoin(param) => {
             add_stored_key_account_of_coin(param)
         },
-        ParamRemoveAccountOfCoin(param) => {
+        ParamRemoveAccountsOfCoin(param) => {
             remove_stored_key_account_of_coin(param)
-        }
+        },
+        ParamRemoveAccountOfAddress(param) => {
+            remove_account_of_address(param)
+        },
     }
 }
 
@@ -220,7 +223,7 @@ fn get_stored_key_all_accounts(param: GetStoredKeyAllAccountParam) -> MwResponse
     }
 }
 
-fn get_stored_key_account_of_coin(param: GetStoredKeyAccountOfCoinParam) -> MwResponse {
+fn get_stored_key_accounts_of_coin(param: GetStoredKeyAccountsOfCoinParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -233,33 +236,19 @@ fn get_stored_key_account_of_coin(param: GetStoredKeyAccountOfCoinParam) -> MwRe
             };
         }
     };
-    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
         }
     };
-    let optional_wallet: Option<HdWallet> = match param.optional_wallet {
-        Some(get_stored_key_account_of_coin_param::OptionalWallet::WalletData(wallet_data)) => {
-            match serde_json::from_slice(&wallet_data) {
-                Ok(wallet) => wallet,
-                Err(_) => None,
-            }
-        },
-        _ => None
-    };
 
-    let optional_account = match stored_key.get_or_create_account_for_coin(coin, optional_wallet.as_ref()) {
-        Ok(account) => account.map(|x| get_stored_key_account_of_coin_resp::OptionalAccount::Account(StoredKeyAccountInfo::from(x)) ),
-        Err(error) => {
-            return get_error_response_by_error(error);
-        }
-    };
+    let accounts: Vec<StoredKeyAccountInfo> = stored_key.get_accounts_of_coin(coin).iter().map(StoredKeyAccountInfo::from).collect();
     MwResponse {
-        response: Some(Response::RespGetStoredKeyAccountOfCoin(
-            GetStoredKeyAccountOfCoinResp {
+        response: Some(Response::RespGetStoredKeyAccountsOfCoin(
+            GetStoredKeyAccountsOfCoinResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
-                optional_account
+                accounts
             }
         ))
     }
@@ -300,7 +289,7 @@ fn add_stored_key_account_of_coin(param: AddStoredKeyAccountOfCoinParam) -> MwRe
     }
 }
 
-fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountOfCoinParam) -> MwResponse {
+fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountsOfCoinParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -322,7 +311,36 @@ fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountOfCoinParam) -
     stored_key.remove_accounts_of_coin(coin);
     MwResponse {
         response: Some(Response::RespRemoveAccountOfCoin(
-            RemoveStoredKeyAccountOfCoinResp {
+            RemoveStoredKeyAccountsOfCoinResp {
+                stored_key: Some(StoredKeyInfo::from(stored_key)),
+            }
+        ))
+    }
+}
+
+fn remove_account_of_address(param: RemoveStoredKeyAccountOfAddressParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError{
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                }))
+            };
+        }
+    };
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    stored_key.remove_account_of_address(&param.address, coin);
+    MwResponse {
+        response: Some(Response::RespRemoveAccountOfAddress(
+            RemoveStoredKeyAccountOfAddressResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
             }
         ))

@@ -189,11 +189,11 @@ impl StoredKey {
         &self.accounts
     }
 
-    pub fn get_account_of_coin(&self, coin: &Coin) -> Vec<Account> {
-        self.accounts.iter().filter(|account| account.coin == *coin ).map(|account| account.clone() ).collect()
+    pub fn get_accounts_of_coin(&self, coin: &Coin) -> Vec<Account> {
+        self.accounts.iter().filter(|account| account.coin == *coin ).cloned().collect()
     }
 
-    pub fn get_or_create_account_for_coin(&mut self, coin: &Coin, hd_wallet: &HdWallet) -> Result<Option<&Account>, Error> {
+    fn get_or_create_account_for_coin(&mut self, coin: &Coin, hd_wallet: &HdWallet) -> Result<Option<&Account>, Error> {
         for (i, account) in self.accounts.iter_mut().enumerate() {
             if account.coin == *coin {
                 // Found an account of required coin
