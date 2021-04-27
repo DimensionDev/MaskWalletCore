@@ -24,7 +24,7 @@ lazy_static! {
 
 pub fn get_coin_info(coin_type: i32) -> Option<&'static Coin> {
     match CoinType::from_i32(coin_type) {
-        Some(coin) => COINS_MAP.get(&coin.to_string()),
+        Some(coin) => COINS_MAP.get(&coin.to_string().to_lowercase()),
         None => None,
     }
 }

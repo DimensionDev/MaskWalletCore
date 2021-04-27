@@ -8,6 +8,13 @@ pub mod private_key;
 pub mod public_key;
 pub mod coin;
 
+#[derive(Debug, PartialEq)]
+pub enum Error {
+    NotSupportedCoin,
+    InvalidSignInput,
+    InvalidPrivateKey,
+}
+
 #[cfg(test)]
 mod tests {
     #[test]

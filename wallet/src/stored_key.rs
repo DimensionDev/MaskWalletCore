@@ -9,7 +9,7 @@ use crypto::key_store_json::KeyStoreJson;
 use super::account::Account;
 use super::encryption_params::{ EncryptionParams };
 use super::derivation_path::DerivationPath;
-use super::coin_dispatcher::get_dispatcher;
+use super::coin_dispatcher::CoinDispatcher;
 use super::hd_wallet::HdWallet;
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
@@ -62,7 +62,7 @@ impl StoredKey {
 
         let public_key = private_key_struct.get_public_key(&coin.public_key_type)?;
         let derivation_path = DerivationPath::new(&coin.derivation_path)?;
-        let address = get_dispatcher(&coin).derive_address(&coin, &public_key, &[], &[])?;
+        let address = CoinDispatcher::get_entry(&coin)?.derive_address(&coin, &public_key, &[], &[])?;
         
         stored_key.accounts.push(Account {
             address,
@@ -287,6 +287,28 @@ impl StoredKey {
                 Ok(PrivateKey::new(&decrypted)?)
             }
         }
+    }
+}
+
+// Sign methods
+impl StoredKey {
+    pub fn sign(&mut self, coin: &Coin, password: &str, address: &str, payload: &[u8]) -> Result<Vec<u8>, Error> {
+        let account = match self.accounts.iter().find(|account| account.address == address ) {
+            Some(account) => account,
+            None => return Err(Error::InvalidAccountRequested),
+        };
+
+        let private_key = match self.r#type {
+            StoredKeyType::Mnemonic => {
+                let wallet = self.get_wallet(&password)?;
+                wallet.get_key(&coin, &account.derivation_path)?
+            }
+            StoredKeyType::PrivateKey => {
+                let decrypted = self.payload.decrypt(&password.as_bytes())?;
+                PrivateKey::new(&decrypted)?
+            }
+        };
+        Ok(CoinDispatcher::get_entry(&coin)?.sign(&coin, &private_key, &payload)?)
     }
 }
 

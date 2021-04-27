@@ -1,9 +1,8 @@
 /// Input data necessary to create a signed transaction.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignInput {
-    /// Chain identifier (256-bit number)
-    #[prost(bytes="vec", tag="1")]
-    pub chain_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag="1")]
+    pub chain_id: u32,
     /// Nonce (256-bit number)
     #[prost(bytes="vec", tag="2")]
     pub nonce: ::prost::alloc::vec::Vec<u8>,
@@ -13,12 +12,12 @@ pub struct SignInput {
     /// Gas limit (256-bit number)
     #[prost(bytes="vec", tag="4")]
     pub gas_limit: ::prost::alloc::vec::Vec<u8>,
+    /// Amount (256-bit number)
+    #[prost(bytes="vec", tag="5")]
+    pub amount: ::prost::alloc::vec::Vec<u8>,
     /// Recipient's address.
-    #[prost(string, tag="5")]
+    #[prost(string, tag="6")]
     pub to_address: ::prost::alloc::string::String,
-    /// Private key.
-    #[prost(bytes="vec", tag="6")]
-    pub private_key: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="7")]
     pub payload: ::prost::alloc::vec::Vec<u8>,
 }

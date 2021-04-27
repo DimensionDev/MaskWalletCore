@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use serde::{ Serialize, Deserialize };
+use crate::Error;
 use crate::param::Coin as ProtoCoin;
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -45,11 +46,29 @@ impl PartialEq for Coin {
 }
 impl Eq for Coin {}
 
-impl ToString for ProtoCoin {
-    fn to_string(&self) -> String {
-        match self {
-            ProtoCoin::Ethereum => "ethereum".to_owned(),
-            ProtoCoin::Polkadot => "polkadot".to_owned(),
+impl std::fmt::Display for ProtoCoin {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::str::FromStr for ProtoCoin {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "ethereum" => Ok(ProtoCoin::Ethereum),
+            "polkadot" => Ok(ProtoCoin::Polkadot),
+            _ => Err(Error::NotSupportedCoin),
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use crate::param::Coin as ProtoCoin;
+    #[test]
+    fn test_proto_coin_into_str() {
+        assert_eq!(ProtoCoin::Ethereum.to_string(), "Ethereum");
     }
 }

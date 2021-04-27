@@ -3,8 +3,8 @@ package Ethereum;
 
 // Input data necessary to create a signed transaction.
 message SignInput {
-    // Chain identifier (256-bit number)
-    bytes chain_id = 1;
+
+    uint32 chain_id = 1;
 
     // Nonce (256-bit number)
     bytes nonce = 2;
@@ -15,11 +15,11 @@ message SignInput {
     // Gas limit (256-bit number)
     bytes gas_limit = 4;
 
-    // Recipient's address.
-    string to_address = 5;
+    // Amount (256-bit number)
+    bytes amount = 5;
 
-    // Private key.
-    bytes private_key = 6;
+    // Recipient's address.
+    string to_address = 6;
 
     bytes payload = 7;
 }

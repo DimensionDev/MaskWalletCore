@@ -1,14 +1,24 @@
+use std::str::FromStr;
 use chain_common::entry::Entry;
 use chain_common::coin::Coin;
 use chain_common::public_key::PublicKey;
 use chain_common::private_key::PrivateKey;
+use chain_common::param::Coin as ProtoCoinType;
+use chain_common::Error as ChainError;
 use crate::Error;
 use ethereum::entry::EthereumEntry;
 
-pub fn get_dispatcher(coin: &Coin) -> Box<dyn Entry> {
-    match coin.name.as_str() {
-        "ethereum" => Box::new(EthereumEntry{}),
-        _ => Box::new(EthereumEntry{})
+pub struct CoinDispatcher {
+
+}
+
+impl CoinDispatcher {
+    pub fn get_entry(coin: &Coin) -> Result<Box<dyn Entry>, Error> {
+        let coin_proto_type = ProtoCoinType::from_str(&coin.name)?;
+        match coin_proto_type {
+            ProtoCoinType::Ethereum => Ok(Box::new(EthereumEntry{})),
+            _ => Err(Error::ChainError(ChainError::NotSupportedCoin)),
+        }
     }
 }
 
@@ -20,5 +30,5 @@ pub fn derive_address_with_private_key(coin: &Coin, private_key: &PrivateKey) ->
 pub fn derive_address_with_public_key(coin: &Coin, public_key: &PublicKey) -> Result<String, Error> {
     let p2pkh = coin.get_value("p2pkh").unwrap_or_default();
     let hrp = coin.get_value("hrp").unwrap_or_default();
-    Ok(get_dispatcher(&coin).derive_address(&coin, &public_key, p2pkh.as_bytes(), hrp.as_bytes())?)
+    Ok(CoinDispatcher::get_entry(&coin)?.derive_address(&coin, &public_key, p2pkh.as_bytes(), hrp.as_bytes())?)
 }
