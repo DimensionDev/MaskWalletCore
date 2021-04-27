@@ -1,0 +1,13 @@
+{
+  "name": "@dimensiondev/mask-wallet-core",
+  "version": "0.0.0",
+  "description": "This is MaskWallet Core layer",
+  "repository": "https://github.com/DimensionDev/MaskWalletCore",
+  "license": "MIT",
+  "main": "node/index.js",
+  "module": "web/index.js",
+  "esnext": "bundle/index.js",
+  "dependencies": {
+    "protobufjs": "^6.10.2"
+  }
+}
