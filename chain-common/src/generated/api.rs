@@ -1,6 +1,6 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -41,11 +41,13 @@ pub mod mw_request {
         ParamExportKeyStoreJson(super::super::param::ExportKeyStoreJsonParam),
         #[prost(message, tag="17")]
         ParamExportKeyStoreJsonOfPath(super::super::param::ExportKeyStoreJsonOfPathParam),
+        #[prost(message, tag="18")]
+        ParamSignTransaction(super::super::param::SignTransactionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -84,6 +86,8 @@ pub mod mw_response {
         RespExportMnemonic(super::super::param::ExportKeyStoreMnemonicResp),
         #[prost(message, tag="16")]
         RespExportKeyStoreJson(super::super::param::ExportKeyStoreJsonResp),
+        #[prost(message, tag="17")]
+        RespSignTransaction(super::super::param::SignTransactionResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

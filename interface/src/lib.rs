@@ -1,7 +1,6 @@
 use prost::Message;
 use prost::EncodeError;
 use std::panic;
-use console_error_panic_hook;
 
 pub mod handler;
 mod coins;
@@ -25,7 +24,7 @@ pub fn request(input: &[u8]) -> Vec<u8> {
     call_api(input)
 }
 
-fn encode_message(msg: impl Message) -> Result<Vec<u8>, EncodeError> {
+fn encode_message<T>(msg: &T) -> Result<Vec<u8>, EncodeError>  where T: Message  {
     let mut buf = BytesMut::with_capacity(msg.encoded_len());
     msg.encode(&mut buf)?;
     Ok(buf.to_vec())
@@ -35,7 +34,7 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
     let mw_request: MwRequest = match MwRequest::decode(input) {
         Ok(request) => request,
         Err(_) => {
-            return encode_message(get_invalid_proto_resposne()).expect("invalid request");
+            return encode_message(&get_invalid_proto_resposne()).expect("invalid request");
         }
     };
     let response: MwResponse;
@@ -50,7 +49,7 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
             }))
         };
     }
-    encode_message(response).expect("invalid request")
+    encode_message(&response).expect("invalid request")
 }
 
 #[cfg(test)]

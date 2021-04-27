@@ -294,16 +294,37 @@ pub struct CreateStoredKeyNewAccountResp {
 }
 /// 19. Sign a transaction
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SignTransaction {
-    #[prost(oneof="sign_transaction::SignInput", tags="1")]
-    pub sign_input: ::core::option::Option<sign_transaction::SignInput>,
+pub struct SignTransactionParam {
+    #[prost(bytes="vec", tag="1")]
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="2")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub password: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="4")]
+    pub coin: i32,
+    #[prost(oneof="sign_transaction_param::SignInput", tags="5")]
+    pub sign_input: ::core::option::Option<sign_transaction_param::SignInput>,
 }
-/// Nested message and enum types in `SignTransaction`.
-pub mod sign_transaction {
+/// Nested message and enum types in `SignTransactionParam`.
+pub mod sign_transaction_param {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum SignInput {
-        #[prost(message, tag="1")]
+        #[prost(message, tag="5")]
         SignInput(super::super::ethereum::SignInput),
+    }
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SignTransactionResp {
+    #[prost(oneof="sign_transaction_resp::SignOutput", tags="1")]
+    pub sign_output: ::core::option::Option<sign_transaction_resp::SignOutput>,
+}
+/// Nested message and enum types in `SignTransactionResp`.
+pub mod sign_transaction_resp {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum SignOutput {
+        #[prost(message, tag="1")]
+        SignOutput(super::super::ethereum::SignOutput),
     }
 }
 /// Begin of Structs definition used in Requests/Responses 

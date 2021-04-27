@@ -223,8 +223,18 @@ message CreateStoredKeyNewAccountResp {
 }
 
 // 19. Sign a transaction
-message SignTransaction {
+message SignTransactionParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    string password = 3;
+    Coin coin = 4;
     oneof signInput {
-        Ethereum.SignInput sign_input = 1;
+        Ethereum.SignInput sign_input = 5;
+    }
+}
+
+message SignTransactionResp {
+    oneof signOutput {
+        Ethereum.SignOutput sign_output = 1;
     }
 }

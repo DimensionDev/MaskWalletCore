@@ -22,7 +22,7 @@ message MWRequest {
         Param.ExportKeyStoreMnemonicParam param_export_mnemonic = 15;
         Param.ExportKeyStoreJsonParam param_export_key_store_json = 16;
         Param.ExportKeyStoreJsonOfPathParam param_export_key_store_json_of_path = 17;
-
+        Param.SignTransactionParam param_sign_transaction = 18;
     }
 }
 
@@ -44,6 +44,7 @@ message MWResponse {
         Param.ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
         Param.ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
         Param.ExportKeyStoreJsonResp resp_export_key_store_json = 16;
+        Param.SignTransactionResp resp_sign_transaction = 17;
     }
 }
 
