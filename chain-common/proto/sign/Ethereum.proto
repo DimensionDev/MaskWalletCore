@@ -4,20 +4,25 @@ package Ethereum;
 // Input data necessary to create a signed transaction.
 message SignInput {
 
-    uint32 chain_id = 1;
+    uint64 chain_id = 1;
 
+    // hex encoded nonce number
     string nonce = 2;
 
+    // hex encoded nonce number
     string gas_price = 3;
 
+    // hex encoded nonce number
     string gas_limit = 4;
 
+    // hex encoded nonce number
     string amount = 5;
 
     // Recipient's address.
     string to_address = 6;
 
-    bytes payload = 7;
+    // hex encoded payload data
+    string payload = 7;
 }
 
 // Transaction signing output.
@@ -25,7 +30,7 @@ message SignOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    bytes v = 2;
+    uint32 v = 2;
     bytes r = 3;
     bytes s = 4;
 

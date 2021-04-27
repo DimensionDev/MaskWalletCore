@@ -1,7 +1,8 @@
 pub mod address;
-pub mod entry;
 mod address_checksum;
+pub mod entry;
 mod signer;
+mod transaction;
 
 #[cfg(test)]
 mod tests {
