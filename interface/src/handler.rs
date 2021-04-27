@@ -533,7 +533,7 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
             return get_json_error_response();
         }
     };
-    let input_struct = match param.sign_input {
+    let input_struct = match param.input {
         Some(input) => input,
         None => {
             return MwResponse {
@@ -544,7 +544,7 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
             };
         }
     };
-    let sign_transaction_param::SignInput::SignInput(chain_input) = input_struct;
+    let sign_transaction_param::Input::SignInput(chain_input) = input_struct;
     let encoded_input = match encode_message(&chain_input) {
         Ok(encoded) => encoded,
         Err(_) => {

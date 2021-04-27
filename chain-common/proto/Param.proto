@@ -228,7 +228,7 @@ message SignTransactionParam {
     string address = 2;
     string password = 3;
     Coin coin = 4;
-    oneof signInput {
+    oneof input {
         Ethereum.SignInput sign_input = 5;
     }
 }

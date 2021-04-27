@@ -6,17 +6,13 @@ message SignInput {
 
     uint32 chain_id = 1;
 
-    // Nonce (256-bit number)
-    bytes nonce = 2;
+    string nonce = 2;
 
-    // Gas price (256-bit number)
-    bytes gas_price = 3;
+    string gas_price = 3;
 
-    // Gas limit (256-bit number)
-    bytes gas_limit = 4;
+    string gas_limit = 4;
 
-    // Amount (256-bit number)
-    bytes amount = 5;
+    string amount = 5;
 
     // Recipient's address.
     string to_address = 6;

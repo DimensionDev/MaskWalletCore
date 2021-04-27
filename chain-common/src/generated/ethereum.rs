@@ -3,18 +3,14 @@
 pub struct SignInput {
     #[prost(uint32, tag="1")]
     pub chain_id: u32,
-    /// Nonce (256-bit number)
-    #[prost(bytes="vec", tag="2")]
-    pub nonce: ::prost::alloc::vec::Vec<u8>,
-    /// Gas price (256-bit number)
-    #[prost(bytes="vec", tag="3")]
-    pub gas_price: ::prost::alloc::vec::Vec<u8>,
-    /// Gas limit (256-bit number)
-    #[prost(bytes="vec", tag="4")]
-    pub gas_limit: ::prost::alloc::vec::Vec<u8>,
-    /// Amount (256-bit number)
-    #[prost(bytes="vec", tag="5")]
-    pub amount: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="2")]
+    pub nonce: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub gas_price: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub gas_limit: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub amount: ::prost::alloc::string::String,
     /// Recipient's address.
     #[prost(string, tag="6")]
     pub to_address: ::prost::alloc::string::String,
