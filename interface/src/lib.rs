@@ -1,5 +1,7 @@
 use prost::Message;
 use prost::EncodeError;
+use std::panic;
+use console_error_panic_hook;
 
 pub mod handler;
 mod coins;
@@ -19,6 +21,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub fn request(input: &[u8]) -> Vec<u8> {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
     call_api(input)
 }
 
