@@ -234,7 +234,7 @@ message SignTransactionParam {
 }
 
 message SignTransactionResp {
-    oneof signOutput {
+    oneof output {
         Ethereum.SignOutput sign_output = 1;
     }
 }

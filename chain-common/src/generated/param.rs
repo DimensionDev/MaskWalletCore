@@ -303,26 +303,26 @@ pub struct SignTransactionParam {
     pub password: ::prost::alloc::string::String,
     #[prost(enumeration="Coin", tag="4")]
     pub coin: i32,
-    #[prost(oneof="sign_transaction_param::SignInput", tags="5")]
-    pub sign_input: ::core::option::Option<sign_transaction_param::SignInput>,
+    #[prost(oneof="sign_transaction_param::Input", tags="5")]
+    pub input: ::core::option::Option<sign_transaction_param::Input>,
 }
 /// Nested message and enum types in `SignTransactionParam`.
 pub mod sign_transaction_param {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum SignInput {
+    pub enum Input {
         #[prost(message, tag="5")]
         SignInput(super::super::ethereum::SignInput),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignTransactionResp {
-    #[prost(oneof="sign_transaction_resp::SignOutput", tags="1")]
-    pub sign_output: ::core::option::Option<sign_transaction_resp::SignOutput>,
+    #[prost(oneof="sign_transaction_resp::Output", tags="1")]
+    pub output: ::core::option::Option<sign_transaction_resp::Output>,
 }
 /// Nested message and enum types in `SignTransactionResp`.
 pub mod sign_transaction_resp {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum SignOutput {
+    pub enum Output {
         #[prost(message, tag="1")]
         SignOutput(super::super::ethereum::SignOutput),
     }

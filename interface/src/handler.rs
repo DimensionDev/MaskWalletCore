@@ -581,7 +581,7 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
     MwResponse {
         response: Some(Response::RespSignTransaction(
             SignTransactionResp {
-                sign_output: Some(sign_transaction_resp::SignOutput::SignOutput(decoded_output))
+                output: Some(sign_transaction_resp::Output::SignOutput(decoded_output))
             }
         ))
     }
