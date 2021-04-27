@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use serde::{ Serialize, Deserialize };
+use crate::param::Coin as ProtoCoin;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Coin {
@@ -43,3 +44,12 @@ impl PartialEq for Coin {
     }
 }
 impl Eq for Coin {}
+
+impl ToString for ProtoCoin {
+    fn to_string(&self) -> String {
+        match self {
+            ProtoCoin::Ethereum => "ethereum".to_owned(),
+            ProtoCoin::Polkadot => "polkadot".to_owned(),
+        }
+    }
+}

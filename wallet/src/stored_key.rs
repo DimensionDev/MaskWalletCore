@@ -13,6 +13,7 @@ use super::coin_dispatcher::get_dispatcher;
 use super::hd_wallet::HdWallet;
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
+use chain_common::param::{ StoredKeyInfo, StoredKeyType as ProtoStoreKeyType };
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
@@ -289,6 +290,26 @@ impl StoredKey {
     }
 }
 
+impl From<StoredKey> for StoredKeyInfo {
+    fn from(stored_key: StoredKey) -> Self {
+        let json = serde_json::to_vec(&stored_key).unwrap().to_vec();
+        StoredKeyInfo {
+            data: json,
+            id: stored_key.id,
+            name: stored_key.name,
+            r#type: stored_key.r#type as i32
+        }
+    }
+}
+
+impl From<StoredKeyType> for ProtoStoreKeyType {
+    fn from(stored_key_type: StoredKeyType) -> Self {
+        match stored_key_type {
+            StoredKeyType::PrivateKey => ProtoStoreKeyType::PrivateKey,
+            StoredKeyType::Mnemonic => ProtoStoreKeyType::Hd,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

@@ -1,0 +1,38 @@
+syntax = "proto3";
+package Ethereum;
+
+// Input data necessary to create a signed transaction.
+message SignInput {
+    // Chain identifier (256-bit number)
+    bytes chain_id = 1;
+
+    // Nonce (256-bit number)
+    bytes nonce = 2;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 3;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 4;
+
+    // Recipient's address.
+    string to_address = 5;
+
+    // Private key.
+    bytes private_key = 6;
+
+    bytes payload = 7;
+}
+
+// Transaction signing output.
+message SignOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
+
+    // The payload part, supplied in the input or assembled from input parameters
+    bytes data = 5;
+}

@@ -1,9 +1,5 @@
-use std::convert::From;
-use super::api::{ MwResponse, MwResponseError };
-use super::api::mw_response::Response;
-use super::param::*;
-use wallet::stored_key;
-use wallet::account::Account;
+use chain_common::api::{ MwResponse, MwResponseError };
+use chain_common::api::mw_response::Response;
 use wallet::Error;
 
 pub fn get_json_response_error() -> Option<Response> {
@@ -38,38 +34,5 @@ fn get_error_response(_error: Error) -> Response {
 pub fn get_error_response_by_error(error: Error) -> MwResponse {
     MwResponse {
         response: Some(get_error_response(error))
-    }
-}
-
-// Begin of convinience function help converting wallet types to protobuf types
-impl From<stored_key::StoredKeyType> for StoredKeyType {
-    fn from(stored_key_type: stored_key::StoredKeyType) -> Self {
-        match stored_key_type {
-            stored_key::StoredKeyType::PrivateKey => StoredKeyType::PrivateKey,
-            stored_key::StoredKeyType::Mnemonic => StoredKeyType::Hd,
-        }
-    }
-}
-
-impl From<stored_key::StoredKey> for StoredKeyInfo {
-    fn from(stored_key: stored_key::StoredKey) -> Self {
-        let json = serde_json::to_vec(&stored_key).unwrap().to_vec();
-        StoredKeyInfo {
-            data: json,
-            id: stored_key.id,
-            name: stored_key.name,
-            r#type: StoredKeyType::from(stored_key.r#type) as i32
-        }
-    }
-}
-
-impl From<&Account> for StoredKeyAccountInfo {
-    fn from(account: &Account) -> Self {
-        StoredKeyAccountInfo {
-            address: account.address.to_owned(),
-            derivation_path: account.derivation_path.to_string(),
-            coin: account.coin.id.to_owned(),
-            extended_public_key: account.extended_public_key.to_owned()
-        }
     }
 }

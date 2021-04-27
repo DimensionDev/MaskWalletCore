@@ -1,3 +1,8 @@
+mod generated;
+pub use generated::api as api;
+pub use generated::param as param;
+pub use generated::ethereum as ethereum;
+
 pub mod entry;
 pub mod private_key;
 pub mod public_key;

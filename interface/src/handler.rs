@@ -1,9 +1,9 @@
 use std::convert::From;
-use super::api::{ MwResponse, mw_request, MwResponseError };
-use super::api::mw_request::Request::*;
-use super::api::mw_response::Response;
-use super::param::*;
-use super::coin::get_coin_info;
+use chain_common::api::{ MwResponse, mw_request, MwResponseError };
+use chain_common::api::mw_request::Request::*;
+use chain_common::api::mw_response::Response;
+use chain_common::param::*;
+use super::coins::get_coin_info;
 use super::response_util::*;
 
 use wallet::stored_key::*;

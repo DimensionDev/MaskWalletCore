@@ -1,6 +1,8 @@
 syntax = "proto3";
 package Param;
 
+import "sign/Ethereum.proto";
+
 /* Begin of Structs definition used in Requests/Responses */
 enum Coin {
     Ethereum = 0;
@@ -218,4 +220,11 @@ message CreateStoredKeyNewAccountParam {
 message CreateStoredKeyNewAccountResp {
     StoredKeyAccountInfo account = 1;
     StoredKeyInfo storedKey = 2;
+}
+
+// 19. Sign a transaction
+message SignTransaction {
+    oneof signInput {
+        Ethereum.SignInput sign_input = 1;
+    }
 }

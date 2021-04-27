@@ -1,18 +1,16 @@
 use prost::Message;
 use prost::EncodeError;
 
-pub mod api;
-pub mod param;
 pub mod handler;
-mod coin;
+mod coins;
 pub mod response_util;
 
 #[macro_use]
 extern crate lazy_static;
 
 use bytes::BytesMut;
-use api::{ MwRequest, MwResponse, MwResponseError };
-use api::mw_response::Response;
+use chain_common::api::{ MwRequest, MwResponse, MwResponseError };
+use chain_common::api::mw_response::Response;
 use response_util::get_invalid_proto_resposne;
 
 use handler::dispatch_request;

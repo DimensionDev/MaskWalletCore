@@ -2,8 +2,7 @@
 use std::collections::HashMap;
 use std::string::ToString;
 use chain_common::coin::Coin;
-
-use super::param::Coin as CoinType;
+use chain_common::param::Coin as CoinType;
 
 lazy_static! {
     static ref COINS_MAP: HashMap<String, Coin> = {
@@ -23,15 +22,6 @@ lazy_static! {
     };
 }
 
-impl ToString for CoinType {
-    fn to_string(&self) -> String {
-        match self {
-            CoinType::Ethereum => "ethereum".to_owned(),
-            CoinType::Polkadot => "polkadot".to_owned()
-        }
-    }
-}
-
 pub fn get_coin_info(coin_type: i32) -> Option<&'static Coin> {
     match CoinType::from_i32(coin_type) {
         Some(coin) => COINS_MAP.get(&coin.to_string()),
@@ -41,7 +31,7 @@ pub fn get_coin_info(coin_type: i32) -> Option<&'static Coin> {
 
 #[cfg(test)]
 mod tests {
-    use crate::coin::COINS_MAP;
+    use super::COINS_MAP;
     #[test]
     fn test_get_coin_info() {
         assert_eq!(COINS_MAP.len(), 2);

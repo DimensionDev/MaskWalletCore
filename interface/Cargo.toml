@@ -20,9 +20,6 @@ wallet = { path = "../wallet" }
 
 [lib]
 name = "interface"
-build = "build.rs"
 
 crate-type = ["cdylib"]
 
-[build-dependencies]
-prost-build = "0.7.0"

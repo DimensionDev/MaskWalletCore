@@ -292,6 +292,20 @@ pub struct CreateStoredKeyNewAccountResp {
     #[prost(message, optional, tag="2")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+/// 19. Sign a transaction
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SignTransaction {
+    #[prost(oneof="sign_transaction::SignInput", tags="1")]
+    pub sign_input: ::core::option::Option<sign_transaction::SignInput>,
+}
+/// Nested message and enum types in `SignTransaction`.
+pub mod sign_transaction {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum SignInput {
+        #[prost(message, tag="1")]
+        SignInput(super::super::ethereum::SignInput),
+    }
+}
 /// Begin of Structs definition used in Requests/Responses 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

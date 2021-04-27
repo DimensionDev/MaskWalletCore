@@ -22,6 +22,7 @@ message MWRequest {
         Param.ExportKeyStoreMnemonicParam param_export_mnemonic = 15;
         Param.ExportKeyStoreJsonParam param_export_key_store_json = 16;
         Param.ExportKeyStoreJsonOfPathParam param_export_key_store_json_of_path = 17;
+
     }
 }
 
