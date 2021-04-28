@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x -euo pipefail
 
-cp -R ./chain-common/proto ./package
+cp -R ./chain-common/proto/* ./package/proto
 
 pushd interface
 wasm-pack build --target nodejs \
@@ -17,10 +17,17 @@ popd
 
 pushd package
 VERSION=$(npx pkg-jq -r '.version' node)
-npx pkg-jq -i ".version = "\""${VERSION}-${BUILD_VERSION}"\"""
+npx pkg-jq -i ".version = \"""$VERSION"-"$BUILD_VERSION""\""
 npm ci
-pushd proto
-npx pbjs --out index.js --target static-module *.proto
-npx pbts --out index.d.ts index.js
-popd
+OUT_PARAMS=(
+	--target static-module
+	--keep-case
+	--no-verify
+	--no-convert
+	--no-delimited
+	proto/*.proto
+)
+npx pbjs --out proto/index.js --wrap commonjs "${OUT_PARAMS[@]}"
+npx pbjs --out proto/index.esm.js --wrap es6 --es6 "${OUT_PARAMS[@]}"
+npx pbts --out proto/index.d.ts proto/index.js
 npm publish
