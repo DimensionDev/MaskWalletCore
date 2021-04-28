@@ -22,6 +22,7 @@ npm ci
 OUT_PARAMS=(
 	--target static-module
 	--keep-case
+	--no-create
 	--no-verify
 	--no-convert
 	--no-delimited
