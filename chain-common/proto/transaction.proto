@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+import "sign/Ethereum.proto";
+
+// Sign a transaction
+message SignTransactionParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    string password = 3;
+    Coin coin = 4;
+    oneof input {
+        Ethereum.SignInput sign_input = 5;
+    }
+}
+
+message SignTransactionResp {
+    oneof output {
+        Ethereum.SignOutput sign_output = 1;
+    }
+}

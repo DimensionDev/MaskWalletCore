@@ -1,5 +1,5 @@
+use chain_common::api::Coin as CoinType;
 use chain_common::coin::Coin;
-use chain_common::param::Coin as CoinType;
 use std::collections::HashMap;
 use std::string::ToString;
 

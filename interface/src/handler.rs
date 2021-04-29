@@ -3,9 +3,9 @@ use super::response_util::*;
 use crate::encode_message;
 use chain_common::api::mw_request::Request::*;
 use chain_common::api::mw_response::Response;
+use chain_common::api::*;
 use chain_common::api::{mw_request, MwResponse, MwResponseError};
 use chain_common::ethereum;
-use chain_common::param::*;
 use prost::Message;
 use std::convert::From;
 
