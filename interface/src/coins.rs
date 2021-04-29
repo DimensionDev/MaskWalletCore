@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn test_get_coin_info() {
         assert_eq!(COINS_MAP.len(), 2);
-        let coin_info = COINS_MAP.get("Ethereum").unwrap();
+        let coin_info = COINS_MAP.get("ethereum").unwrap();
         assert_eq!(coin_info.curve, "secp256k1");
     }
 }
