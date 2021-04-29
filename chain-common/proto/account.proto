@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message CreateStoredKeyNewAccountParam {
+    bytes StoredKeyData = 1;
+    Coin coin = 2;
+    string derivationPath = 3;
+    string password = 4;
+}
+
+message CreateStoredKeyNewAccountResp {
+    StoredKeyAccountInfo account = 1;
+    StoredKeyInfo storedKey = 2;
+}
+
+// Get count of accounts of a StoredKey
+message GetStoredKeyAccountCountParam {
+    bytes data = 1; // StoredKey data returned from other response
+}
+
+message GetStoredKeyAccountCountResp {
+    uint32 count = 1;
+}
+
+// Get the account at specific index of a StoredKey
+message GetStoredKeyAccountParam {
+    bytes data = 1;   // StoredKey data returned from other response
+    uint32 index = 2; // Index of the account, begin from zero
+}
+
+message GetStoredKeyAccountResp {
+    StoredKeyAccountInfo account = 1;
+}
+
+// Get all accounts information of a StoredKey
+message GetStoredKeyAllAccountParam {
+    bytes data = 1;
+}
+
+message GetStoredKeyAllAccountResp {
+    repeated StoredKeyAccountInfo accounts = 1;
+}
+
+// Get the accounts of specific coin form a StoredKey
+message GetStoredKeyAccountsOfCoinParam {
+    bytes storedKeyData = 1;
+    Coin coin = 2;
+}
+
+message GetStoredKeyAccountsOfCoinResp {
+    StoredKeyInfo StoredKey = 1;
+    repeated StoredKeyAccountInfo accounts = 2;
+}
+
+// Add a new account of specific coin type into a StoredKey
+message AddStoredKeyAccountOfCoinParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+    string extetndedPublicKey = 5;
+}
+
+message AddStoredKeyAccountOfCoinResp {
+    StoredKeyAccountInfo account = 1;
+    StoredKeyInfo storedKey = 2;
+}
+
+// Remove all accounts of specific coin type into a StoredKey
+message RemoveStoredKeyAccountsOfCoinParam {
+    bytes storedKeyData = 1;
+    Coin coin = 2;
+}
+
+message RemoveStoredKeyAccountsOfCoinResp {
+    StoredKeyInfo storedKey = 1;
+}
+
+// Remove account of the specific address and coin type
+message RemoveStoredKeyAccountOfAddressParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    Coin coin = 3;
+}
+
+message RemoveStoredKeyAccountOfAddressResp {
+    StoredKeyInfo storedKey = 1;
+}

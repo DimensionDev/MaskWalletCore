@@ -1,27 +1,18 @@
-use std::collections::HashMap;
-use serde::{ Serialize, Deserialize };
+use crate::api::Coin as ProtoCoin;
 use crate::Error;
-use crate::param::Coin as ProtoCoin;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Coin {
-    
     pub id: String,
-    
     pub name: String,
-    
     pub coin_id: i32,
-    
     pub symbol: String,
-    
     pub decimals: i32,
-    
     pub blockchain: String,
-    
     pub derivation_path: String,
-    
     pub curve: String,
-    
     pub public_key_type: String,
 
     #[serde(skip_serializing)]
@@ -31,11 +22,11 @@ pub struct Coin {
 
 impl Coin {
     pub fn get_value(&self, key: &str) -> Option<String> {
-        self.all_info.get(key).map(|x| x.to_string() )
+        self.all_info.get(key).map(|x| x.to_string())
     }
 
     pub fn get_xpub(&self) -> Option<String> {
-        self.all_info.get("xpub").map(|x| x.to_string() )
+        self.all_info.get("xpub").map(|x| x.to_string())
     }
 }
 
@@ -63,10 +54,9 @@ impl std::str::FromStr for ProtoCoin {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use crate::param::Coin as ProtoCoin;
+    use crate::api::Coin as ProtoCoin;
     #[test]
     fn test_proto_coin_into_str() {
         assert_eq!(ProtoCoin::Ethereum.to_string(), "Ethereum");

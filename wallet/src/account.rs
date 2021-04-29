@@ -1,8 +1,8 @@
-use serde::{ Serialize, Deserialize };
-use chain_common::coin::Coin;
-use chain_common::param::StoredKeyAccountInfo;
 use super::derivation_path::DerivationPath;
 use crate::Error;
+use chain_common::api::StoredKeyAccountInfo;
+use chain_common::coin::Coin;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Account {
@@ -13,7 +13,12 @@ pub struct Account {
 }
 
 impl Account {
-    pub fn new(address: &str, coin: Coin, derivation_path: &str, extended_public_key: &str) -> Result<Self, Error> {
+    pub fn new(
+        address: &str,
+        coin: Coin,
+        derivation_path: &str,
+        extended_public_key: &str,
+    ) -> Result<Self, Error> {
         let derivation_path_struct = DerivationPath::new(&derivation_path)?;
         Ok(Account {
             address: address.to_owned(),
@@ -30,7 +35,7 @@ impl From<&Account> for StoredKeyAccountInfo {
             address: account.address.to_owned(),
             derivation_path: account.derivation_path.to_string(),
             coin: account.coin.id.to_owned(),
-            extended_public_key: account.extended_public_key.to_owned()
+            extended_public_key: account.extended_public_key.to_owned(),
         }
     }
 }
