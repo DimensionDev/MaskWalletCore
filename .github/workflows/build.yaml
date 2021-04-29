@@ -12,13 +12,15 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04
-    env:
-      WASM_PACK: interface
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - uses: actions-rs/toolchain@v1
       - uses: Swatinem/rust-cache@v1
+      - uses: dimensiondev/github-token-action@latest
+        with:
+          registry: true
+          global: true
       - name: Install `wasm-pack`
         uses: actions-rs/install@v0.1
         with:
@@ -27,16 +29,5 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-      - name: Build WebAssembly
-        run: wasm-pack build ${{ env.WASM_PACK }} --target web
-      - name: Package
-        run: ${{ github.workspace }}/.github/scripts/package.sh
-        working-directory: ${{ env.WASM_PACK }}/pkg
-      - uses: actions/upload-artifact@v2
-        with:
-          name: wasm
-          path: ${{ env.WASM_PACK }}/pkg/*.tgz
+      - name: Publish
+        run: .github/scripts/publish.sh

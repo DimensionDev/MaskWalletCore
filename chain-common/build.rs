@@ -5,7 +5,7 @@ fn main() {
     env::set_var("OUT_DIR", "src/generated");
     prost_build::compile_protos(
         &[
-            "proto/Api.proto",
+            "proto/api.proto",
         ],
         &[
             "proto/sign/",
