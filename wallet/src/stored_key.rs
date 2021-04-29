@@ -312,7 +312,7 @@ impl StoredKey {
         derivation_path: &str,
         password: &str,
     ) -> Result<Account, Error> {
-        let derivation_path_struct = DerivationPath::new(&coin.derivation_path)?;
+        let derivation_path_struct = DerivationPath::new(&derivation_path)?;
         if let Some(account) = self.accounts.iter().find(|account| {
             account.coin == coin && account.derivation_path == derivation_path_struct
         }) {
@@ -520,5 +520,36 @@ mod tests {
         assert_eq!(account.derivation_path.to_string(), derivation_path);
         assert_eq!(account.coin.name, "ethereum");
         assert_eq!(account.extended_public_key, "");
+    }
+
+    #[test]
+    fn test_create_account_at_path() {
+        let mnemonic =
+            "suffer artefact burst review network fantasy easy century mom unique pupil boy";
+        let password = "";
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+            all_info: HashMap::new(),
+        };
+
+        let mut stored_key = StoredKey::create_with_mnemonic("mask", &password, &mnemonic).unwrap();
+        let test_derivation_path1 = "m/44'/60'/0'/0/1";
+        let account1 = stored_key
+            .add_new_account_of_coin_and_derivation_path_by_password(
+                coin,
+                &test_derivation_path1,
+                &password,
+            )
+            .unwrap();
+        assert_eq!(account1.derivation_path.to_string(), test_derivation_path1);
     }
 }
