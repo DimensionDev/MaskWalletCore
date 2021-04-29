@@ -1,8 +1,7 @@
-
-use std::collections::HashMap;
-use std::string::ToString;
 use chain_common::coin::Coin;
 use chain_common::param::Coin as CoinType;
+use std::collections::HashMap;
+use std::string::ToString;
 
 lazy_static! {
     static ref COINS_MAP: HashMap<String, Coin> = {
@@ -16,7 +15,7 @@ lazy_static! {
 
         coins.into_iter().for_each(|mut coin| {
             coin.all_info = coins_info_hashmaps.remove(0);
-            coins_map.insert(coin.name.to_owned(), coin);
+            coins_map.insert(coin.name.to_lowercase().to_owned(), coin);
         });
         coins_map
     };
@@ -36,7 +35,6 @@ mod tests {
     fn test_get_coin_info() {
         assert_eq!(COINS_MAP.len(), 2);
         let coin_info = COINS_MAP.get("Ethereum").unwrap();
-        
         assert_eq!(coin_info.curve, "secp256k1");
     }
 }
