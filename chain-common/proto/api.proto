@@ -19,7 +19,7 @@ message MWRequest {
         GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
         GetStoredKeyAccountsOfCoinParam param_get_stored_key_accounts_of_coin = 9;
         CreateStoredKeyNewAccountParam param_create_acccount_of_coin_at_path = 10;
-        RemoveStoredKeyAccountsOfCoinParam param_remove_accounts_of_coin = 11;
+        RemoveStoredKeyAccountOfCoinParam param_remove_accounts_of_coin = 11;
         RemoveStoredKeyAccountOfAddressParam param_remove_account_of_address = 12;
         ExportKeyStorePrivateKeyParam param_export_private_key = 13;
         ExportKeyStorePrivateKeyOfPathParam param_export_private_key_of_path = 14;
@@ -43,7 +43,7 @@ message MWResponse {
         GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
         GetStoredKeyAccountsOfCoinResp resp_get_stored_key_accounts_of_coin = 10;
         CreateStoredKeyNewAccountResp resp_create_account_of_coin_at_path = 11;
-        RemoveStoredKeyAccountsOfCoinResp resp_remove_account_of_coin = 12;
+        RemoveStoredKeyAccountOfCoinResp resp_remove_account_of_coin = 12;
         RemoveStoredKeyAccountOfAddressResp resp_remove_account_of_address = 13;
         ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
         ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
@@ -77,7 +77,7 @@ service Account {
     rpc ReadByCoin(GetStoredKeyAccountOfCoinParam) returns (GetStoredKeyAccountsOfCoinResp);
     rpc ReadCount(GetStoredKeyAccountCountParam) returns (GetStoredKeyAccountCountResp);
     rpc ReadAll(GetStoredKeyAllAccountParam) returns (GetStoredKeyAllAccountResp);
-    rpc RemoveByCoin(RemoveStoredKeyAccountOfCoinParam) returns (RemoveStoredKeyAccountsOfCoinResp);
+    rpc RemoveByCoin(RemoveStoredKeyAccountOfCoinParam) returns (RemoveStoredKeyAccountOfCoinResp);
     rpc RemoveByAddress(RemoveStoredKeyAccountOfAddressParam) returns (RemoveStoredKeyAccountOfAddressResp);
 }
 

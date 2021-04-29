@@ -129,14 +129,14 @@ pub struct AddStoredKeyAccountOfCoinResp {
 }
 /// Remove all accounts of specific coin type into a StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountsOfCoinParam {
+pub struct RemoveStoredKeyAccountOfCoinParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(enumeration="Coin", tag="2")]
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountsOfCoinResp {
+pub struct RemoveStoredKeyAccountOfCoinResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
@@ -367,7 +367,7 @@ pub mod mw_request {
         #[prost(message, tag="10")]
         ParamCreateAcccountOfCoinAtPath(super::CreateStoredKeyNewAccountParam),
         #[prost(message, tag="11")]
-        ParamRemoveAccountsOfCoin(super::RemoveStoredKeyAccountsOfCoinParam),
+        ParamRemoveAccountsOfCoin(super::RemoveStoredKeyAccountOfCoinParam),
         #[prost(message, tag="12")]
         ParamRemoveAccountOfAddress(super::RemoveStoredKeyAccountOfAddressParam),
         #[prost(message, tag="13")]
@@ -416,7 +416,7 @@ pub mod mw_response {
         #[prost(message, tag="11")]
         RespCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountResp),
         #[prost(message, tag="12")]
-        RespRemoveAccountOfCoin(super::RemoveStoredKeyAccountsOfCoinResp),
+        RespRemoveAccountOfCoin(super::RemoveStoredKeyAccountOfCoinResp),
         #[prost(message, tag="13")]
         RespRemoveAccountOfAddress(super::RemoveStoredKeyAccountOfAddressResp),
         #[prost(message, tag="14")]

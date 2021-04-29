@@ -288,7 +288,7 @@ fn create_stored_key_account_of_coin_at_path(param: CreateStoredKeyNewAccountPar
     }
 }
 
-fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountsOfCoinParam) -> MwResponse {
+fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountOfCoinParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -310,7 +310,7 @@ fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountsOfCoinParam) 
     stored_key.remove_accounts_of_coin(coin);
     MwResponse {
         response: Some(Response::RespRemoveAccountOfCoin(
-            RemoveStoredKeyAccountsOfCoinResp {
+            RemoveStoredKeyAccountOfCoinResp {
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
             },
         )),
