@@ -1,9 +1,9 @@
-use std::string::ToString;
+use super::address_checksum::{checksum, ChecksumType};
 use chain_common::public_key::PublicKey;
-use crypto::Error;
-use crypto::public_key::PublicKeyType;
 use crypto::hash::Keccak256;
-use super::address_checksum::{ ChecksumType, checksum };
+use crypto::public_key::PublicKeyType;
+use crypto::Error;
+use std::string::ToString;
 
 const ADDRESS_SIZE: usize = 20;
 
@@ -21,7 +21,7 @@ impl EthereumAddress {
         let begin = hash.len() - ADDRESS_SIZE;
         Ok(EthereumAddress {
             coin_id: coin_id.to_owned(),
-            data: hash[begin..].to_vec()
+            data: hash[begin..].to_vec(),
         })
     }
 }
@@ -39,12 +39,11 @@ impl ToString for EthereumAddress {
 
 #[cfg(test)]
 mod tests {
+    use crate::address::EthereumAddress;
     use chain_common::public_key::PublicKey;
     use crypto::public_key::PublicKeyType;
-    use crate::address::EthereumAddress;
     #[test]
     fn test_derive_from_pub_key() {
-        
         let pub_key_str = "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91";
 
         let pub_key_data = hex::decode(pub_key_str).unwrap();
