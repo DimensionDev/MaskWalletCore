@@ -71,12 +71,12 @@ message AddStoredKeyAccountOfCoinResp {
 }
 
 // Remove all accounts of specific coin type into a StoredKey
-message RemoveStoredKeyAccountsOfCoinParam {
+message RemoveStoredKeyAccountOfCoinParam {
     bytes storedKeyData = 1;
     Coin coin = 2;
 }
 
-message RemoveStoredKeyAccountsOfCoinResp {
+message RemoveStoredKeyAccountOfCoinResp {
     StoredKeyInfo storedKey = 1;
 }
 
