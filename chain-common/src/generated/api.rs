@@ -26,7 +26,7 @@ pub mod mw_request {
         #[prost(message, tag="9")]
         ParamGetStoredKeyAccountsOfCoin(super::super::param::GetStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="10")]
-        ParamAddAccountOfCoin(super::super::param::AddStoredKeyAccountOfCoinParam),
+        ParamCreateAcccountOfCoinAtPath(super::super::param::CreateStoredKeyNewAccountParam),
         #[prost(message, tag="11")]
         ParamRemoveAccountsOfCoin(super::super::param::RemoveStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="12")]
@@ -75,7 +75,7 @@ pub mod mw_response {
         #[prost(message, tag="10")]
         RespGetStoredKeyAccountsOfCoin(super::super::param::GetStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="11")]
-        RespAddAccountOfCoin(super::super::param::AddStoredKeyAccountOfCoinResp),
+        RespCreateAccountOfCoinAtPath(super::super::param::CreateStoredKeyNewAccountResp),
         #[prost(message, tag="12")]
         RespRemoveAccountOfCoin(super::super::param::RemoveStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="13")]

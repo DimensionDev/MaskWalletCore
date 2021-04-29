@@ -22,7 +22,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGetStoredKeyAccount(param) => get_store_key_account(param),
         ParamGetStoredKeyAllAccounts(param) => get_stored_key_all_accounts(param),
         ParamGetStoredKeyAccountsOfCoin(param) => get_stored_key_accounts_of_coin(param),
-        ParamAddAccountOfCoin(param) => add_stored_key_account_of_coin(param),
+        ParamCreateAcccountOfCoinAtPath(param) => create_stored_key_account_of_coin_at_path(param),
         ParamRemoveAccountsOfCoin(param) => remove_stored_key_account_of_coin(param),
         ParamRemoveAccountOfAddress(param) => remove_account_of_address(param),
         ParamExportPrivateKey(param) => export_private_key(param),
@@ -249,7 +249,7 @@ fn get_stored_key_accounts_of_coin(param: GetStoredKeyAccountsOfCoinParam) -> Mw
     }
 }
 
-fn add_stored_key_account_of_coin(param: AddStoredKeyAccountOfCoinParam) -> MwResponse {
+fn create_stored_key_account_of_coin_at_path(param: CreateStoredKeyNewAccountParam) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -268,11 +268,10 @@ fn add_stored_key_account_of_coin(param: AddStoredKeyAccountOfCoinParam) -> MwRe
             return get_json_error_response();
         }
     };
-    let account = match stored_key.add_new_account_of_coin(
-        &param.address,
+    let account = match stored_key.add_new_account_of_coin_and_derivation_path_by_password(
         coin.clone(),
         &param.derivation_path,
-        &param.extetnded_public_key,
+        &param.password,
     ) {
         Ok(account) => account,
         Err(error) => {
@@ -280,8 +279,8 @@ fn add_stored_key_account_of_coin(param: AddStoredKeyAccountOfCoinParam) -> MwRe
         }
     };
     MwResponse {
-        response: Some(Response::RespAddAccountOfCoin(
-            AddStoredKeyAccountOfCoinResp {
+        response: Some(Response::RespCreateAccountOfCoinAtPath(
+            CreateStoredKeyNewAccountResp {
                 account: Some(StoredKeyAccountInfo::from(&account)),
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
             },
