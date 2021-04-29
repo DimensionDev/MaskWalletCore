@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package api;
-
 enum Coin {
     Ethereum = 0;
     Polkadot = 1;

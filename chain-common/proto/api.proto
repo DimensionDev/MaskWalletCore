@@ -1,5 +1,4 @@
 syntax = "proto3";
-package api;
 
 import "base.proto";
 import "account.proto";

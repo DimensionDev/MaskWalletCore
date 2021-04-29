@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package api;
-
 import "base.proto";
 
 // Get information from StoredKey raw data

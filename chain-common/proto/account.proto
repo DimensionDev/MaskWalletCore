@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package api;
-
 import "base.proto";
 
 // Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
