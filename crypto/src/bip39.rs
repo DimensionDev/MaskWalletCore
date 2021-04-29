@@ -1,6 +1,6 @@
-use std::str::FromStr;
-use bip39::Mnemonic as CryptoMnemonic;
 use crate::Error;
+use bip39::Mnemonic as CryptoMnemonic;
+use std::str::FromStr;
 
 pub struct Mnemonic {
     pub words: String,
@@ -10,14 +10,15 @@ pub struct Mnemonic {
 
 impl Mnemonic {
     pub fn generate(word_count: u32, passphrase: &str) -> Result<Mnemonic, Error> {
-        let mnemonic = CryptoMnemonic::generate(word_count as usize).map_err(|_| Error::InvalidMnemonic)?;
+        let mnemonic =
+            CryptoMnemonic::generate(word_count as usize).map_err(|_| Error::InvalidMnemonic)?;
         let seed = mnemonic.to_seed_normalized(passphrase).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();
         Ok(Mnemonic {
             words: mnemonic.to_string(),
             seed,
-            entropy
+            entropy,
         })
     }
 
@@ -29,7 +30,7 @@ impl Mnemonic {
         Ok(Mnemonic {
             words: mnemonic.to_string(),
             seed,
-            entropy
+            entropy,
         })
     }
 
@@ -55,5 +56,4 @@ mod tests {
         assert_eq!(Mnemonic::generate(25, "").is_err(), true);
         assert_eq!(Mnemonic::generate(11, "").is_err(), true);
     }
-
 }

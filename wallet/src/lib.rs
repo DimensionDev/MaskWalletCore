@@ -1,13 +1,13 @@
-pub mod stored_key;
 pub mod account;
-pub mod hd_wallet;
-pub mod encryption_params;
-mod derivation_path;
 mod coin_dispatcher;
+mod derivation_path;
+pub mod encryption_params;
+pub mod hd_wallet;
+pub mod stored_key;
 
-use std::fmt::Debug;
-use crypto::Error as CryptoError;
 use chain_common::Error as ChainError;
+use crypto::Error as CryptoError;
+use std::fmt::Debug;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
