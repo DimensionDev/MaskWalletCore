@@ -32,6 +32,8 @@ pub struct StoredKey {
     payload: EncryptionParams,
 
     accounts: Vec<Account>,
+
+    deleted_paths: Vec<DerivationPath>,
 }
 
 // Create & Import function
@@ -50,6 +52,7 @@ impl StoredKey {
             id: uuid.to_string(),
             payload,
             accounts: vec![],
+            deleted_paths: vec![],
         })
     }
 
@@ -294,44 +297,32 @@ impl StoredKey {
         Ok(self.accounts.last())
     }
 
-    pub fn add_new_account_of_coin(
-        &mut self,
-        address: &str,
-        coin: Coin,
-        derivation_path: &str,
-        extended_public_key: &str,
-    ) -> Result<Account, Error> {
-        let account = Account::new(&address, coin, &derivation_path, &extended_public_key)?;
-        self.accounts.push(account);
-        Ok(self.accounts.last().unwrap().clone())
-    }
-
-    pub fn add_new_account_of_coin_and_derivation_path_by_password(
-        &mut self,
-        coin: Coin,
-        derivation_path: &str,
-        password: &str,
-    ) -> Result<Account, Error> {
-        let derivation_path_struct = DerivationPath::new(&derivation_path)?;
-        if let Some(account) = self.accounts.iter().find(|account| {
-            account.coin == coin && account.derivation_path == derivation_path_struct
-        }) {
-            Ok(account.clone())
-        } else {
-            let wallet = self.get_wallet(&password)?;
-            let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
-            let extended_public_key =
-                wallet.get_extended_public_key_of_path(&coin, &derivation_path);
-            let account = Account {
-                address,
-                coin: coin.clone(),
-                derivation_path: derivation_path_struct,
-                extended_public_key,
-            };
-            self.accounts.push(account);
-            Ok(self.accounts.last().unwrap().clone())
-        }
-    }
+    // pub fn add_new_account_of_coin_and_derivation_path_by_password(
+    //     &mut self,
+    //     coin: Coin,
+    //     derivation_path: &str,
+    //     password: &str,
+    // ) -> Result<Account, Error> {
+    //     let derivation_path_struct = DerivationPath::new(&derivation_path)?;
+    //     if let Some(account) = self.accounts.iter().find(|account| {
+    //         account.coin == coin && account.derivation_path == derivation_path_struct
+    //     }) {
+    //         Ok(account.clone())
+    //     } else {
+    //         let wallet = self.get_wallet(&password)?;
+    //         let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
+    //         let extended_public_key =
+    //             wallet.get_extended_public_key_of_path(&coin, &derivation_path);
+    //         let account = Account {
+    //             address,
+    //             coin: coin.clone(),
+    //             derivation_path: derivation_path_struct,
+    //             extended_public_key,
+    //         };
+    //         self.accounts.push(account);
+    //         Ok(self.accounts.last().unwrap().clone())
+    //     }
+    // }
 
     pub fn add_new_account_of_coin_and_derivation_path(
         &mut self,

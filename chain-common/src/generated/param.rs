@@ -275,7 +275,7 @@ pub struct ExportKeyStoreJsonResp {
 }
 ///// 18. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountParam {
+pub struct CreateStoredKeyNewAccountAtPathParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(enumeration="Coin", tag="2")]
@@ -286,7 +286,7 @@ pub struct CreateStoredKeyNewAccountParam {
     pub password: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountResp {
+pub struct CreateStoredKeyNewAccountAtPathResp {
     #[prost(message, optional, tag="1")]
     pub account: ::core::option::Option<StoredKeyAccountInfo>,
     #[prost(message, optional, tag="2")]

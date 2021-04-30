@@ -249,7 +249,9 @@ fn get_stored_key_accounts_of_coin(param: GetStoredKeyAccountsOfCoinParam) -> Mw
     }
 }
 
-fn create_stored_key_account_of_coin_at_path(param: CreateStoredKeyNewAccountParam) -> MwResponse {
+fn create_stored_key_account_of_coin_at_path(
+    param: CreateStoredKeyNewAccountAtPathParam,
+) -> MwResponse {
     let coin_info = get_coin_info(param.coin);
     let coin = match coin_info {
         Some(coin_info) => coin_info,
@@ -280,7 +282,7 @@ fn create_stored_key_account_of_coin_at_path(param: CreateStoredKeyNewAccountPar
     };
     MwResponse {
         response: Some(Response::RespCreateAccountOfCoinAtPath(
-            CreateStoredKeyNewAccountResp {
+            CreateStoredKeyNewAccountAtPathResp {
                 account: Some(StoredKeyAccountInfo::from(&account)),
                 stored_key: Some(StoredKeyInfo::from(stored_key)),
             },

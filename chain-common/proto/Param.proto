@@ -210,14 +210,14 @@ message ExportKeyStoreJsonResp {
 }
 
 //// 18. Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
-message CreateStoredKeyNewAccountParam {
+message CreateStoredKeyNewAccountAtPathParam {
     bytes StoredKeyData = 1;
     Coin coin = 2;
     string derivationPath = 3;
     string password = 4;
 }
 
-message CreateStoredKeyNewAccountResp {
+message CreateStoredKeyNewAccountAtPathResp {
     StoredKeyAccountInfo account = 1;
     StoredKeyInfo storedKey = 2;
 }
