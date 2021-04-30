@@ -16,6 +16,7 @@ wasm-pack build --target web \
 popd
 
 pushd package
+find . -name '*.proto' -exec sed -i '/package api;/d' {} \;
 VERSION=$(npx pkg-jq -r '.version' node)
 npx pkg-jq -i ".version = \"""$VERSION"-"$BUILD_VERSION""\""
 npm ci
