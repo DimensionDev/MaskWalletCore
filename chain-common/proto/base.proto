@@ -9,7 +9,7 @@ enum Coin {
 
 enum StoredKeyType {
     PrivateKey = 0;
-    Hd = 1;
+    Mnemonic = 1;
 }
 
 message StoredKeyInfo {

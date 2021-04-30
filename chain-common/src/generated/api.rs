@@ -32,7 +32,7 @@ pub enum Coin {
 #[repr(i32)]
 pub enum StoredKeyType {
     PrivateKey = 0,
-    Hd = 1,
+    Mnemonic = 1,
 }
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]

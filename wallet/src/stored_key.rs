@@ -17,7 +17,7 @@ use crypto::Error as CryptoError;
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
-    PrivateKey = 1,
+    PrivateKey = 0,
     Mnemonic,
 }
 
@@ -325,7 +325,12 @@ impl StoredKey {
     }
 
     pub fn remove_accounts_of_coin(&mut self, coin: &Coin) {
-        self.accounts.retain(|account| account.coin != *coin);
+        // self.accounts
+        //     .iter()
+        //     .filter(|account| account.coin == *coin)
+        self
+            .accounts
+            .retain(|account| account.coin != *coin);
     }
 
     pub fn remove_account_of_address(&mut self, address: &str, coin: &Coin) {
@@ -406,7 +411,7 @@ impl From<StoredKeyType> for ProtoStoreKeyType {
     fn from(stored_key_type: StoredKeyType) -> Self {
         match stored_key_type {
             StoredKeyType::PrivateKey => ProtoStoreKeyType::PrivateKey,
-            StoredKeyType::Mnemonic => ProtoStoreKeyType::Hd,
+            StoredKeyType::Mnemonic => ProtoStoreKeyType::Mnemonic,
         }
     }
 }
