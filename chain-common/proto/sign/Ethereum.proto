@@ -1,27 +1,21 @@
 syntax = "proto3";
+
 package Ethereum;
 
 // Input data necessary to create a signed transaction.
 message SignInput {
-
     uint64 chain_id = 1;
-
     // hex encoded nonce number
     string nonce = 2;
-
     // hex encoded nonce number
     string gas_price = 3;
-
     // hex encoded nonce number
     string gas_limit = 4;
-
     // hex encoded nonce number
     string amount = 5;
-
     // Recipient's address.
     string to_address = 6;
-
-    // hex encoded payload data
+    // hex encoded nonce number
     string payload = 7;
 }
 
@@ -29,11 +23,9 @@ message SignInput {
 message SignOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
-
     uint32 v = 2;
     bytes r = 3;
     bytes s = 4;
-
     // The payload part, supplied in the input or assembled from input parameters
     bytes data = 5;
 }

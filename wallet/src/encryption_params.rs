@@ -1,16 +1,15 @@
-
-use std::str::FromStr;
-use serde::{ Serialize, Deserialize };
-use uuid::Uuid;
 use crate::Error;
-use crypto::Error as CryptoError;
-use crypto::key_store_json::{ KeyStoreJson, Crypto };
-use crypto::aes_params::AesParams;
-use crypto::aes::AesType;
-use crypto::kdf_params::{ KdfParams, KdfParamsType };
-use crypto::scrypt_params::ScryptParams;
 use crypto::aes;
+use crypto::aes::AesType;
+use crypto::aes_params::AesParams;
 use crypto::hash;
+use crypto::kdf_params::{KdfParams, KdfParamsType};
+use crypto::key_store_json::{Crypto, KeyStoreJson};
+use crypto::scrypt_params::ScryptParams;
+use crypto::Error as CryptoError;
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
 pub struct EncryptionParams {
@@ -18,11 +17,10 @@ pub struct EncryptionParams {
     cipher: AesType,
     pub cipher_params: AesParams,
     mac: Vec<u8>,
-    kdf_params: KdfParams
+    kdf_params: KdfParams,
 }
 
 impl EncryptionParams {
-
     pub fn new(password: &[u8], data: &[u8]) -> Result<EncryptionParams, Error> {
         let kdf_params = KdfParams::ScryptParam(ScryptParams::default());
         let derived_key = kdf_params.generate_derived_key(password)?;
@@ -40,7 +38,10 @@ impl EncryptionParams {
         })
     }
 
-    pub fn new_from_json_struct(json_struct: &KeyStoreJson, password: &[u8]) -> Result<(EncryptionParams, Vec<u8>), Error> {
+    pub fn new_from_json_struct(
+        json_struct: &KeyStoreJson,
+        password: &[u8],
+    ) -> Result<(EncryptionParams, Vec<u8>), Error> {
         let cipher = AesType::from_str(&json_struct.crypto.cipher)?;
         let unverified_encryption_param = Self {
             encrypted: json_struct.crypto.ciphertext.as_bytes().to_vec(),
@@ -61,26 +62,33 @@ impl EncryptionParams {
         }
         let iv = hex::decode(&self.cipher_params.iv).expect("fail to decode iv");
         match self.cipher {
-            AesType::Ctr(bits) => {
-                Ok(aes::ctr::decrypt(&self.encrypted, &derived_key[0..16], &iv, bits)?)
-            },
-            AesType::Cbc(_) => {
-                Err(Error::CryptoError(CryptoError::NotSupportedCipher))
-            }
+            AesType::Ctr(bits) => Ok(aes::ctr::decrypt(
+                &self.encrypted,
+                &derived_key[0..16],
+                &iv,
+                bits,
+            )?),
+            AesType::Cbc(_) => Err(Error::CryptoError(CryptoError::NotSupportedCipher)),
         }
     }
 
-    pub fn export_to_key_store_json(&self, password: &str, new_password: &str) -> Result<String, Error> {
+    pub fn export_to_key_store_json(
+        &self,
+        password: &str,
+        new_password: &str,
+    ) -> Result<String, Error> {
         // 1. Check the password by using the decrypt method
         let decrypted = self.decrypt(&password.as_bytes())?;
 
         // 2. Generate a temp new EncryptionParam using the new_password
         let new_encryption_param = Self::new(&new_password.as_bytes(), &decrypted)?;
-        
-        let new_encrypted_text = std::str::from_utf8(&new_encryption_param.encrypted).map_err(|_| CryptoError::PasswordIncorrect )?;
-        let new_mac = std::str::from_utf8(&new_encryption_param.mac).map_err(|_| CryptoError::PasswordIncorrect )?;
+
+        let new_encrypted_text = std::str::from_utf8(&new_encryption_param.encrypted)
+            .map_err(|_| CryptoError::PasswordIncorrect)?;
+        let new_mac = std::str::from_utf8(&new_encryption_param.mac)
+            .map_err(|_| CryptoError::PasswordIncorrect)?;
         let kdf = match new_encryption_param.kdf_params {
-            KdfParams::ScryptParam(_) => "scrypt".to_owned()
+            KdfParams::ScryptParam(_) => "scrypt".to_owned(),
         };
         let crypto = Crypto {
             cipher: new_encryption_param.cipher.to_string(),
@@ -88,14 +96,15 @@ impl EncryptionParams {
             ciphertext: new_encrypted_text.to_owned(),
             kdf,
             kdfparams: new_encryption_param.kdf_params,
-            mac: new_mac.to_owned()
+            mac: new_mac.to_owned(),
         };
         let key_store_json = KeyStoreJson {
             crypto,
             version: 3,
-            id: Uuid::new_v4().to_string()
+            id: Uuid::new_v4().to_string(),
         };
-        let json_str = serde_json::to_string_pretty(&key_store_json).map_err(|_| Error::JsonSerializationError )?;
+        let json_str = serde_json::to_string_pretty(&key_store_json)
+            .map_err(|_| Error::JsonSerializationError)?;
         Ok(json_str)
     }
 }

@@ -1,12 +1,11 @@
 mod generated;
-pub use generated::api as api;
-pub use generated::param as param;
-pub use generated::ethereum as ethereum;
+pub use generated::api;
+pub use generated::ethereum;
 
+pub mod coin;
 pub mod entry;
 pub mod private_key;
 pub mod public_key;
-pub mod coin;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {

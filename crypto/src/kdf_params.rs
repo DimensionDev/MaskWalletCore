@@ -1,6 +1,6 @@
-use serde::{ Serialize, Deserialize };
 use super::scrypt_params::ScryptParams;
 use crate::Error;
+use serde::{Deserialize, Serialize};
 
 pub trait KdfParamsType {
     fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error>;
@@ -15,7 +15,7 @@ pub enum KdfParams {
 impl KdfParamsType for KdfParams {
     fn generate_derived_key(&self, password: &[u8]) -> Result<Vec<u8>, Error> {
         match self {
-            Self::ScryptParam(algo) => algo.generate_derived_key(password)
+            Self::ScryptParam(algo) => algo.generate_derived_key(password),
         }
     }
 }

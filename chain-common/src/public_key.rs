@@ -1,5 +1,5 @@
-use crypto::public_key::PublicKeyType;
 use crypto::hash::Hashable;
+use crypto::public_key::PublicKeyType;
 use crypto::Error as CryptoError;
 
 const SECP256K1_SIZE: usize = 33;
@@ -12,7 +12,6 @@ pub struct PublicKey {
 }
 
 impl PublicKey {
-
     pub fn is_valid_data(data: &[u8], r#type: &PublicKeyType) -> bool {
         if data.is_empty() {
             return false;
@@ -21,10 +20,8 @@ impl PublicKey {
         match r#type {
             PublicKeyType::Secp256k1 => {
                 size == SECP256K1_SIZE && (data[0] == 0x02 || data[0] == 0x03)
-            },
-            PublicKeyType::Secp256k1Extended => {
-                size == SECP256K1EXTENDED_SIZE && data[0] == 0x04
             }
+            PublicKeyType::Secp256k1Extended => size == SECP256K1EXTENDED_SIZE && data[0] == 0x04,
         }
     }
 
@@ -34,11 +31,16 @@ impl PublicKey {
         }
         Ok(PublicKey {
             r#type,
-            data: data.to_vec()
+            data: data.to_vec(),
         })
     }
 
-    pub fn hash<T: Hashable>(&self, prefix: &[u8], hasher: T, skip_type_byte: bool) -> Result<Vec<u8>, CryptoError> {
+    pub fn hash<T: Hashable>(
+        &self,
+        prefix: &[u8],
+        hasher: T,
+        skip_type_byte: bool,
+    ) -> Result<Vec<u8>, CryptoError> {
         let offset: usize = match skip_type_byte {
             true => 1,
             false => 0,

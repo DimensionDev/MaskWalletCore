@@ -18,7 +18,7 @@ pub struct SignInput {
     /// Recipient's address.
     #[prost(string, tag="6")]
     pub to_address: ::prost::alloc::string::String,
-    /// hex encoded payload data
+    /// hex encoded nonce number
     #[prost(string, tag="7")]
     pub payload: ::prost::alloc::string::String,
 }

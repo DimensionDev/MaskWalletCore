@@ -1,9 +1,9 @@
+use super::public_key::PublicKey;
+use crypto::curve::Curve;
+use crypto::public_key::PublicKeyType;
+use crypto::Error as CryptoError;
 use std::str::FromStr;
 use std::string::ToString;
-use crypto::curve::Curve;
-use crypto::Error as CryptoError;
-use crypto::public_key::PublicKeyType;
-use super::public_key::PublicKey;
 
 // The number of bytes in a private key.
 const VALID_SIZE: u8 = 32;
@@ -11,7 +11,7 @@ const VALID_SIZE: u8 = 32;
 const VALID_EXTENDED_SIZE: u8 = 3 * VALID_SIZE;
 
 pub enum PrivateKeyType {
-    PrivateKeyTypeDefault32 = 0, // 32-byte private key
+    PrivateKeyTypeDefault32 = 0,  // 32-byte private key
     PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
     PrivateKeyTypeHd = 2,         // 32-byte private key
 }
@@ -27,14 +27,14 @@ impl PrivateKey {
         match curve {
             Curve::Ed25519Extended => PrivateKeyType::PrivateKeyTypeExtended96,
             Curve::Ed25519hd => PrivateKeyType::PrivateKeyTypeHd,
-            _ => PrivateKeyType::PrivateKeyTypeDefault32
+            _ => PrivateKeyType::PrivateKeyTypeDefault32,
         }
     }
 
     fn is_valid_data(data: &[u8]) -> bool {
         // Check length.  Extended key needs 3*32 bytes.
         if data.len() as u8 != VALID_SIZE && data.len() as u8 != VALID_EXTENDED_SIZE {
-            return false
+            return false;
         }
         // Check whether data is not all zero
         return data.iter().any(|&x| x != 0);
@@ -44,11 +44,16 @@ impl PrivateKey {
         if !Self::is_valid_data(data) {
             return Err(CryptoError::InvalidPrivateKey);
         }
-        Curve::from_str(curve).map_err(|_| CryptoError::NotSupportedCurve).map(|_| {})
+        Curve::from_str(curve)
+            .map_err(|_| CryptoError::NotSupportedCurve)
+            .map(|_| {})
     }
 
     fn new_extended(data: &[u8], ext: &[u8], chain_code: &[u8]) -> Result<PrivateKey, CryptoError> {
-        if !Self::is_valid_data(data) || !Self::is_valid_data(ext) || !Self::is_valid_data(chain_code) {
+        if !Self::is_valid_data(data)
+            || !Self::is_valid_data(ext)
+            || !Self::is_valid_data(chain_code)
+        {
             return Err(CryptoError::InvalidPrivateKey);
         }
         Ok(PrivateKey {
@@ -74,8 +79,14 @@ impl PrivateKey {
     }
 
     pub fn get_public_key(&self, public_key_type_str: &str) -> Result<PublicKey, CryptoError> {
-        let public_key_type = PublicKeyType::from_str(public_key_type_str).map_err(|_| CryptoError::NotSupportedPublicKeyType)?;
-        let pub_key_data = crypto::public_key::get_public_key(public_key_type_str, &self.data, &self.extends_data, &self.chain_code_bytes)?;
+        let public_key_type = PublicKeyType::from_str(public_key_type_str)
+            .map_err(|_| CryptoError::NotSupportedPublicKeyType)?;
+        let pub_key_data = crypto::public_key::get_public_key(
+            public_key_type_str,
+            &self.data,
+            &self.extends_data,
+            &self.chain_code_bytes,
+        )?;
         PublicKey::new(public_key_type, &pub_key_data)
     }
 }
@@ -83,7 +94,7 @@ impl PrivateKey {
 impl FromStr for PrivateKey {
     type Err = CryptoError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let bytes = hex::decode(s.as_bytes()).map_err(|_| CryptoError::InvalidPrivateKey )?;
+        let bytes = hex::decode(s.as_bytes()).map_err(|_| CryptoError::InvalidPrivateKey)?;
         Self::new(&bytes)
     }
 }
@@ -96,9 +107,9 @@ impl ToString for PrivateKey {
 
 #[cfg(test)]
 mod tests {
-    use hex;
     use crate::private_key::PrivateKey;
-    
+    use hex;
+
     #[test]
     fn test_get_public_key_secp256k1extended() {
         let priv_key_str = "18dd1dcd752466afa3d1fac1424333c6461c3a0f1d6702e9c45bc9254ec74e5f";

@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+// Export the private key of StoredKey
+message ExportKeyStorePrivateKeyParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+}
+
+// Export the private key of StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStorePrivateKeyOfPathParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+}
+
+message ExportKeyStorePrivateKeyResp {
+    string privateKey = 1;
+}
+
+// Export the mnemonic of the StoredKey. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStoreMnemonicParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+}
+
+message ExportKeyStoreMnemonicResp {
+    string mnemonic = 1;
+}
+
+// Export the V3 KeyStoreJSON string of the StoredKey
+message ExportKeyStoreJSONParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    string newPassword = 3;
+    Coin coin = 4;
+}
+
+// Export the V3 KeyStoreJSON string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message ExportKeyStoreJSONOfPathParam {
+    bytes StoredKeyData = 1;
+    string password = 2;
+    string newPassword = 3;
+    Coin coin = 4;
+    string derivationPath = 5;
+}
+
+message ExportKeyStoreJSONResp {
+    string json = 1;
+}

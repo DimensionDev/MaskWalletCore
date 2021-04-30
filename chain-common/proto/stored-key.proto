@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+// Get information from StoredKey raw data
+message LoadStoredKeyParam {
+    repeated bytes data = 1;
+}
+
+message LoadStoredKeyResp {
+    repeated StoredKeyInfo StoredKeys = 1;
+}
+
+// Create a new StoredKey with random generated mnemonic
+message CreateStoredKeyParam {
+    string name = 1;
+    string password = 2;
+}
+
+message CreateStoredKeyResp {
+    StoredKeyInfo StoredKey = 1;
+}
+
+// Create a StoredKey with private key 
+message ImportPrivateStoredKeyParam {
+    string privateKey = 1; // Hex encoded private key string
+    string password = 2;
+    string name = 3;
+    Coin coin = 4;
+}
+
+message ImportPrivateStoredKeyResp {
+    StoredKeyInfo StoredKey = 1;
+}
+
+// Create a new StoredKey with given mnemonic
+message ImportMnemonicStoredKeyParam {
+    string mnemonic = 1;
+    string name = 2;
+    string password = 3;
+    Coin coin = 4;
+}
+
+message ImportMnemonicStoredKeyResp {
+    StoredKeyInfo StoredKey = 1;
+}
+
+// Create a new StoredKey with JSON
+message ImportJSONStoredKeyParam {
+    string json = 1;
+    string name = 2;
+    string password = 3;
+    Coin coin = 4;
+}
+
+message ImportJSONStoredKeyResp {
+    StoredKeyInfo StoredKey = 1;
+}

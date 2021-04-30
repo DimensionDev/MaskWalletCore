@@ -7,7 +7,7 @@ pub trait Hashable {
 pub struct Hasher;
 
 impl Hasher {
-    pub fn hash<T: Hashable>(h: T, input: &[u8])  -> Result<Vec<u8>, Error> {
+    pub fn hash<T: Hashable>(h: T, input: &[u8]) -> Result<Vec<u8>, Error> {
         h.hash(&input)
     }
 }
@@ -15,7 +15,7 @@ impl Hasher {
 pub struct Keccak256;
 impl Hashable for Keccak256 {
     fn hash(&self, input: &[u8]) -> Result<Vec<u8>, Error> {
-        use tiny_keccak::{ Hasher as KeccakHasher, Keccak };
+        use tiny_keccak::{Hasher as KeccakHasher, Keccak};
         let mut hasher = Keccak::v256();
         hasher.update(&input);
         let mut output = [0u8; 32];
@@ -25,7 +25,7 @@ impl Hashable for Keccak256 {
 }
 
 pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
-    use tiny_keccak::{ Hasher as KeccakHasher, Keccak };
+    use tiny_keccak::{Hasher as KeccakHasher, Keccak};
     let result = [&derived_key, encrypted_text].concat();
     let mut hasher = Keccak::v256();
     hasher.update(&result);
@@ -37,7 +37,7 @@ pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use tiny_keccak::{Hasher, Keccak};
-    
+
     #[test]
     fn empty_keccak() {
         let keccak = Keccak::v256();
@@ -72,7 +72,8 @@ mod tests {
     fn test_compute_mac() {
         let input1 = "hello world";
         let input2 = "!";
-        let expected_mac = "57caa176af1ac0433c5df30e8dabcd2ec1af1e92a26eced5f719b88458777cd6".to_owned();
+        let expected_mac =
+            "57caa176af1ac0433c5df30e8dabcd2ec1af1e92a26eced5f719b88458777cd6".to_owned();
         let mac = compute_mac(input1.as_bytes(), input2.as_bytes());
         let hex_mac = hex::encode(mac);
         assert_eq!(hex_mac, expected_mac);

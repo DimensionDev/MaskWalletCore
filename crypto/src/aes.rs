@@ -1,7 +1,7 @@
+use crate::Error;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::string::ToString;
-use serde::{ Serialize, Deserialize };
-use crate::Error;
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum AesType {
@@ -33,19 +33,17 @@ impl ToString for AesType {
             Self::Cbc(128) => "aes-128-cbc".to_owned(),
             Self::Cbc(192) => "aes-192-cbc".to_owned(),
             Self::Cbc(256) => "aes-256-cbc".to_owned(),
-            _ => "Unknown".to_owned()
+            _ => "Unknown".to_owned(),
         }
     }
 }
 
 pub mod ctr {
-    use aes_ctr::{ Aes128Ctr, Aes192Ctr, Aes256Ctr };
     use aes_ctr::cipher::{
         generic_array::GenericArray,
-        stream::{
-            NewStreamCipher, SyncStreamCipher
-        }
+        stream::{NewStreamCipher, SyncStreamCipher},
     };
+    use aes_ctr::{Aes128Ctr, Aes192Ctr, Aes256Ctr};
 
     use crate::Error;
 
@@ -68,21 +66,21 @@ pub mod ctr {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes128Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes192Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes256Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             _ => return Err(Error::NotSupportedCipher),
         };
         // let mut cipher = Aes128Ctr::new(&key, &iv);
-        
+
         // cipher.apply_keystream(&mut data_copy);
         Ok(data_copy)
     }
@@ -103,21 +101,21 @@ pub mod ctr {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes128Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes192Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
                 Aes256Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
-            },
+            }
             _ => return Err(Error::NotSupportedCipher),
         };
         // let mut cipher = Aes128Ctr::new(key, iv);
-        
+
         // cipher.apply_keystream(&mut data_copy);
         Ok(data_copy)
     }
@@ -126,7 +124,7 @@ pub mod ctr {
 #[cfg(test)]
 mod tests {
 
-    use hex::{ ToHex };
+    use hex::ToHex;
 
     #[test]
     fn ctr_encrypt_test() {
