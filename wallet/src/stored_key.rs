@@ -17,7 +17,7 @@ use crypto::Error as CryptoError;
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
-    PrivateKey = 1,
+    PrivateKey = 0,
     Mnemonic,
 }
 
@@ -406,7 +406,7 @@ impl From<StoredKeyType> for ProtoStoreKeyType {
     fn from(stored_key_type: StoredKeyType) -> Self {
         match stored_key_type {
             StoredKeyType::PrivateKey => ProtoStoreKeyType::PrivateKey,
-            StoredKeyType::Mnemonic => ProtoStoreKeyType::Hd,
+            StoredKeyType::Mnemonic => ProtoStoreKeyType::Mnemonic,
         }
     }
 }
