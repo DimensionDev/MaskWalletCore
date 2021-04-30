@@ -72,8 +72,8 @@ fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) -> MwR
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -102,8 +102,8 @@ fn create_stored_key_with_mnemonic(param: ImportMnemonicStoredKeyParam) -> MwRes
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -133,8 +133,8 @@ fn create_with_json(param: ImportJsonStoredKeyParam) -> MwResponse {
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -221,8 +221,8 @@ fn get_stored_key_accounts_of_coin(param: GetStoredKeyAccountsOfCoinParam) -> Mw
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -256,8 +256,8 @@ fn create_stored_key_account_of_coin_at_path(param: CreateStoredKeyNewAccountPar
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -295,8 +295,8 @@ fn remove_stored_key_account_of_coin(param: RemoveStoredKeyAccountOfCoinParam) -
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -324,8 +324,8 @@ fn remove_account_of_address(param: RemoveStoredKeyAccountOfAddressParam) -> MwR
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -353,8 +353,8 @@ fn export_private_key(param: ExportKeyStorePrivateKeyParam) -> MwResponse {
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -385,8 +385,8 @@ fn export_private_key_of_path(param: ExportKeyStorePrivateKeyOfPathParam) -> MwR
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -461,8 +461,8 @@ fn export_key_store_json_of_path(param: ExportKeyStoreJsonOfPathParam) -> MwResp
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -498,8 +498,8 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid Coin Type".to_owned(),
                 })),
             };
         }
@@ -515,8 +515,8 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
         None => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid sign input".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid sign input".to_owned(),
                 })),
             };
         }
@@ -527,8 +527,8 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
         Err(_) => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid sign input".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid sign input".to_owned(),
                 })),
             };
         }
@@ -549,8 +549,8 @@ fn sign_transaction(param: SignTransactionParam) -> MwResponse {
         Err(_) => {
             return MwResponse {
                 response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid sign output".to_owned(),
+                    code: "-1".to_owned(),
+                    message: "Invalid sign output".to_owned(),
                 })),
             };
         }

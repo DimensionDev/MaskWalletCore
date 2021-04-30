@@ -4,8 +4,8 @@ use wallet::Error;
 
 pub fn get_json_response_error() -> Option<Response> {
     Some(Response::Error(MwResponseError {
-        error_code: "-1".to_owned(),
-        error_msg: "Invalid Data".to_owned(),
+        code: "-1".to_owned(),
+        message: "Invalid Data".to_owned(),
     }))
 }
 
@@ -18,16 +18,16 @@ pub fn get_json_error_response() -> MwResponse {
 pub fn get_invalid_proto_resposne() -> MwResponse {
     MwResponse {
         response: Some(Response::Error(MwResponseError {
-            error_code: "-1".to_owned(),
-            error_msg: "Invalid Input".to_owned(),
+            code: "-1".to_owned(),
+            message: "Invalid Input".to_owned(),
         })),
     }
 }
 
 fn get_error_response(_error: Error) -> Response {
     Response::Error(MwResponseError {
-        error_code: "-1".to_owned(),          // TODO: error to error code
-        error_msg: "Invalid Data".to_owned(), // TODO: error to error message
+        code: "-1".to_owned(),              // TODO: error to error code
+        message: "Invalid Data".to_owned(), // TODO: error to error message
     })
 }
 

@@ -432,7 +432,7 @@ pub mod mw_response {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponseError {
     #[prost(string, tag="1")]
-    pub error_code: ::prost::alloc::string::String,
+    pub code: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
-    pub error_msg: ::prost::alloc::string::String,
+    pub message: ::prost::alloc::string::String,
 }

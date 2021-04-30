@@ -46,8 +46,8 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
     } else {
         response = MwResponse {
             response: Some(Response::Error(MwResponseError {
-                error_code: "-1".to_owned(),
-                error_msg: "Empty Request".to_owned(),
+                code: "-1".to_owned(),
+                message: "Empty Request".to_owned(),
             })),
         };
     }
