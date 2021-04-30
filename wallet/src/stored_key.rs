@@ -297,45 +297,19 @@ impl StoredKey {
         Ok(self.accounts.last())
     }
 
-    // pub fn add_new_account_of_coin_and_derivation_path_by_password(
-    //     &mut self,
-    //     coin: Coin,
-    //     derivation_path: &str,
-    //     password: &str,
-    // ) -> Result<Account, Error> {
-    //     let derivation_path_struct = DerivationPath::new(&derivation_path)?;
-    //     if let Some(account) = self.accounts.iter().find(|account| {
-    //         account.coin == coin && account.derivation_path == derivation_path_struct
-    //     }) {
-    //         Ok(account.clone())
-    //     } else {
-    //         let wallet = self.get_wallet(&password)?;
-    //         let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
-    //         let extended_public_key =
-    //             wallet.get_extended_public_key_of_path(&coin, &derivation_path);
-    //         let account = Account {
-    //             address,
-    //             coin: coin.clone(),
-    //             derivation_path: derivation_path_struct,
-    //             extended_public_key,
-    //         };
-    //         self.accounts.push(account);
-    //         Ok(self.accounts.last().unwrap().clone())
-    //     }
-    // }
-
-    pub fn add_new_account_of_coin_and_derivation_path(
+    pub fn add_new_account_of_coin_and_derivation_path_by_password(
         &mut self,
         coin: Coin,
         derivation_path: &str,
-        wallet: &HdWallet,
+        password: &str,
     ) -> Result<Account, Error> {
-        let derivation_path_struct = DerivationPath::new(&coin.derivation_path)?;
+        let derivation_path_struct = DerivationPath::new(&derivation_path)?;
         if let Some(account) = self.accounts.iter().find(|account| {
             account.coin == coin && account.derivation_path == derivation_path_struct
         }) {
             Ok(account.clone())
         } else {
+            let wallet = self.get_wallet(&password)?;
             let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
             let extended_public_key =
                 wallet.get_extended_public_key_of_path(&coin, &derivation_path);

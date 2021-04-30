@@ -106,22 +106,20 @@ pub struct GetStoredKeyAccountsOfCoinResp {
     #[prost(message, repeated, tag="2")]
     pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
 }
-/// Add a new account of specific coin type into a StoredKey
+/// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddStoredKeyAccountOfCoinParam {
+pub struct CreateStoredKeyNewAccountAtPathParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag="2")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="3")]
+    #[prost(enumeration="Coin", tag="2")]
     pub coin: i32,
-    #[prost(string, tag="4")]
+    #[prost(string, tag="3")]
     pub derivation_path: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
-    pub extetnded_public_key: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub password: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AddStoredKeyAccountOfCoinResp {
+pub struct CreateStoredKeyNewAccountAtPathResp {
     #[prost(message, optional, tag="1")]
     pub account: ::core::option::Option<StoredKeyAccountInfo>,
     #[prost(message, optional, tag="2")]
@@ -365,7 +363,7 @@ pub mod mw_request {
         #[prost(message, tag="9")]
         ParamGetStoredKeyAccountsOfCoin(super::GetStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="10")]
-        ParamCreateAcccountOfCoinAtPath(super::CreateStoredKeyNewAccountParam),
+        ParamCreateAcccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathParam),
         #[prost(message, tag="11")]
         ParamRemoveAccountsOfCoin(super::RemoveStoredKeyAccountOfCoinParam),
         #[prost(message, tag="12")]
@@ -414,11 +412,7 @@ pub mod mw_response {
         #[prost(message, tag="10")]
         RespGetStoredKeyAccountsOfCoin(super::GetStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="11")]
-<<<<<<< HEAD
-        RespCreateAccountOfCoinAtPath(super::super::param::CreateStoredKeyNewAccountAtPathResp),
-=======
-        RespCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountResp),
->>>>>>> f983a3ccb8f8f8827edf1ac59dbeb39c310f6fbd
+        RespCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathResp),
         #[prost(message, tag="12")]
         RespRemoveAccountOfCoin(super::RemoveStoredKeyAccountOfCoinResp),
         #[prost(message, tag="13")]

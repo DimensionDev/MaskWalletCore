@@ -18,7 +18,7 @@ message MWRequest {
         GetStoredKeyAccountParam param_get_stored_key_account = 7;
         GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
         GetStoredKeyAccountsOfCoinParam param_get_stored_key_accounts_of_coin = 9;
-        CreateStoredKeyNewAccountParam param_create_acccount_of_coin_at_path = 10;
+        CreateStoredKeyNewAccountAtPathParam param_create_acccount_of_coin_at_path = 10;
         RemoveStoredKeyAccountOfCoinParam param_remove_accounts_of_coin = 11;
         RemoveStoredKeyAccountOfAddressParam param_remove_account_of_address = 12;
         ExportKeyStorePrivateKeyParam param_export_private_key = 13;
@@ -42,7 +42,7 @@ message MWResponse {
         GetStoredKeyAccountResp resp_get_stored_key_account = 8;
         GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
         GetStoredKeyAccountsOfCoinResp resp_get_stored_key_accounts_of_coin = 10;
-        CreateStoredKeyNewAccountResp resp_create_account_of_coin_at_path = 11;
+        CreateStoredKeyNewAccountAtPathResp resp_create_account_of_coin_at_path = 11;
         RemoveStoredKeyAccountOfCoinResp resp_remove_account_of_coin = 12;
         RemoveStoredKeyAccountOfAddressResp resp_remove_account_of_address = 13;
         ExportKeyStorePrivateKeyResp resp_export_private_key = 14;

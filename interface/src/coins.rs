@@ -15,7 +15,7 @@ lazy_static! {
 
         coins.into_iter().for_each(|mut coin| {
             coin.all_info = coins_info_hashmaps.remove(0);
-            coins_map.insert(coin.name.to_lowercase().to_owned(), coin);
+            coins_map.insert(coin.name.to_lowercase(), coin);
         });
         coins_map
     };

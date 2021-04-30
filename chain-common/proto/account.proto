@@ -56,16 +56,15 @@ message GetStoredKeyAccountsOfCoinResp {
     repeated StoredKeyAccountInfo accounts = 2;
 }
 
-// Add a new account of specific coin type into a StoredKey
-message AddStoredKeyAccountOfCoinParam {
-    bytes storedKeyData = 1;
-    string address = 2;
-    Coin coin = 3;
-    string derivationPath = 4;
-    string extetndedPublicKey = 5;
+// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
+message CreateStoredKeyNewAccountAtPathParam {
+    bytes StoredKeyData = 1;
+    Coin coin = 2;
+    string derivationPath = 3;
+    string password = 4;
 }
 
-message AddStoredKeyAccountOfCoinResp {
+message CreateStoredKeyNewAccountAtPathResp {
     StoredKeyAccountInfo account = 1;
     StoredKeyInfo storedKey = 2;
 }
