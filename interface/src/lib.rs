@@ -53,11 +53,3 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
     }
     encode_message(&response).expect("invalid request")
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_import_private_key() {
-        assert_eq!(2 + 2, 4);
-    }
-}
