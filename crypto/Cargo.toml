@@ -9,8 +9,7 @@ edition = "2018"
 [dependencies]
 rand = "0.8.3"
 hex = "0.4.3"
-aes = "0.6.0"
-aes-ctr = "0.6.0"
+aes = { version = "0.7.0", features = ["ctr"] }
 bitcoin = { version = "0.26.0" }
 bip39 = { version = "1.0.1", features = ["all-languages", "rand"] }
 tiny-keccak = { version = "2.0", features = ["keccak"] }

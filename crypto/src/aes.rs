@@ -39,11 +39,9 @@ impl ToString for AesType {
 }
 
 pub mod ctr {
-    use aes_ctr::cipher::{
-        generic_array::GenericArray,
-        stream::{NewStreamCipher, SyncStreamCipher},
-    };
-    use aes_ctr::{Aes128Ctr, Aes192Ctr, Aes256Ctr};
+    use aes::cipher::generic_array::GenericArray;
+    use aes::cipher::{NewCipher, StreamCipher};
+    use aes::{Aes128Ctr, Aes192Ctr, Aes256Ctr};
 
     use crate::Error;
 
@@ -56,8 +54,6 @@ pub mod ctr {
         if ![128, 192, 256].contains(&bits) {
             return Err(Error::NotSupportedCipher);
         }
-        // let key = GenericArray::from_slice(key);
-        // let iv = GenericArray::from_slice(iv);
         let mut data_copy = vec![0; data.len()];
         data_copy.copy_from_slice(data);
 
@@ -79,9 +75,6 @@ pub mod ctr {
             }
             _ => return Err(Error::NotSupportedCipher),
         };
-        // let mut cipher = Aes128Ctr::new(&key, &iv);
-
-        // cipher.apply_keystream(&mut data_copy);
         Ok(data_copy)
     }
 
@@ -92,8 +85,6 @@ pub mod ctr {
         if ![128, 192, 256].contains(&bits) {
             return Err(Error::NotSupportedCipher);
         }
-        // let key = GenericArray::from_slice(key);
-        // let iv = GenericArray::from_slice(iv);
         let mut data_copy = vec![0; data.len()];
         data_copy.copy_from_slice(data);
         match bits {
@@ -114,9 +105,6 @@ pub mod ctr {
             }
             _ => return Err(Error::NotSupportedCipher),
         };
-        // let mut cipher = Aes128Ctr::new(key, iv);
-
-        // cipher.apply_keystream(&mut data_copy);
         Ok(data_copy)
     }
 }
