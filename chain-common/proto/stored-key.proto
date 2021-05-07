@@ -58,3 +58,24 @@ message ImportJSONStoredKeyParam {
 message ImportJSONStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
+
+// Update the password of an exisiting StoredKey
+message UpdateStoredKeyPasswordParam {
+    bytes StoredKeyData = 1;
+    string oldPassword = 2;
+    string newPassword = 3;
+}
+
+message UpdateStoredKeyPasswordResp {
+    StoredKeyInfo StoredKey = 1;
+}
+
+// Update the password of an exisiting StoredKey
+message UpdateStoredKeyNameParam {
+    bytes StoredKeyData = 1;
+    string newName = 2;
+}
+
+message UpdateStoredKeyNameResp {
+    StoredKeyInfo StoredKey = 1;
+}

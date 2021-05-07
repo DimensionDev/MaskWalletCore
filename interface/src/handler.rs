@@ -30,6 +30,8 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamExportMnemonic(param) => export_mnemonic(param),
         ParamExportKeyStoreJson(param) => export_key_store_json(param),
         ParamExportKeyStoreJsonOfPath(param) => export_key_store_json_of_path(param),
+        ParamUpdateKeyStorePassword(param) => update_key_store_password(param),
+        ParamUpdateKeyStoreName(param) => update_key_store_name(param),
         ParamSignTransaction(param) => sign_transaction(param),
     }
 }
@@ -489,6 +491,40 @@ fn export_key_store_json_of_path(param: ExportKeyStoreJsonOfPathParam) -> MwResp
     MwResponse {
         response: Some(Response::RespExportKeyStoreJson(ExportKeyStoreJsonResp {
             json,
+        })),
+    }
+}
+
+fn update_key_store_password(param: UpdateStoredKeyPasswordParam) -> MwResponse {
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    match stored_key.update_password(&param.old_password, &param.new_password) {
+        Ok(_) => MwResponse {
+            response: Some(Response::RespUpdateKeyStorePassword(
+                UpdateStoredKeyPasswordResp {
+                    stored_key: Some(StoredKeyInfo::from(stored_key)),
+                },
+            )),
+        },
+        Err(error) => get_error_response_by_error(error),
+    }
+}
+
+fn update_key_store_name(param: UpdateStoredKeyNameParam) -> MwResponse {
+    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+        Ok(key) => key,
+        Err(_) => {
+            return get_json_error_response();
+        }
+    };
+    stored_key.update_name(&param.new_name);
+    MwResponse {
+        response: Some(Response::RespUpdateKeyStoreName(UpdateStoredKeyNameResp {
+            stored_key: Some(StoredKeyInfo::from(stored_key)),
         })),
     }
 }

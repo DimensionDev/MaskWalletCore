@@ -1,5 +1,4 @@
 # https://github.com/rust-lang/rustfmt/blob/master/Configurations.md
-unstable_features = true
 ignore = [
     "chain-common/src/generated",
 ]

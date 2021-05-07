@@ -26,7 +26,9 @@ message MWRequest {
         ExportKeyStoreMnemonicParam param_export_mnemonic = 15;
         ExportKeyStoreJSONParam param_export_key_store_json = 16;
         ExportKeyStoreJSONOfPathParam param_export_key_store_json_of_path = 17;
-        SignTransactionParam param_sign_transaction = 18;
+        UpdateStoredKeyPasswordParam param_update_key_store_password = 18;
+        UpdateStoredKeyNameParam param_update_key_store_name = 19;
+        SignTransactionParam param_sign_transaction = 20;
     }
 }
 
@@ -48,7 +50,9 @@ message MWResponse {
         ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
         ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
         ExportKeyStoreJSONResp resp_export_key_store_json = 16;
-        SignTransactionResp resp_sign_transaction = 17;
+        UpdateStoredKeyPasswordResp resp_update_key_store_password = 17;
+        UpdateStoredKeyNameResp resp_update_key_store_name = 18;
+        SignTransactionResp resp_sign_transaction = 19;
     }
 }
 

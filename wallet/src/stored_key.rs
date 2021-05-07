@@ -164,7 +164,20 @@ impl StoredKey {
     }
 }
 
-// Export function
+// Update methods
+impl StoredKey {
+    pub fn update_password(&mut self, old_password: &str, new_password: &str) -> Result<(), Error> {
+        let decrypted = self.payload.decrypt(&old_password.as_bytes())?;
+        self.payload = EncryptionParams::new(new_password.as_bytes(), &decrypted)?;
+        Ok(())
+    }
+
+    pub fn update_name(&mut self, new_name: &str) {
+        self.name = new_name.to_owned();
+    }
+}
+
+// Export methods
 impl StoredKey {
     pub fn export_private_key(&mut self, password: &str, coin: &Coin) -> Result<String, Error> {
         let private_key = self.decrypt_private_key(&password, &coin)?;
@@ -243,7 +256,7 @@ impl StoredKey {
     }
 }
 
-// Account related function
+// Account related methods
 impl StoredKey {
     pub fn get_accounts_count(&self) -> u32 {
         self.accounts.len() as u32
@@ -328,9 +341,7 @@ impl StoredKey {
         // self.accounts
         //     .iter()
         //     .filter(|account| account.coin == *coin)
-        self
-            .accounts
-            .retain(|account| account.coin != *coin);
+        self.accounts.retain(|account| account.coin != *coin);
     }
 
     pub fn remove_account_of_address(&mut self, address: &str, coin: &Coin) {
@@ -339,7 +350,7 @@ impl StoredKey {
     }
 }
 
-// Decrypt function
+// Decrypt methods
 impl StoredKey {
     pub fn decrypt_private_key(
         &mut self,

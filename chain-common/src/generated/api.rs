@@ -300,6 +300,34 @@ pub struct ImportJsonStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+/// Update the password of an exisiting StoredKey
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateStoredKeyPasswordParam {
+    #[prost(bytes="vec", tag="1")]
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="2")]
+    pub old_password: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub new_password: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateStoredKeyPasswordResp {
+    #[prost(message, optional, tag="1")]
+    pub stored_key: ::core::option::Option<StoredKeyInfo>,
+}
+/// Update the password of an exisiting StoredKey
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateStoredKeyNameParam {
+    #[prost(bytes="vec", tag="1")]
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="2")]
+    pub new_name: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateStoredKeyNameResp {
+    #[prost(message, optional, tag="1")]
+    pub stored_key: ::core::option::Option<StoredKeyInfo>,
+}
 /// Sign a transaction
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignTransactionParam {
@@ -337,7 +365,7 @@ pub mod sign_transaction_resp {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -379,12 +407,16 @@ pub mod mw_request {
         #[prost(message, tag="17")]
         ParamExportKeyStoreJsonOfPath(super::ExportKeyStoreJsonOfPathParam),
         #[prost(message, tag="18")]
+        ParamUpdateKeyStorePassword(super::UpdateStoredKeyPasswordParam),
+        #[prost(message, tag="19")]
+        ParamUpdateKeyStoreName(super::UpdateStoredKeyNameParam),
+        #[prost(message, tag="20")]
         ParamSignTransaction(super::SignTransactionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -424,6 +456,10 @@ pub mod mw_response {
         #[prost(message, tag="16")]
         RespExportKeyStoreJson(super::ExportKeyStoreJsonResp),
         #[prost(message, tag="17")]
+        RespUpdateKeyStorePassword(super::UpdateStoredKeyPasswordResp),
+        #[prost(message, tag="18")]
+        RespUpdateKeyStoreName(super::UpdateStoredKeyNameResp),
+        #[prost(message, tag="19")]
         RespSignTransaction(super::SignTransactionResp),
     }
 }
