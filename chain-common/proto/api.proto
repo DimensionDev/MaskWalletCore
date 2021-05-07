@@ -60,32 +60,3 @@ message MWResponseError {
     string errorCode = 1;
     string errorMsg = 2;
 }
-
-/*
-service StoredKey {
-    rpc New(CreateStoredKeyParam) returns (CreateStoredKeyResp);
-    rpc Load(LoadStoredKeyParam) returns (LoadStoredKeyResp);
-    rpc ImportPrivateKey(ImportPrivateStoredKeyParam) returns (ImportPrivateStoredKeyResp);
-    rpc ImportMnemonic(ImportMnemonicStoredKeyParam) returns (ImportMnemonicStoredKeyResp);
-    rpc ImportJSON(ImportJSONStoredKeyParam) returns (ImportJSONStoredKeyResp);
-    rpc ExportPrivateKey(ExportKeyStorePrivateKeyParam) returns (ExportKeyStorePrivateKeyResp);
-    rpc ExportPrivateOfPath(ExportKeyStorePrivateKeyOfPathParam) returns (ExportKeyStorePrivateKeyResp);
-    rpc ExportMnemonic(ExportKeyStoreMnemonicParam) returns (ExportKeyStoreMnemonicResp);
-    rpc ExportJSON(ExportKeyStoreJSONParam) returns (ExportKeyStoreJSONResp);
-    rpc ExportJSONOfPath(ExportKeyStoreJSONOfPathParam) returns (ExportKeyStoreJSONResp);
-}
-
-service Account {
-    rpc New(CreateStoredKeyNewAccountParam) returns (CreateStoredKeyNewAccountResp);
-    rpc Read(GetStoredKeyAccountParam) returns (GetStoredKeyAccountResp);
-    rpc ReadByCoin(GetStoredKeyAccountOfCoinParam) returns (GetStoredKeyAccountsOfCoinResp);
-    rpc ReadCount(GetStoredKeyAccountCountParam) returns (GetStoredKeyAccountCountResp);
-    rpc ReadAll(GetStoredKeyAllAccountParam) returns (GetStoredKeyAllAccountResp);
-    rpc RemoveByCoin(RemoveStoredKeyAccountOfCoinParam) returns (RemoveStoredKeyAccountOfCoinResp);
-    rpc RemoveByAddress(RemoveStoredKeyAccountOfAddressParam) returns (RemoveStoredKeyAccountOfAddressResp);
-}
-
-service Transaction {
-    rpc Sign(SignTransactionParam) returns (SignTransactionResp);
-}
-*/
