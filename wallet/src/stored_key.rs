@@ -15,6 +15,8 @@ use crypto::bip39::Mnemonic;
 use crypto::key_store_json::KeyStoreJson;
 use crypto::Error as CryptoError;
 
+const VERSION: &'static str = "0.1.0";
+
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
     PrivateKey = 0,
@@ -28,6 +30,8 @@ pub struct StoredKey {
     pub id: String,
 
     pub name: String,
+
+    pub version: String,
 
     payload: EncryptionParams,
 
@@ -50,6 +54,7 @@ impl StoredKey {
             r#type,
             name: String::from(name),
             id: uuid.to_string(),
+            version: VERSION.to_owned(),
             payload,
             accounts: vec![],
             deleted_paths: vec![],
@@ -458,6 +463,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(stored_key.get_accounts_count(), 1);
+        assert_eq!(stored_key.version, VERSION);
         let account = stored_key.get_account(0).unwrap();
         assert_eq!(
             account.address,

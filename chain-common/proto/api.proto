@@ -1,6 +1,7 @@
 syntax = "proto3";
 package api;
 
+import "common.proto";
 import "base.proto";
 import "account.proto";
 import "key-store.proto";
@@ -29,6 +30,7 @@ message MWRequest {
         UpdateStoredKeyPasswordParam param_update_key_store_password = 18;
         UpdateStoredKeyNameParam param_update_key_store_name = 19;
         SignTransactionParam param_sign_transaction = 20;
+        GetVersionParam param_get_version = 21;
     }
 }
 
@@ -53,6 +55,7 @@ message MWResponse {
         UpdateStoredKeyPasswordResp resp_update_key_store_password = 17;
         UpdateStoredKeyNameResp resp_update_key_store_name = 18;
         SignTransactionResp resp_sign_transaction = 19;
+        GetVersionResp resp_get_version = 20;
     }
 }
 

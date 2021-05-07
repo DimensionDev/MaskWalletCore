@@ -1,3 +1,12 @@
+/// Get the version code of MaskWalletCore library
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetVersionParam {
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetVersionResp {
+    #[prost(string, tag="1")]
+    pub version: ::prost::alloc::string::String,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StoredKeyInfo {
     #[prost(string, tag="1")]
@@ -365,7 +374,7 @@ pub mod sign_transaction_resp {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -412,11 +421,13 @@ pub mod mw_request {
         ParamUpdateKeyStoreName(super::UpdateStoredKeyNameParam),
         #[prost(message, tag="20")]
         ParamSignTransaction(super::SignTransactionParam),
+        #[prost(message, tag="21")]
+        ParamGetVersion(super::GetVersionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -461,6 +472,8 @@ pub mod mw_response {
         RespUpdateKeyStoreName(super::UpdateStoredKeyNameResp),
         #[prost(message, tag="19")]
         RespSignTransaction(super::SignTransactionResp),
+        #[prost(message, tag="20")]
+        RespGetVersion(super::GetVersionResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package api;
+
+// Get the version code of MaskWalletCore library
+message GetVersionParam {
+    
+}
+
+message GetVersionResp {
+    string version = 1;
+}

@@ -33,6 +33,18 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamUpdateKeyStorePassword(param) => update_key_store_password(param),
         ParamUpdateKeyStoreName(param) => update_key_store_name(param),
         ParamSignTransaction(param) => sign_transaction(param),
+        ParamGetVersion(_) => get_lib_version(),
+    }
+}
+
+use std::env;
+pub const VERSION: &'static str = include_str!(concat!(env!("OUT_DIR"), "/VERSION"));
+
+fn get_lib_version() -> MwResponse {
+    MwResponse {
+        response: Some(Response::RespGetVersion(GetVersionResp {
+            version: VERSION.to_owned(),
+        })),
     }
 }
 
