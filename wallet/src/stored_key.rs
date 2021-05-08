@@ -12,6 +12,7 @@ use chain_common::api::{StoredKeyInfo, StoredKeyType as ProtoStoreKeyType};
 use chain_common::coin::Coin;
 use chain_common::private_key::PrivateKey;
 use crypto::bip39::Mnemonic;
+use crypto::hash;
 use crypto::key_store_json::KeyStoreJson;
 use crypto::Error as CryptoError;
 
@@ -28,6 +29,8 @@ pub struct StoredKey {
     pub r#type: StoredKeyType,
 
     pub id: String,
+
+    pub hash: String,
 
     pub name: String,
 
@@ -48,10 +51,20 @@ impl StoredKey {
     ) -> Result<StoredKey, Error> {
         let uuid = Uuid::new_v4();
         let payload = EncryptionParams::new(password.as_bytes(), &data)?;
+        let hash = match r#type {
+            StoredKeyType::PrivateKey => hash::dsha256(&data),
+            StoredKeyType::Mnemonic => {
+                let mnemonic_str = std::str::from_utf8(&data)
+                    .map_err(|_| Error::CryptoError(CryptoError::PasswordIncorrect))?;
+                let mnemonic = Mnemonic::new(&mnemonic_str, &password)?;
+                hash::dsha256(&mnemonic.seed)
+            }
+        };
         Ok(StoredKey {
             r#type,
             name: String::from(name),
             id: uuid.to_string(),
+            hash: hex::encode(hash),
             version: VERSION.to_owned(),
             payload,
             accounts: vec![],
@@ -476,8 +489,13 @@ mod tests {
             all_info: HashMap::new(),
         };
 
-        let stored_key =
-            StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, &coin).unwrap();
+        let stored_key = StoredKey::create_with_private_key_and_default_address(
+            "mask",
+            &password,
+            priv_key_str,
+            &coin,
+        )
+        .unwrap();
         assert_eq!(stored_key.get_accounts_count(), 1);
         assert_eq!(stored_key.version, VERSION);
         let account = stored_key.get_account(0).unwrap();
@@ -559,5 +577,19 @@ mod tests {
             )
             .unwrap();
         assert_eq!(account1.derivation_path.to_string(), test_derivation_path1);
+    }
+
+    #[test]
+    fn test_hash() {
+        let mnemonic1 =
+            "suffer artefact burst review network fantasy easy century mom unique pupil boy";
+        let password = "";
+        let stored_key1 = StoredKey::create_with_mnemonic("mask1", &password, &mnemonic1).unwrap();
+        let stored_key2 = StoredKey::create_with_mnemonic("mask2", &password, &mnemonic1).unwrap();
+        assert_eq!(stored_key1.hash, stored_key2.hash);
+
+        let stored_key_random = StoredKey::create_with_mnemonic_random("mask", &password).unwrap();
+        assert_ne!(stored_key1.hash, stored_key_random.hash);
+        assert_ne!(stored_key2.hash, stored_key_random.hash);
     }
 }
