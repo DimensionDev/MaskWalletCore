@@ -14,7 +14,8 @@ pub enum Error {
     CryptoError(CryptoError),
     ChainError(ChainError),
     IndexOutOfBounds,
-    InvalidAccountRequested,
+    RequestNotSupportedOnPrivateKeyTypeStoredKey,
+    RequstedAccountNotFound,
     JsonSerializationError,
 }
 

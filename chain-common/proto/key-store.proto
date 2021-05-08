@@ -33,12 +33,13 @@ message ExportKeyStoreMnemonicResp {
     string mnemonic = 1;
 }
 
-// Export the V3 KeyStoreJSON string of the StoredKey
-message ExportKeyStoreJSONParam {
+// Export the V3 KeyStoreJSON string of the StoredKey at the specific address
+message ExportKeyStoreJSONOfAddressParam {
     bytes StoredKeyData = 1;
     string password = 2;
     string newPassword = 3;
     Coin coin = 4;
+    string address = 5;
 }
 
 // Export the V3 KeyStoreJSON string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey

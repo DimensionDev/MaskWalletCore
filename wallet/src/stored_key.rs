@@ -36,8 +36,6 @@ pub struct StoredKey {
     payload: EncryptionParams,
 
     accounts: Vec<Account>,
-
-    deleted_paths: Vec<DerivationPath>,
 }
 
 // Create & Import function
@@ -57,7 +55,6 @@ impl StoredKey {
             version: VERSION.to_owned(),
             payload,
             accounts: vec![],
-            deleted_paths: vec![],
         })
     }
 
@@ -75,7 +72,7 @@ impl StoredKey {
         name: &str,
         password: &str,
         private_key: &str,
-        coin: Coin,
+        coin: &Coin,
     ) -> Result<StoredKey, Error> {
         let priv_key_bytes =
             hex::decode(private_key).map_err(|_| CryptoError::InvalidPrivateKey)?;
@@ -90,7 +87,7 @@ impl StoredKey {
             CoinDispatcher::get_entry(&coin)?.derive_address(&coin, &public_key, &[], &[])?;
         stored_key.accounts.push(Account {
             address,
-            coin,
+            coin: coin.clone(),
             derivation_path,
             extended_public_key: "".to_owned(),
         });
@@ -123,32 +120,32 @@ impl StoredKey {
         )
     }
 
-    pub fn create_with_mnemonic_and_default_address(
-        name: &str,
-        password: &str,
-        mnemonic: &str,
-        coin: Coin,
-    ) -> Result<StoredKey, Error> {
-        let mut stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
+    // pub fn create_with_mnemonic_and_default_address(
+    //     name: &str,
+    //     password: &str,
+    //     mnemonic: &str,
+    //     coin: Coin,
+    // ) -> Result<StoredKey, Error> {
+    //     let mut stored_key = StoredKey::create_with_mnemonic(&name, &password, &mnemonic)?;
 
-        let wallet = HdWallet::new_with_mnemonic(mnemonic, "")?;
-        let derivation_path = DerivationPath::new(&coin.derivation_path)?;
-        let address = wallet.get_address_for_coin(&coin)?;
-        let extended_public_key = wallet.get_extended_public_key(&coin);
-        stored_key.accounts.push(Account {
-            address,
-            coin,
-            derivation_path,
-            extended_public_key,
-        });
-        Ok(stored_key)
-    }
+    //     let wallet = HdWallet::new_with_mnemonic(mnemonic, "")?;
+    //     let derivation_path = DerivationPath::new(&coin.derivation_path)?;
+    //     let address = wallet.get_address_for_coin(&coin)?;
+    //     let extended_public_key = wallet.get_extended_public_key(&coin);
+    //     stored_key.accounts.push(Account {
+    //         address,
+    //         coin,
+    //         derivation_path,
+    //         extended_public_key,
+    //     });
+    //     Ok(stored_key)
+    // }
 
     pub fn create_with_json(
         name: &str,
         password: &str,
         json: &str,
-        coin: Coin,
+        coin: &Coin,
     ) -> Result<StoredKey, Error> {
         let key_store_json_struct = KeyStoreJson::from_str(&json)?;
         let (_, decrypted) =
@@ -156,12 +153,7 @@ impl StoredKey {
         let decrypted_str = std::str::from_utf8(&decrypted)
             .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJson))?;
         if Mnemonic::is_valid(&decrypted_str) {
-            return Self::create_with_mnemonic_and_default_address(
-                &name,
-                &password,
-                &decrypted_str,
-                coin,
-            );
+            return Self::create_with_mnemonic(&name, &password, &decrypted_str);
         }
         let private_key = PrivateKey::new(&decrypted)?;
         let private_key_hex = hex::encode(&private_key.data);
@@ -196,7 +188,7 @@ impl StoredKey {
         derivation_path: &str,
     ) -> Result<String, Error> {
         if self.r#type != StoredKeyType::Mnemonic {
-            return Err(Error::InvalidAccountRequested);
+            return Err(Error::RequestNotSupportedOnPrivateKeyTypeStoredKey);
         }
         let wallet = self.get_wallet(&password)?;
         let derivation_path = DerivationPath::new(&derivation_path)?;
@@ -206,7 +198,7 @@ impl StoredKey {
 
     pub fn export_mnemonic(&mut self, password: &str) -> Result<String, Error> {
         if self.r#type != StoredKeyType::Mnemonic {
-            return Err(Error::InvalidAccountRequested);
+            return Err(Error::RequestNotSupportedOnPrivateKeyTypeStoredKey);
         }
         let mnemonic_bytes = self.payload.decrypt(&password.as_bytes())?;
         let mnemonic = std::str::from_utf8(&mnemonic_bytes)
@@ -221,6 +213,38 @@ impl StoredKey {
     ) -> Result<String, Error> {
         self.payload
             .export_to_key_store_json(&password, &new_password)
+    }
+
+    pub fn export_key_store_json_of_address(
+        &mut self,
+        password: &str,
+        new_password: &str,
+        coin: &Coin,
+        address: &str,
+    ) -> Result<String, Error> {
+        if let Some(account) = self
+            .accounts
+            .iter()
+            .find(|account| account.address == address)
+        {
+            if self.r#type == StoredKeyType::PrivateKey {
+                // Convert the payload to KeyStoreJson
+                return self
+                    .payload
+                    .export_to_key_store_json(&password, &new_password);
+            } else {
+                // 1. If this StoredKey is created from a mnemonic, derive to the specific path to get the private key
+                let wallet = self.get_wallet(&password)?;
+                let private_key = wallet.get_key(&coin, &account.derivation_path)?;
+
+                // 2. Create a temp EncryptionParam with new password for exporting
+                let temp_encryption_param =
+                    EncryptionParams::new(new_password.as_bytes(), &private_key.data)?;
+                temp_encryption_param.export_to_key_store_json(&new_password, &new_password)
+            }
+        } else {
+            return Err(Error::RequstedAccountNotFound);
+        }
     }
 
     pub fn export_key_store_json_of_path(
@@ -252,7 +276,7 @@ impl StoredKey {
 impl StoredKey {
     fn get_wallet(&self, password: &str) -> Result<HdWallet, Error> {
         if self.r#type != StoredKeyType::Mnemonic {
-            return Err(Error::InvalidAccountRequested);
+            return Err(Error::RequestNotSupportedOnPrivateKeyTypeStoredKey);
         }
         let mnemonic_bytes = self.payload.decrypt(&password.as_bytes())?;
         let mnemonic = std::str::from_utf8(&mnemonic_bytes)
@@ -343,9 +367,6 @@ impl StoredKey {
     }
 
     pub fn remove_accounts_of_coin(&mut self, coin: &Coin) {
-        // self.accounts
-        //     .iter()
-        //     .filter(|account| account.coin == *coin)
         self.accounts.retain(|account| account.coin != *coin);
     }
 
@@ -394,7 +415,7 @@ impl StoredKey {
             .find(|account| account.address == address)
         {
             Some(account) => account,
-            None => return Err(Error::InvalidAccountRequested),
+            None => return Err(Error::RequstedAccountNotFound),
         };
 
         let private_key = match self.r#type {
@@ -455,13 +476,8 @@ mod tests {
             all_info: HashMap::new(),
         };
 
-        let stored_key = StoredKey::create_with_private_key_and_default_address(
-            "mask",
-            &password,
-            priv_key_str,
-            coin,
-        )
-        .unwrap();
+        let stored_key =
+            StoredKey::create_with_private_key_and_default_address("mask", &password, priv_key_str, &coin).unwrap();
         assert_eq!(stored_key.get_accounts_count(), 1);
         assert_eq!(stored_key.version, VERSION);
         let account = stored_key.get_account(0).unwrap();
@@ -492,9 +508,14 @@ mod tests {
             all_info: HashMap::new(),
         };
 
-        let stored_key =
-            StoredKey::create_with_mnemonic_and_default_address("mask", &password, &mnemonic, coin)
-                .unwrap();
+        let mut stored_key = StoredKey::create_with_mnemonic("mask", &password, &mnemonic).unwrap();
+        stored_key
+            .add_new_account_of_coin_and_derivation_path_by_password(
+                coin,
+                &derivation_path,
+                &password,
+            )
+            .unwrap();
         assert_eq!(stored_key.r#type == StoredKeyType::Mnemonic, true);
         assert_eq!(stored_key.get_accounts_count(), 1);
         let decrypted = stored_key.payload.decrypt(password.as_bytes()).unwrap();

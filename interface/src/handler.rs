@@ -28,7 +28,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamExportPrivateKey(param) => export_private_key(param),
         ParamExportPrivateKeyOfPath(param) => export_private_key_of_path(param),
         ParamExportMnemonic(param) => export_mnemonic(param),
-        ParamExportKeyStoreJson(param) => export_key_store_json(param),
+        ParamExportKeyStoreJsonOfAddress(param) => export_key_store_json_of_address(param),
         ParamExportKeyStoreJsonOfPath(param) => export_key_store_json_of_path(param),
         ParamUpdateKeyStorePassword(param) => update_key_store_password(param),
         ParamUpdateKeyStoreName(param) => update_key_store_name(param),
@@ -80,25 +80,8 @@ fn create_stored_key(param: CreateStoredKeyParam) -> MwResponse {
 }
 
 fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) -> MwResponse {
-    let coin_info = get_coin_info(param.coin);
-    let coin = match coin_info {
-        Some(coin_info) => coin_info,
-        None => {
-            return MwResponse {
-                response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
-                })),
-            };
-        }
-    };
-
-    let stored_key = StoredKey::create_with_private_key_and_default_address(
-        &param.name,
-        &param.password,
-        &param.private_key,
-        coin.clone(),
-    );
+    let stored_key =
+        StoredKey::create_with_private_key(&param.name, &param.password, &param.private_key);
     match stored_key {
         Ok(key) => MwResponse {
             response: Some(Response::RespImportPrivateKey(ImportPrivateStoredKeyResp {
@@ -110,29 +93,13 @@ fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) -> MwR
 }
 
 fn create_stored_key_with_mnemonic(param: ImportMnemonicStoredKeyParam) -> MwResponse {
-    let coin_info = get_coin_info(param.coin);
-    let coin = match coin_info {
-        Some(coin_info) => coin_info,
-        None => {
-            return MwResponse {
-                response: Some(Response::Error(MwResponseError {
-                    error_code: "-1".to_owned(),
-                    error_msg: "Invalid Coin Type".to_owned(),
-                })),
-            };
-        }
-    };
-    let stored_key: StoredKey = match StoredKey::create_with_mnemonic_and_default_address(
-        &param.name,
-        &param.password,
-        &param.mnemonic,
-        coin.clone(),
-    ) {
-        Ok(key) => key,
-        Err(error) => {
-            return get_error_response_by_error(error);
-        }
-    };
+    let stored_key: StoredKey =
+        match StoredKey::create_with_mnemonic(&param.name, &param.password, &param.mnemonic) {
+            Ok(key) => key,
+            Err(error) => {
+                return get_error_response_by_error(error);
+            }
+        };
     MwResponse {
         response: Some(Response::RespImportMnemonic(ImportMnemonicStoredKeyResp {
             stored_key: Some(StoredKeyInfo::from(stored_key)),
@@ -153,17 +120,13 @@ fn create_with_json(param: ImportJsonStoredKeyParam) -> MwResponse {
             };
         }
     };
-    let stored_key: StoredKey = match StoredKey::create_with_json(
-        &param.name,
-        &param.password,
-        &param.json,
-        coin.clone(),
-    ) {
-        Ok(key) => key,
-        Err(error) => {
-            return get_error_response_by_error(error);
-        }
-    };
+    let stored_key: StoredKey =
+        match StoredKey::create_with_json(&param.name, &param.password, &param.json, coin) {
+            Ok(key) => key,
+            Err(error) => {
+                return get_error_response_by_error(error);
+            }
+        };
     MwResponse {
         response: Some(Response::RespImportJson(ImportJsonStoredKeyResp {
             stored_key: Some(StoredKeyInfo::from(stored_key)),
@@ -450,14 +413,31 @@ fn export_mnemonic(param: ExportKeyStoreMnemonicParam) -> MwResponse {
     }
 }
 
-fn export_key_store_json(param: ExportKeyStoreJsonParam) -> MwResponse {
+fn export_key_store_json_of_address(param: ExportKeyStoreJsonOfAddressParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError {
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                })),
+            };
+        }
+    };
     let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
         }
     };
-    let json = match stored_key.export_key_store_json(&param.password, &param.new_password) {
+    let json = match stored_key.export_key_store_json_of_address(
+        &param.password,
+        &param.new_password,
+        coin,
+        &param.address,
+    ) {
         Ok(key) => key,
         Err(error) => {
             return get_error_response_by_error(error);

@@ -13,7 +13,7 @@ message LoadStoredKeyResp {
     repeated StoredKeyInfo StoredKeys = 1;
 }
 
-// Create a new StoredKey with random generated mnemonic
+// Create a new StoredKey with random generated mnemonic, this request will NOT create any account
 message CreateStoredKeyParam {
     string name = 1;
     string password = 2;
@@ -23,7 +23,7 @@ message CreateStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
-// Create a StoredKey with private key 
+// Create a StoredKey with private key, please aware that this request DOES create an account with the specific coin
 message ImportPrivateStoredKeyParam {
     string privateKey = 1; // Hex encoded private key string
     string password = 2;
@@ -35,19 +35,18 @@ message ImportPrivateStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
-// Create a new StoredKey with given mnemonic
+// Create a new StoredKey with given mnemonic, this request will NOT create any account
 message ImportMnemonicStoredKeyParam {
     string mnemonic = 1;
     string name = 2;
     string password = 3;
-    Coin coin = 4;
 }
 
 message ImportMnemonicStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
 }
 
-// Create a new StoredKey with JSON
+// Create a new StoredKey with JSON, please aware that this request DOES create an account with the specific coin
 message ImportJSONStoredKeyParam {
     string json = 1;
     string name = 2;

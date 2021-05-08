@@ -202,9 +202,9 @@ pub struct ExportKeyStoreMnemonicResp {
     #[prost(string, tag="1")]
     pub mnemonic: ::prost::alloc::string::String,
 }
-/// Export the V3 KeyStoreJSON string of the StoredKey
+/// Export the V3 KeyStoreJSON string of the StoredKey at the specific address
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ExportKeyStoreJsonParam {
+pub struct ExportKeyStoreJsonOfAddressParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="2")]
@@ -213,6 +213,8 @@ pub struct ExportKeyStoreJsonParam {
     pub new_password: ::prost::alloc::string::String,
     #[prost(enumeration="Coin", tag="4")]
     pub coin: i32,
+    #[prost(string, tag="5")]
+    pub address: ::prost::alloc::string::String,
 }
 /// Export the V3 KeyStoreJSON string of the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -244,7 +246,7 @@ pub struct LoadStoredKeyResp {
     #[prost(message, repeated, tag="1")]
     pub stored_keys: ::prost::alloc::vec::Vec<StoredKeyInfo>,
 }
-/// Create a new StoredKey with random generated mnemonic
+/// Create a new StoredKey with random generated mnemonic, this request will NOT create any account
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateStoredKeyParam {
     #[prost(string, tag="1")]
@@ -257,7 +259,7 @@ pub struct CreateStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
-/// Create a StoredKey with private key 
+/// Create a StoredKey with private key, please aware that this request DOES create an account with the specific coin
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ImportPrivateStoredKeyParam {
     /// Hex encoded private key string
@@ -275,7 +277,7 @@ pub struct ImportPrivateStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
-/// Create a new StoredKey with given mnemonic
+/// Create a new StoredKey with given mnemonic, this request will NOT create any account
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ImportMnemonicStoredKeyParam {
     #[prost(string, tag="1")]
@@ -284,15 +286,13 @@ pub struct ImportMnemonicStoredKeyParam {
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub password: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="4")]
-    pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ImportMnemonicStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
-/// Create a new StoredKey with JSON
+/// Create a new StoredKey with JSON, please aware that this request DOES create an account with the specific coin
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ImportJsonStoredKeyParam {
     #[prost(string, tag="1")]
@@ -412,7 +412,7 @@ pub mod mw_request {
         #[prost(message, tag="15")]
         ParamExportMnemonic(super::ExportKeyStoreMnemonicParam),
         #[prost(message, tag="16")]
-        ParamExportKeyStoreJson(super::ExportKeyStoreJsonParam),
+        ParamExportKeyStoreJsonOfAddress(super::ExportKeyStoreJsonOfAddressParam),
         #[prost(message, tag="17")]
         ParamExportKeyStoreJsonOfPath(super::ExportKeyStoreJsonOfPathParam),
         #[prost(message, tag="18")]
