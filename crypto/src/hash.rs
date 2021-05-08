@@ -24,6 +24,7 @@ impl Hashable for Keccak256 {
     }
 }
 
+/* Helper hash functions */
 pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
     use tiny_keccak::{Hasher as KeccakHasher, Keccak};
     let result = [&derived_key, encrypted_text].concat();
@@ -32,6 +33,11 @@ pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
     let mut output = [0u8; 32];
     hasher.finalize(&mut output);
     output.to_vec()
+}
+
+pub fn dsha256(input: &[u8]) -> Vec<u8> {
+    use sha2::{ Digest, Sha256 };
+    Sha256::digest(&Sha256::digest(&input)).to_vec()
 }
 
 #[cfg(test)]
