@@ -16,6 +16,7 @@ pub enum Error {
     IndexOutOfBounds,
     RequestNotSupportedOnPrivateKeyTypeStoredKey,
     RequstedAccountNotFound,
+    AccountAlreadyExist,
     JsonSerializationError,
 }
 

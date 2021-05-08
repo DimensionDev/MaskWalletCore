@@ -5,27 +5,23 @@ use std::path::Path;
 use std::process::Command;
 
 fn get_git_version() -> String {
-    let version = env::var("CARGO_PKG_VERSION").unwrap().to_string();
+    let version = env::var("CARGO_PKG_VERSION").unwrap();
 
-    let child = Command::new("git")
-        .args(&["describe", "--always"])
-        .output();
+    let child = Command::new("git").args(&["describe", "--always"]).output();
     match child {
         Ok(child) => {
             let buf = String::from_utf8(child.stdout).expect("failed to read stdout");
-            return version + "-" + &buf;
-        },
+            version + "-" + &buf
+        }
         Err(err) => {
             eprintln!("`git describe` err: {}", err);
-            return version;
+            version
         }
     }
 }
 
 fn main() {
     let version = get_git_version();
-    let mut f = File::create(
-        Path::new(&env::var("OUT_DIR").unwrap())
-            .join("VERSION")).unwrap();
+    let mut f = File::create(Path::new(&env::var("OUT_DIR").unwrap()).join("VERSION")).unwrap();
     f.write_all(version.trim().as_bytes()).unwrap();
 }

@@ -38,7 +38,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
 }
 
 use std::env;
-pub const VERSION: &'static str = include_str!(concat!(env!("OUT_DIR"), "/VERSION"));
+pub const VERSION: &str = include_str!(concat!(env!("OUT_DIR"), "/VERSION"));
 
 fn get_lib_version() -> MwResponse {
     MwResponse {
@@ -315,13 +315,15 @@ fn remove_account_of_address(param: RemoveStoredKeyAccountOfAddressParam) -> MwR
             return get_json_error_response();
         }
     };
-    stored_key.remove_account_of_address(&param.address, coin);
-    MwResponse {
-        response: Some(Response::RespRemoveAccountOfAddress(
-            RemoveStoredKeyAccountOfAddressResp {
-                stored_key: Some(StoredKeyInfo::from(stored_key)),
-            },
-        )),
+    match stored_key.remove_account_of_address(&param.address, coin) {
+        Ok(_) => MwResponse {
+            response: Some(Response::RespRemoveAccountOfAddress(
+                RemoveStoredKeyAccountOfAddressResp {
+                    stored_key: Some(StoredKeyInfo::from(stored_key)),
+                },
+            )),
+        },
+        Err(error) => get_error_response_by_error(error),
     }
 }
 

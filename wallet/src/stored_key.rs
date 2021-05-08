@@ -16,7 +16,7 @@ use crypto::hash;
 use crypto::key_store_json::KeyStoreJson;
 use crypto::Error as CryptoError;
 
-const VERSION: &'static str = "0.1.0";
+const VERSION: &str = "0.1.0";
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum StoredKeyType {
@@ -242,9 +242,8 @@ impl StoredKey {
         {
             if self.r#type == StoredKeyType::PrivateKey {
                 // Convert the payload to KeyStoreJson
-                return self
-                    .payload
-                    .export_to_key_store_json(&password, &new_password);
+                self.payload
+                    .export_to_key_store_json(&password, &new_password)
             } else {
                 // 1. If this StoredKey is created from a mnemonic, derive to the specific path to get the private key
                 let wallet = self.get_wallet(&password)?;
@@ -256,7 +255,7 @@ impl StoredKey {
                 temp_encryption_param.export_to_key_store_json(&new_password, &new_password)
             }
         } else {
-            return Err(Error::RequstedAccountNotFound);
+            Err(Error::RequstedAccountNotFound)
         }
     }
 
@@ -359,10 +358,11 @@ impl StoredKey {
         password: &str,
     ) -> Result<Account, Error> {
         let derivation_path_struct = DerivationPath::new(&derivation_path)?;
-        if let Some(account) = self.accounts.iter().find(|account| {
+        let find_account_block = |account: &Account| {
             account.coin == coin && account.derivation_path == derivation_path_struct
-        }) {
-            Ok(account.clone())
+        };
+        if self.accounts.iter().any(find_account_block) {
+            Err(Error::AccountAlreadyExist)
         } else {
             let wallet = self.get_wallet(&password)?;
             let address = wallet.get_address_for_coin_of_path(&coin, &derivation_path)?;
@@ -370,7 +370,7 @@ impl StoredKey {
                 wallet.get_extended_public_key_of_path(&coin, &derivation_path);
             let account = Account {
                 address,
-                coin: coin.clone(),
+                coin,
                 derivation_path: derivation_path_struct,
                 extended_public_key,
             };
@@ -383,9 +383,17 @@ impl StoredKey {
         self.accounts.retain(|account| account.coin != *coin);
     }
 
-    pub fn remove_account_of_address(&mut self, address: &str, coin: &Coin) {
+    pub fn remove_account_of_address(&mut self, address: &str, coin: &Coin) -> Result<(), Error> {
+        if !self
+            .accounts
+            .iter()
+            .any(|account| account.address != address && account.coin != *coin)
+        {
+            return Err(Error::RequstedAccountNotFound);
+        }
         self.accounts
             .retain(|account| account.address != address && account.coin != *coin);
+        Ok(())
     }
 }
 
