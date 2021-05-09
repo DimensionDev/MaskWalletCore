@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+message PasswordValidationParam {
+    bytes storedKeyData = 1;
+    string password = 2;
+}
+
+message AddressValidationParam {
+    string address = 1;
+    Coin coin = 2;
+}
+
+// Get the version code of MaskWalletCore library
+message ValidateParam {
+    oneof input{
+        string privateKey = 1;
+        string mnemonic = 2;
+        string keyStoreJson = 3;
+        PasswordValidationParam storedKeyPassword = 4;
+        AddressValidationParam addressValidationParam = 5;
+    }
+}
+
+message ValidateResp {
+    bool valid = 1;
+}

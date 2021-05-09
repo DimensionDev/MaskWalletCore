@@ -9,10 +9,10 @@ pub struct Mnemonic {
 }
 
 impl Mnemonic {
-    pub fn generate(word_count: u32, passphrase: &str) -> Result<Mnemonic, Error> {
+    pub fn generate(word_count: u32, password: &str) -> Result<Mnemonic, Error> {
         let mnemonic =
             CryptoMnemonic::generate(word_count as usize).map_err(|_| Error::InvalidMnemonic)?;
-        let seed = mnemonic.to_seed_normalized(passphrase).to_vec();
+        let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();
         Ok(Mnemonic {
@@ -22,9 +22,9 @@ impl Mnemonic {
         })
     }
 
-    pub fn new(mnemonic: &str, passphrase: &str) -> Result<Mnemonic, Error> {
+    pub fn new(mnemonic: &str, password: &str) -> Result<Mnemonic, Error> {
         let mnemonic = CryptoMnemonic::from_str(mnemonic).map_err(|_| Error::InvalidMnemonic)?;
-        let seed = mnemonic.to_seed_normalized(passphrase).to_vec();
+        let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();
         Ok(Mnemonic {

@@ -373,8 +373,49 @@ pub mod sign_transaction_resp {
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PasswordValidationParam {
+    #[prost(bytes="vec", tag="1")]
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="2")]
+    pub password: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AddressValidationParam {
+    #[prost(string, tag="1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="2")]
+    pub coin: i32,
+}
+/// Get the version code of MaskWalletCore library
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateParam {
+    #[prost(oneof="validate_param::Input", tags="1, 2, 3, 4, 5")]
+    pub input: ::core::option::Option<validate_param::Input>,
+}
+/// Nested message and enum types in `ValidateParam`.
+pub mod validate_param {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Input {
+        #[prost(string, tag="1")]
+        PrivateKey(::prost::alloc::string::String),
+        #[prost(string, tag="2")]
+        Mnemonic(::prost::alloc::string::String),
+        #[prost(string, tag="3")]
+        KeyStoreJson(::prost::alloc::string::String),
+        #[prost(message, tag="4")]
+        StoredKeyPassword(super::PasswordValidationParam),
+        #[prost(message, tag="5")]
+        AddressValidationParam(super::AddressValidationParam),
+    }
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateResp {
+    #[prost(bool, tag="1")]
+    pub valid: bool,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -423,11 +464,13 @@ pub mod mw_request {
         ParamSignTransaction(super::SignTransactionParam),
         #[prost(message, tag="21")]
         ParamGetVersion(super::GetVersionParam),
+        #[prost(message, tag="22")]
+        ParamValidation(super::ValidateParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -474,6 +517,8 @@ pub mod mw_response {
         RespSignTransaction(super::SignTransactionResp),
         #[prost(message, tag="20")]
         RespGetVersion(super::GetVersionResp),
+        #[prost(message, tag="21")]
+        RespValidate(super::ValidateResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

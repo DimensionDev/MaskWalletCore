@@ -14,27 +14,27 @@ use std::str::FromStr;
 pub struct HdWallet {
     seed: Vec<u8>,
     pub mnemonic: String,
-    passphrase: String,
+    password: String,
     entropy: Vec<u8>,
 }
 
 impl HdWallet {
-    pub fn new(word_count: u32, passphrase: &str) -> Result<HdWallet, Error> {
-        let mnemonic = Mnemonic::generate(word_count, passphrase)?;
+    pub fn new(word_count: u32, password: &str) -> Result<HdWallet, Error> {
+        let mnemonic = Mnemonic::generate(word_count, password)?;
         Ok(HdWallet {
             seed: mnemonic.seed,
             mnemonic: mnemonic.words,
-            passphrase: passphrase.to_owned(),
+            password: password.to_owned(),
             entropy: mnemonic.entropy,
         })
     }
 
-    pub fn new_with_mnemonic(mnemonic: &str, passphrase: &str) -> Result<HdWallet, Error> {
-        let mnemonic = Mnemonic::new(&mnemonic, &passphrase)?;
+    pub fn new_with_mnemonic(mnemonic: &str, password: &str) -> Result<HdWallet, Error> {
+        let mnemonic = Mnemonic::new(&mnemonic, &password)?;
         Ok(HdWallet {
             seed: mnemonic.seed,
             mnemonic: mnemonic.words,
-            passphrase: passphrase.to_owned(),
+            password: password.to_owned(),
             entropy: mnemonic.entropy,
         })
     }

@@ -399,6 +399,10 @@ impl StoredKey {
 
 // Decrypt methods
 impl StoredKey {
+    pub fn validate_password(&self, password: &str) -> bool {
+        self.payload.decrypt(password.as_bytes()).is_ok()
+    }
+
     pub fn decrypt_private_key(
         &mut self,
         password: &str,

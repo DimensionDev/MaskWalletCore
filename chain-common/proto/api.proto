@@ -7,6 +7,7 @@ import "account.proto";
 import "key-store.proto";
 import "stored-key.proto";
 import "transaction.proto";
+import "validation.proto";
 
 message MWRequest {
     oneof request {
@@ -31,6 +32,7 @@ message MWRequest {
         UpdateStoredKeyNameParam param_update_key_store_name = 19;
         SignTransactionParam param_sign_transaction = 20;
         GetVersionParam param_get_version = 21;
+        ValidateParam param_validation = 22;
     }
 }
 
@@ -56,6 +58,7 @@ message MWResponse {
         UpdateStoredKeyNameResp resp_update_key_store_name = 18;
         SignTransactionResp resp_sign_transaction = 19;
         GetVersionResp resp_get_version = 20;
+        ValidateResp resp_validate = 21;
     }
 }
 
