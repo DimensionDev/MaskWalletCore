@@ -12,6 +12,10 @@ use prost::Message;
 pub struct EthereumEntry;
 
 impl Entry for EthereumEntry {
+    fn validate_address(&self, address: &str) -> bool {
+        EthereumAddress::is_valid(&address)
+    }
+
     fn derive_address(
         &self,
         coin: &Coin,

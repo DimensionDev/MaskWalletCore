@@ -1,5 +1,5 @@
 pub mod account;
-mod coin_dispatcher;
+pub mod coin_dispatcher;
 mod derivation_path;
 pub mod encryption_params;
 pub mod hd_wallet;

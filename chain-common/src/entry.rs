@@ -4,6 +4,7 @@ use super::public_key::PublicKey;
 use crypto::Error;
 
 pub trait Entry {
+    fn validate_address(&self, address: &str) -> bool;
     fn derive_address(
         &self,
         coin: &Coin,
