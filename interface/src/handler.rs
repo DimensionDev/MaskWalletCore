@@ -23,6 +23,8 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamExportKeyStoreJsonOfPath(param) => stored_key::export_key_store_json_of_path(param),
         ParamUpdateKeyStorePassword(param) => stored_key::update_key_store_password(param),
         ParamUpdateKeyStoreName(param) => stored_key::update_key_store_name(param),
+        ParamGetStoredKeyImportType(param) => stored_key::get_supported_import_types(param),
+        ParamGetStoredKeyExportType(param) => stored_key::get_supported_export_types(param),
 
         ParamGetStoredKeyAccountCount(param) => account::get_stored_key_account_count(param),
         ParamGetStoredKeyAccount(param) => account::get_store_key_account(param),

@@ -43,7 +43,7 @@ impl KdfParamsType for ScryptParams {
 mod tests {
     use scrypt::{scrypt, Params};
     #[test]
-    fn it_works() {
+    fn test_scrypt() {
         let log_n = (4096 as f64).log2().round();
         let params = Params::new(log_n as u8, 8, 1).unwrap();
         let mut output: [u8; 64] = [0; 64];

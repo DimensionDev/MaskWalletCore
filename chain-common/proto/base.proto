@@ -12,11 +12,24 @@ enum StoredKeyType {
     Mnemonic = 1;
 }
 
+enum StoredKeyImportType {
+    PrivateKeyImportType = 0;
+    MnemonicImportType = 1;
+    KeyStoreJsonImportType = 2;
+}
+
+enum StoredKeyExportType {
+    PrivateKeyExportType = 0;
+    MnemonicExportType = 1;
+    KeyStoreJsonExportType = 2;
+}
+
 message StoredKeyInfo {
     string id = 1;
     string name = 2;
-    StoredKeyType type = 3;
-    bytes data = 4;  // Raw data of the StoredKey, used in requests required an existing StoredKey
+    string hash = 3; // The unique hash of the StoredKey, users could check whether two StoredKeys are same by comparing the hashes
+    StoredKeyType type = 4;
+    bytes data = 5;  // Raw data of the StoredKey, used in requests required an existing StoredKey
 }
 
 message StoredKeyAccountInfo {
@@ -25,3 +38,4 @@ message StoredKeyAccountInfo {
     string coin = 3;  // Coin id
     string extendedPublicKey = 4;
 }
+

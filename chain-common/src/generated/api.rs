@@ -13,10 +13,13 @@ pub struct StoredKeyInfo {
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(enumeration="StoredKeyType", tag="3")]
+    /// The unique hash of the StoredKey, users could check whether two StoredKeys are same by comparing the hashes
+    #[prost(string, tag="3")]
+    pub hash: ::prost::alloc::string::String,
+    #[prost(enumeration="StoredKeyType", tag="4")]
     pub r#type: i32,
     /// Raw data of the StoredKey, used in requests required an existing StoredKey
-    #[prost(bytes="vec", tag="4")]
+    #[prost(bytes="vec", tag="5")]
     pub data: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -42,6 +45,20 @@ pub enum Coin {
 pub enum StoredKeyType {
     PrivateKey = 0,
     Mnemonic = 1,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum StoredKeyImportType {
+    PrivateKeyImportType = 0,
+    MnemonicImportType = 1,
+    KeyStoreJsonImportType = 2,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum StoredKeyExportType {
+    PrivateKeyExportType = 0,
+    MnemonicExportType = 1,
+    KeyStoreJsonExportType = 2,
 }
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -162,6 +179,16 @@ pub struct RemoveStoredKeyAccountOfAddressResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetKeyStoreSupportExportTypeParam {
+    #[prost(enumeration="Coin", tag="1")]
+    pub coin: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetKeyStoreSupportExportTypeResp {
+    #[prost(enumeration="StoredKeyImportType", repeated, tag="1")]
+    pub r#type: ::prost::alloc::vec::Vec<i32>,
+}
 /// Export the private key of StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ExportKeyStorePrivateKeyParam {
@@ -234,6 +261,16 @@ pub struct ExportKeyStoreJsonOfPathParam {
 pub struct ExportKeyStoreJsonResp {
     #[prost(string, tag="1")]
     pub json: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetKeyStoreSupportImportTypeParam {
+    #[prost(enumeration="Coin", tag="1")]
+    pub coin: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetKeyStoreSupportImportTypeResp {
+    #[prost(enumeration="StoredKeyImportType", repeated, tag="1")]
+    pub r#type: ::prost::alloc::vec::Vec<i32>,
 }
 /// Get information from StoredKey raw data
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -415,7 +452,7 @@ pub struct ValidateResp {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -466,11 +503,15 @@ pub mod mw_request {
         ParamGetVersion(super::GetVersionParam),
         #[prost(message, tag="22")]
         ParamValidation(super::ValidateParam),
+        #[prost(message, tag="23")]
+        ParamGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeParam),
+        #[prost(message, tag="24")]
+        ParamGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -519,6 +560,10 @@ pub mod mw_response {
         RespGetVersion(super::GetVersionResp),
         #[prost(message, tag="21")]
         RespValidate(super::ValidateResp),
+        #[prost(message, tag="22")]
+        RespGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeResp),
+        #[prost(message, tag="23")]
+        RespGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

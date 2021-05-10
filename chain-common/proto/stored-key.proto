@@ -4,6 +4,14 @@ package api;
 
 import "base.proto";
 
+message GetKeyStoreSupportImportTypeParam {
+    Coin coin = 1;
+}
+
+message GetKeyStoreSupportImportTypeResp {
+    repeated StoredKeyImportType type = 1;
+}
+
 // Get information from StoredKey raw data
 message LoadStoredKeyParam {
     repeated bytes data = 1;

@@ -464,6 +464,7 @@ impl From<StoredKey> for StoredKeyInfo {
             data: json,
             id: stored_key.id,
             name: stored_key.name,
+            hash: stored_key.hash,
             r#type: stored_key.r#type as i32,
         }
     }
