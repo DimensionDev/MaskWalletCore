@@ -19,7 +19,7 @@ message ValidateParam {
     oneof input{
         string privateKey = 1;
         string mnemonic = 2;
-        string keyStoreJson = 3;
+        string keyStoreJSON = 3;
         PasswordValidationParam storedKeyPassword = 4;
         AddressValidationParam addressValidationParam = 5;
     }

@@ -2,7 +2,7 @@ use super::address::EthereumAddress;
 use super::signer::Signer;
 use bytes::BytesMut;
 use chain_common::coin::Coin;
-use chain_common::entry::Entry;
+use chain_common::entry::{ChainExportType, ChainImportType, Entry};
 use chain_common::ethereum::SignInput;
 use chain_common::private_key::PrivateKey;
 use chain_common::public_key::PublicKey;
@@ -12,6 +12,18 @@ use prost::Message;
 pub struct EthereumEntry;
 
 impl Entry for EthereumEntry {
+    fn get_supported_import_types(&self) -> Vec<ChainImportType> {
+        vec![
+            ChainImportType::PrivateKey,
+            ChainImportType::Mnemonic,
+            ChainImportType::KeyStoreJSON,
+        ]
+    }
+
+    fn get_supported_export_types(&self) -> Vec<ChainExportType> {
+        vec![ChainExportType::PrivateKey, ChainExportType::KeyStoreJSON]
+    }
+
     fn validate_address(&self, address: &str) -> bool {
         EthereumAddress::is_valid(&address)
     }

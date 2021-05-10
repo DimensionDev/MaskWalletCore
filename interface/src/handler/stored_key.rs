@@ -2,6 +2,7 @@ use crate::coins::get_coin_info;
 use crate::response_util::*;
 use chain_common::api::mw_response::Response;
 use chain_common::api::*;
+use wallet::coin_dispatcher::CoinDispatcher;
 use wallet::stored_key::StoredKey;
 
 pub fn load_stored_keys(param: LoadStoredKeyParam) -> MwResponse {
@@ -283,5 +284,67 @@ pub fn update_key_store_name(param: UpdateStoredKeyNameParam) -> MwResponse {
         response: Some(Response::RespUpdateKeyStoreName(UpdateStoredKeyNameResp {
             stored_key: Some(StoredKeyInfo::from(stored_key)),
         })),
+    }
+}
+
+pub fn get_supported_import_types(param: GetKeyStoreSupportImportTypeParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError {
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                })),
+            };
+        }
+    };
+    let entry = match CoinDispatcher::get_entry(&coin) {
+        Ok(entry) => entry,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    let types = entry
+        .get_supported_import_types()
+        .into_iter()
+        .map(|r#type| r#type as i32)
+        .collect();
+    MwResponse {
+        response: Some(Response::RespGetStoredKeyImportType(
+            GetKeyStoreSupportImportTypeResp { r#type: types },
+        )),
+    }
+}
+
+pub fn get_supported_export_types(param: GetKeyStoreSupportExportTypeParam) -> MwResponse {
+    let coin_info = get_coin_info(param.coin);
+    let coin = match coin_info {
+        Some(coin_info) => coin_info,
+        None => {
+            return MwResponse {
+                response: Some(Response::Error(MwResponseError {
+                    error_code: "-1".to_owned(),
+                    error_msg: "Invalid Coin Type".to_owned(),
+                })),
+            };
+        }
+    };
+    let entry = match CoinDispatcher::get_entry(&coin) {
+        Ok(entry) => entry,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
+    let types = entry
+        .get_supported_export_types()
+        .into_iter()
+        .map(|r#type| r#type as i32)
+        .collect();
+    MwResponse {
+        response: Some(Response::RespGetStoredKeyExportType(
+            GetKeyStoreSupportExportTypeResp { r#type: types },
+        )),
     }
 }

@@ -164,7 +164,7 @@ impl StoredKey {
         let (_, decrypted) =
             EncryptionParams::new_from_json_struct(&key_store_json_struct, password.as_bytes())?;
         let decrypted_str = std::str::from_utf8(&decrypted)
-            .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJson))?;
+            .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJSON))?;
         if Mnemonic::is_valid(&decrypted_str) {
             return Self::create_with_mnemonic(&name, &password, &decrypted_str);
         }
@@ -241,7 +241,7 @@ impl StoredKey {
             .find(|account| account.address == address)
         {
             if self.r#type == StoredKeyType::PrivateKey {
-                // Convert the payload to KeyStoreJson
+                // Convert the payload to KeyStoreJSON
                 self.payload
                     .export_to_key_store_json(&password, &new_password)
             } else {
@@ -464,6 +464,7 @@ impl From<StoredKey> for StoredKeyInfo {
             data: json,
             id: stored_key.id,
             name: stored_key.name,
+            hash: stored_key.hash,
             r#type: stored_key.r#type as i32,
         }
     }

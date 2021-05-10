@@ -4,6 +4,14 @@ package api;
 
 import "base.proto";
 
+message GetKeyStoreSupportExportTypeParam {
+    Coin coin = 1;
+}
+
+message GetKeyStoreSupportExportTypeResp {
+    repeated StoredKeyImportType type = 1;
+}
+
 // Export the private key of StoredKey
 message ExportKeyStorePrivateKeyParam {
     bytes StoredKeyData = 1;
