@@ -1,0 +1,17 @@
+[package]
+name = "wasm"
+version = "0.1.0"
+authors = ["jk234ert <handan0524@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+console_error_panic_hook = "0.1.6"
+wasm-bindgen = "0.2"
+
+interface = { path = "../interface" }
+
+[lib]
+name = "mask_wallet_core_wasm"
+crate-type = ["cdylib"]
