@@ -34,7 +34,7 @@ pub enum Error {
 
     InvalidDerivationpath,
 
-    InvalidKeyStoreJson,
+    InvalidKeyStoreJSON,
 
     NotSupportedPublicKeyType,
 

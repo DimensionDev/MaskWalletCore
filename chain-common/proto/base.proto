@@ -15,13 +15,13 @@ enum StoredKeyType {
 enum StoredKeyImportType {
     PrivateKeyImportType = 0;
     MnemonicImportType = 1;
-    KeyStoreJsonImportType = 2;
+    KeyStoreJSONImportType = 2;
 }
 
 enum StoredKeyExportType {
     PrivateKeyExportType = 0;
     MnemonicExportType = 1;
-    KeyStoreJsonExportType = 2;
+    KeyStoreJSONExportType = 2;
 }
 
 message StoredKeyInfo {

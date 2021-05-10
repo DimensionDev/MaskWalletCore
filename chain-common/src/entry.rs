@@ -6,13 +6,13 @@ use crypto::Error;
 pub enum ChainImportType {
     PrivateKey = 0,
     Mnemonic = 1,
-    KeyStoreJson = 2,
+    KeyStoreJSON = 2,
 }
 
 pub enum ChainExportType {
     PrivateKey = 0,
     Mnemonic = 1,
-    KeyStoreJson = 2,
+    KeyStoreJSON = 2,
 }
 
 pub trait Entry {
