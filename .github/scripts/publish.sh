@@ -3,7 +3,7 @@ set -x -euo pipefail
 
 cp -R ./chain-common/proto/* ./package/proto
 
-pushd interface
+pushd target-wasm
 wasm-pack build --target nodejs \
 	--out-name index \
 	--out-dir ../package/node

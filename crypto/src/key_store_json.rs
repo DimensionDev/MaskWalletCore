@@ -24,7 +24,7 @@ pub struct Crypto {
 impl FromStr for KeyStoreJson {
     type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        serde_json::from_str(s).map_err(|_| Error::InvalidKeyStoreJSON)
+        serde_json::from_str(s).map_err(|_| Error::InvalidKeyStoreJson)
     }
 }
 

@@ -16,12 +16,12 @@ impl Entry for EthereumEntry {
         vec![
             ChainImportType::PrivateKey,
             ChainImportType::Mnemonic,
-            ChainImportType::KeyStoreJSON,
+            ChainImportType::KeyStoreJson,
         ]
     }
 
     fn get_supported_export_types(&self) -> Vec<ChainExportType> {
-        vec![ChainExportType::PrivateKey, ChainExportType::KeyStoreJSON]
+        vec![ChainExportType::PrivateKey, ChainExportType::KeyStoreJson]
     }
 
     fn validate_address(&self, address: &str) -> bool {
