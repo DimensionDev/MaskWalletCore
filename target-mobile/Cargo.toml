@@ -1,5 +1,5 @@
 [package]
-name = "mobile"
+name = "target-mobile"
 version = "0.1.0"
 authors = ["jk234ert <handan0524@gmail.com>"]
 edition = "2018"

@@ -1,8 +1,8 @@
 [workspace]
 members = [
     "cli",
-    "mobile",
-    "wasm",
+    "target-mobile",
+    "target-wasm",
     "interface",
     "wallet",
     "crypto",

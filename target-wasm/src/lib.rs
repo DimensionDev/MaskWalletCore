@@ -1,4 +1,3 @@
-use interface;
 use std::panic;
 use wasm_bindgen::prelude::*;
 

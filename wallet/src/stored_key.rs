@@ -164,7 +164,7 @@ impl StoredKey {
         let (_, decrypted) =
             EncryptionParams::new_from_json_struct(&key_store_json_struct, password.as_bytes())?;
         let decrypted_str = std::str::from_utf8(&decrypted)
-            .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJSON))?;
+            .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJson))?;
         if Mnemonic::is_valid(&decrypted_str) {
             return Self::create_with_mnemonic(&name, &password, &decrypted_str);
         }
