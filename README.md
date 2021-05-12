@@ -17,20 +17,28 @@ The project structure is managed using a crate workspace, comprised by different
 
 ## Usage
 
+The definition of supported requests and corresponding responses could be found from the proto definition files `Api.proto` and `Response.proto` in the `chain-common/proto` directory.
+
+### For Wasm
+
 To `send API requests` to this library, you need to call the `request(&[u8]) -> Vec<u8>` by sending protobuf encoded requests,
 then decode the response using protobuf to get the actual returned value.
 
-The supported requests could be found from the proto definition files `Api.proto` and `Param.proto` in the `interface/proto` directory.
+### For iOS
 
-The corresponding responses could be found from the proto definition files `Api.proto` and `Respons.proto` in the `interface/proto` directory.
+In development
+
+### For Android
+
+In development
 
 ## New Chain Integration Checklist
 
 - [ ] Add chain and coin info to `interface/resource/coin.json`
 - [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory
 - [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
-- [ ] Add new enum value to `enum Coin` in `interface/proto/Param.proto`
-- [ ] Add the newly added chain to following location in `interface/src/coin.rs`
+- [ ] Add new enum value to `enum Coin` in `chain-common/proto/Param.proto`
+- [ ] Add the newly added chain to following location in `chain-common/src/coin.rs`
 
 ```rust
 impl ToString for CoinType {
@@ -47,10 +55,11 @@ impl ToString for CoinType {
 - [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs` as following
 
 ```rust
-pub fn get_dispatcher(coin: &Coin) -> Box<dyn Entry> {
-    match coin.name.as_str() {
-        "ethereum" => Box::new(EthereumEntry{}),
-        // Add "${NEW_CHAIN_ID}" to the Box::new(${NEW_CHAIN_ENTRY})
+pub fn get_entry(coin: &Coin) -> Result<Box<dyn Entry>, Error> {
+    let coin_proto_type = ProtoCoinType::from_str(&coin.name)?;
+    match coin_proto_type {
+        ProtoCoinType::Ethereum => Ok(Box::new(EthereumEntry {})),
+        _ => Err(Error::ChainError(ChainError::NotSupportedCoin)),
     }
 }
 ```
@@ -84,5 +93,5 @@ cargo install wasm-pack
 After successfully installing all dependencies, build the WebAssembly wasm by simply running:
 
 ```bash
-wasm-pack build interface --target web
+wasm-pack build target-wasm --target web
 ```

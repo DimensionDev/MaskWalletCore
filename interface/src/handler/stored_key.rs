@@ -348,3 +348,37 @@ pub fn get_supported_export_types(param: GetKeyStoreSupportExportTypeParam) -> M
         )),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_get_import_types() {
+        use chain_common::coin::Coin;
+        use std::collections::HashMap;
+        use wallet::coin_dispatcher::CoinDispatcher;
+        use wallet::stored_key::StoredKey;
+
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+            all_info: HashMap::new(),
+        };
+
+        let entry = CoinDispatcher::get_entry(&coin).unwrap();
+        let types: Vec<i32> = entry
+            .get_supported_import_types()
+            .into_iter()
+            .map(|r#type| r#type as i32)
+            .collect();
+        assert_eq!(types, vec![0, 1, 2]);
+    }
+}
