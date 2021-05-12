@@ -3,6 +3,22 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-char *rust_request(const char *input);
+typedef struct RustByteSlice {
+  const uint8_t *bytes;
+  unsigned int len;
+} RustByteSlice;
 
-void rust_free(char *s);
+/**
+ * # Safety
+ *
+ * The caller should provide a pointer that points to a valid C string with a NUL terminator of size less than `isize::MAX`
+ */
+struct RustByteSlice rust_request(const uint8_t *bytes,
+                                  unsigned int len);
+
+/**
+ * # Safety
+ *
+ * The caller should provide a pointer that points to a valid C string with a NUL terminator of size less than `isize::MAX`.
+ */
+void rust_free(struct RustByteSlice slice);
