@@ -3,7 +3,7 @@ syntax = "proto3";
 package api;
 
 import "base.proto";
-import "sign/ethereum.proto";
+import "sign/Ethereum.proto";
 
 // Sign a transaction
 message SignTransactionParam {
