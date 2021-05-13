@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package Ethereum;
+package ethereum;
 
 // Input data necessary to create a signed transaction.
 message SignInput {

@@ -18,8 +18,6 @@ pub enum Error {
 
     PasswordIncorrect,
 
-    DerivedKeyNotMatched,
-
     InvalidKeyIvLength,
 
     InvalidCiphertext,
@@ -41,6 +39,42 @@ pub enum Error {
     NotSupportedCurve,
 
     NotSupportedCipher,
+}
 
-    CachedDkFeatureNotSupport,
+impl Error {
+    pub fn get_code(&self) -> String {
+        match self {
+            Error::KdfParamsInvalid => "-3001".to_owned(),
+            Error::PasswordIncorrect => "-3002".to_owned(),
+            Error::InvalidKeyIvLength => "-3004".to_owned(),
+            Error::InvalidCiphertext => "-3004".to_owned(),
+            Error::InvalidPrivateKey => "-3004".to_owned(),
+            Error::InvalidPublicKey => "-3004".to_owned(),
+            Error::InvalidMnemonic => "-3004".to_owned(),
+            Error::InvalidSeed => "-3004".to_owned(),
+            Error::InvalidDerivationpath => "-3004".to_owned(),
+            Error::InvalidKeyStoreJson => "-3004".to_owned(),
+            Error::NotSupportedPublicKeyType => "-3004".to_owned(),
+            Error::NotSupportedCurve => "-3004".to_owned(),
+            Error::NotSupportedCipher => "-3004".to_owned(),
+        }
+    }
+
+    pub fn get_message(&self) -> String {
+        match self {
+            Error::KdfParamsInvalid => "Invalid kdf parameter".to_owned(),
+            Error::PasswordIncorrect => "Password incorrect".to_owned(),
+            Error::InvalidKeyIvLength => "Invalid iv length".to_owned(),
+            Error::InvalidCiphertext => "Invalid cipher text".to_owned(),
+            Error::InvalidPrivateKey => "Invalid private key".to_owned(),
+            Error::InvalidPublicKey => "Invalid public key".to_owned(),
+            Error::InvalidMnemonic => "Invalid mnemonic".to_owned(),
+            Error::InvalidSeed => "Invalid seed".to_owned(),
+            Error::InvalidDerivationpath => "Invalid derivation path".to_owned(),
+            Error::InvalidKeyStoreJson => "Invalid key store json".to_owned(),
+            Error::NotSupportedPublicKeyType => "Not supported public key type".to_owned(),
+            Error::NotSupportedCurve => "Not supported curve".to_owned(),
+            Error::NotSupportedCipher => "Not supported cipher type".to_owned(),
+        }
+    }
 }

@@ -351,13 +351,11 @@ pub fn get_supported_export_types(param: GetKeyStoreSupportExportTypeParam) -> M
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     #[test]
     fn test_get_import_types() {
         use chain_common::coin::Coin;
         use std::collections::HashMap;
         use wallet::coin_dispatcher::CoinDispatcher;
-        use wallet::stored_key::StoredKey;
 
         let derivation_path = "m/44'/60'/0'/0/0";
         let coin = Coin {

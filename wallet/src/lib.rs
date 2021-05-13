@@ -31,3 +31,33 @@ impl From<ChainError> for Error {
         Error::ChainError(err)
     }
 }
+
+impl Error {
+    pub fn get_code(&self) -> String {
+        match self {
+            Error::JsonSerializationError => "-1001".to_owned(),
+            Error::IndexOutOfBounds => "-1002".to_owned(),
+            Error::RequestNotSupportedOnPrivateKeyTypeStoredKey => "-1003".to_owned(),
+            Error::RequstedAccountNotFound => "-1004".to_owned(),
+            Error::AccountAlreadyExist => "-1005".to_owned(),
+            Error::CryptoError(crypto_error) => crypto_error.get_code(),
+            Error::ChainError(chain_error) => chain_error.get_code(),
+        }
+    }
+
+    pub fn get_message(&self) -> String {
+        match self {
+            Error::JsonSerializationError => "Fail to serialize json".to_owned(),
+            Error::IndexOutOfBounds => "Requested index is out of bounds".to_owned(),
+            Error::RequestNotSupportedOnPrivateKeyTypeStoredKey => {
+                "Request is not supported on a private key type StoredKey".to_owned()
+            }
+            Error::RequstedAccountNotFound => {
+                "Account of requested address is not found".to_owned()
+            }
+            Error::AccountAlreadyExist => "The requested account already exists".to_owned(),
+            Error::CryptoError(crypto_error) => crypto_error.get_message(),
+            Error::ChainError(chain_error) => chain_error.get_message(),
+        }
+    }
+}

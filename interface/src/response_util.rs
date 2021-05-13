@@ -26,7 +26,7 @@ pub fn get_invalid_proto_resposne() -> MwResponse {
 
 fn get_error_response(_error: Error) -> Response {
     Response::Error(MwResponseError {
-        error_code: "-1".to_owned(),          // TODO: error to error code
+        error_code: _error.get_code(),        // TODO: error to error code
         error_msg: "Invalid Data".to_owned(), // TODO: error to error message
     })
 }

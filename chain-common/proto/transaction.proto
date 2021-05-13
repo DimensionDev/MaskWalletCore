@@ -3,7 +3,7 @@ syntax = "proto3";
 package api;
 
 import "base.proto";
-import "sign/Ethereum.proto";
+import "sign/ethereum.proto";
 
 // Sign a transaction
 message SignTransactionParam {
@@ -12,12 +12,12 @@ message SignTransactionParam {
     string password = 3;
     Coin coin = 4;
     oneof input {
-        Ethereum.SignInput sign_input = 5;
+        ethereum.SignInput sign_input = 5;
     }
 }
 
 message SignTransactionResp {
     oneof output {
-        Ethereum.SignOutput sign_output = 1;
+        ethereum.SignOutput sign_output = 1;
     }
 }
