@@ -25,6 +25,8 @@ jobs:
         uses: actions-rs/install@v0.1
         with:
           crate: wasm-pack
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
       - name: Test
         uses: actions-rs/cargo@v1
         with:
