@@ -9,9 +9,6 @@
   "config": {
     "protocVersion": "3.17.0"
   },
-  "devDependencies": {
-    "@protobuf-ts/plugin": "^1.0.13"
-  },
   "peerDependencies": {
     "@protobuf-ts/runtime": ">= 1.0.13"
   },
