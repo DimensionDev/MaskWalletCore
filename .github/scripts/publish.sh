@@ -19,13 +19,13 @@ pushd package
 VERSION=$(npx pkg-jq -r '.version' node)
 npx pkg-jq -i ".version = \"""$VERSION"-"$BUILD_VERSION""\""
 npm ci
-pushd proto
-npx --no-install --package @protobuf-ts/plugin protoc \
-	--ts_out . \
+npx protoc \
+	--ts_out proto \
 	--ts_opt long_type_string \
 	--ts_opt optimize_code_size \
-	--proto_path . \
-	*.proto
+	--proto_path proto \
+	proto/*.proto
+pushd proto
 npx --no-install --package typescript tsc
 popd
 npm publish
