@@ -19,16 +19,13 @@ pushd package
 VERSION=$(npx pkg-jq -r '.version' node)
 npx pkg-jq -i ".version = \"""$VERSION"-"$BUILD_VERSION""\""
 npm ci
-OUT_PARAMS=(
-	--target static-module
-	--keep-case
-	--no-create
-	--no-verify
-	--no-convert
-	--no-delimited
-	proto/*.proto
-)
-npx pbjs --out proto/index.js --wrap commonjs "${OUT_PARAMS[@]}"
-npx pbjs --out proto/index.esm.js --wrap es6 --es6 "${OUT_PARAMS[@]}"
-npx pbts --out proto/index.d.ts proto/index.js
+pushd proto
+npx protoc \
+	--ts_out . \
+	--ts_opt long_type_string \
+	--ts_opt optimize_code_size \
+	--proto_path . \
+	*.proto
+npx --no-install --package typescript tsc
+popd
 npm publish
