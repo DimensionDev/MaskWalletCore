@@ -1,27 +1,25 @@
-use std::os::raw::c_uint;
 use std::slice;
 
 #[repr(C)]
 pub struct RustByteSlice {
     pub bytes: *const u8,
-    pub len: c_uint,
+    pub len: usize,
 }
 
 /// # Safety
 ///
 /// The caller should provide a pointer that points to a valid C string with a NUL terminator of size less than `isize::MAX`
 #[no_mangle]
-pub unsafe extern "C" fn rust_request(bytes: *const u8, len: c_uint) -> RustByteSlice {
+pub unsafe extern "C" fn rust_request(bytes: *const u8, len: usize) -> RustByteSlice {
     let byte_slice = slice::from_raw_parts(bytes, len as usize);
 
-    // let c_str = CStr::from_ptr(input);
-    // let input_bytes = c_str.to_bytes();
     let response_bytes = interface::call_api(byte_slice);
-    // CString::new(response_bytes).unwrap().into_raw()
-
+    let bytes_ptr = response_bytes.as_ptr();
+    let bytes_len = response_bytes.len();
+    std::mem::forget(response_bytes);
     RustByteSlice {
-        bytes: response_bytes.as_ptr(),
-        len: response_bytes.len() as u32,
+        bytes: bytes_ptr,
+        len: bytes_len,
     }
 }
 
@@ -29,8 +27,7 @@ pub unsafe extern "C" fn rust_request(bytes: *const u8, len: c_uint) -> RustByte
 ///
 /// The caller should provide a pointer that points to a valid C string with a NUL terminator of size less than `isize::MAX`.
 #[no_mangle]
-pub unsafe extern "C" fn rust_free(slice: RustByteSlice) {
-    if slice.bytes.is_null() {
-        return;
-    }
+pub unsafe extern "C" fn rust_free(input: RustByteSlice) {
+    let slice = slice::from_raw_parts_mut(input.bytes as *mut u8, input.len as usize);
+    let _: Box<[u8]> = Box::from_raw(slice);
 }
