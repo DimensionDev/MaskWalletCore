@@ -22,7 +22,7 @@ pub fn load_stored_keys(param: LoadStoredKeyParam) -> MwResponse {
 }
 
 pub fn create_stored_key(param: CreateStoredKeyParam) -> MwResponse {
-    let stored_key: StoredKey =
+    let (stored_key, mnemonic) =
         match StoredKey::create_with_mnemonic_random(&param.name, &param.password) {
             Ok(key) => key,
             Err(error) => {
@@ -32,6 +32,7 @@ pub fn create_stored_key(param: CreateStoredKeyParam) -> MwResponse {
     MwResponse {
         response: Some(Response::RespCreateStoredKey(CreateStoredKeyResp {
             stored_key: Some(StoredKeyInfo::from(stored_key)),
+            mnemonic,
         })),
     }
 }

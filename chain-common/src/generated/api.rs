@@ -295,6 +295,9 @@ pub struct CreateStoredKeyParam {
 pub struct CreateStoredKeyResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
+    /// The mnemonic of the new generated StoredKey
+    #[prost(string, tag="2")]
+    pub mnemonic: ::prost::alloc::string::String,
 }
 /// Create a StoredKey with private key, please aware that this request DOES create an account with the specific coin
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -29,6 +29,7 @@ message CreateStoredKeyParam {
 
 message CreateStoredKeyResp {
     StoredKeyInfo StoredKey = 1;
+    string mnemonic = 2; // The mnemonic of the new generated StoredKey
 }
 
 // Create a StoredKey with private key, please aware that this request DOES create an account with the specific coin

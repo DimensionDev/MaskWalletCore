@@ -123,14 +123,18 @@ impl StoredKey {
         )
     }
 
-    pub fn create_with_mnemonic_random(name: &str, password: &str) -> Result<StoredKey, Error> {
+    pub fn create_with_mnemonic_random(
+        name: &str,
+        password: &str,
+    ) -> Result<(StoredKey, String), Error> {
         let wallet = HdWallet::new(12, "")?;
-        Self::create_with_data(
+        let stored_key = Self::create_with_data(
             StoredKeyType::Mnemonic,
             &name,
             &password,
             &wallet.mnemonic.as_bytes(),
-        )
+        )?;
+        Ok((stored_key, wallet.mnemonic))
     }
 
     // pub fn create_with_mnemonic_and_default_address(
@@ -562,6 +566,11 @@ mod tests {
     }
 
     #[test]
+    fn test_create_with_json() {
+        let json = r#""#;
+    }
+
+    #[test]
     fn test_create_account_at_path() {
         let mnemonic =
             "suffer artefact burst review network fantasy easy century mom unique pupil boy";
@@ -601,7 +610,8 @@ mod tests {
         let stored_key2 = StoredKey::create_with_mnemonic("mask2", &password, &mnemonic1).unwrap();
         assert_eq!(stored_key1.hash, stored_key2.hash);
 
-        let stored_key_random = StoredKey::create_with_mnemonic_random("mask", &password).unwrap();
+        let (stored_key_random, _) =
+            StoredKey::create_with_mnemonic_random("mask", &password).unwrap();
         assert_ne!(stored_key1.hash, stored_key_random.hash);
         assert_ne!(stored_key2.hash, stored_key_random.hash);
     }
