@@ -29,7 +29,7 @@ message MWRequest {
         ExportKeyStoreJSONOfAddressParam param_export_key_store_json_of_address = 16;
         ExportKeyStoreJSONOfPathParam param_export_key_store_json_of_path = 17;
         UpdateStoredKeyPasswordParam param_update_key_store_password = 18;
-        UpdateStoredKeyNameParam param_update_key_store_name = 19;
+        UpdateStoredKeyAccountNameOfAddressParam param_update_stored_key_account_name = 19;
         SignTransactionParam param_sign_transaction = 20;
         GetVersionParam param_get_version = 21;
         ValidateParam param_validation = 22;
@@ -57,7 +57,7 @@ message MWResponse {
         ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
         ExportKeyStoreJSONResp resp_export_key_store_json = 16;
         UpdateStoredKeyPasswordResp resp_update_key_store_password = 17;
-        UpdateStoredKeyNameResp resp_update_key_store_name = 18;
+        UpdateStoredKeyAccountNameOfAddressResp resp_update_key_store_account_name = 18;
         SignTransactionResp resp_sign_transaction = 19;
         GetVersionResp resp_get_version = 20;
         ValidateResp resp_validate = 21;

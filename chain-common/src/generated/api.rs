@@ -11,15 +11,13 @@ pub struct GetVersionResp {
 pub struct StoredKeyInfo {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub name: ::prost::alloc::string::String,
     /// The unique hash of the StoredKey, users could check whether two StoredKeys are same by comparing the hashes
-    #[prost(string, tag="3")]
+    #[prost(string, tag="2")]
     pub hash: ::prost::alloc::string::String,
-    #[prost(enumeration="StoredKeyType", tag="4")]
+    #[prost(enumeration="StoredKeyType", tag="3")]
     pub r#type: i32,
     /// Raw data of the StoredKey, used in requests required an existing StoredKey
-    #[prost(bytes="vec", tag="5")]
+    #[prost(bytes="vec", tag="4")]
     pub data: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -27,11 +25,13 @@ pub struct StoredKeyAccountInfo {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
     pub derivation_path: ::prost::alloc::string::String,
     /// Coin id
-    #[prost(string, tag="3")]
-    pub coin: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
+    pub coin: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
     pub extended_public_key: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -62,18 +62,20 @@ pub enum StoredKeyExportType {
 }
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountParam {
+pub struct CreateStoredKeyNewAccountAtPathParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(enumeration="Coin", tag="2")]
+    #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(enumeration="Coin", tag="3")]
     pub coin: i32,
-    #[prost(string, tag="3")]
-    pub derivation_path: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
+    pub derivation_path: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
     pub password: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountResp {
+pub struct CreateStoredKeyNewAccountAtPathResp {
     #[prost(message, optional, tag="1")]
     pub account: ::core::option::Option<StoredKeyAccountInfo>,
     #[prost(message, optional, tag="2")]
@@ -84,7 +86,7 @@ pub struct CreateStoredKeyNewAccountResp {
 pub struct GetStoredKeyAccountCountParam {
     /// StoredKey data returned from other response
     #[prost(bytes="vec", tag="1")]
-    pub data: ::prost::alloc::vec::Vec<u8>,
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAccountCountResp {
@@ -96,7 +98,7 @@ pub struct GetStoredKeyAccountCountResp {
 pub struct GetStoredKeyAccountParam {
     /// StoredKey data returned from other response
     #[prost(bytes="vec", tag="1")]
-    pub data: ::prost::alloc::vec::Vec<u8>,
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     /// Index of the account, begin from zero
     #[prost(uint32, tag="2")]
     pub index: u32,
@@ -110,7 +112,7 @@ pub struct GetStoredKeyAccountResp {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAllAccountParam {
     #[prost(bytes="vec", tag="1")]
-    pub data: ::prost::alloc::vec::Vec<u8>,
+    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAllAccountResp {
@@ -132,24 +134,21 @@ pub struct GetStoredKeyAccountsOfCoinResp {
     #[prost(message, repeated, tag="2")]
     pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
 }
-/// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountAtPathParam {
+pub struct UpdateStoredKeyAccountNameOfAddressParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(enumeration="Coin", tag="2")]
-    pub coin: i32,
+    #[prost(string, tag="2")]
+    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
-    pub derivation_path: ::prost::alloc::string::String,
-    #[prost(string, tag="4")]
-    pub password: ::prost::alloc::string::String,
+    pub name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateStoredKeyNewAccountAtPathResp {
+pub struct UpdateStoredKeyAccountNameOfAddressResp {
     #[prost(message, optional, tag="1")]
-    pub account: ::core::option::Option<StoredKeyAccountInfo>,
-    #[prost(message, optional, tag="2")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
+    #[prost(message, optional, tag="2")]
+    pub account: ::core::option::Option<StoredKeyAccountInfo>,
 }
 /// Remove all accounts of specific coin type into a StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -286,8 +285,6 @@ pub struct LoadStoredKeyResp {
 /// Create a new StoredKey with random generated mnemonic, this request will NOT create any account
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateStoredKeyParam {
-    #[prost(string, tag="1")]
-    pub name: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub password: ::prost::alloc::string::String,
 }
@@ -307,6 +304,7 @@ pub struct ImportPrivateStoredKeyParam {
     pub private_key: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub password: ::prost::alloc::string::String,
+    /// The name of created ACCOUNT
     #[prost(string, tag="3")]
     pub name: ::prost::alloc::string::String,
     #[prost(enumeration="Coin", tag="4")]
@@ -322,8 +320,6 @@ pub struct ImportPrivateStoredKeyResp {
 pub struct ImportMnemonicStoredKeyParam {
     #[prost(string, tag="1")]
     pub mnemonic: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub name: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub password: ::prost::alloc::string::String,
 }
@@ -337,6 +333,7 @@ pub struct ImportMnemonicStoredKeyResp {
 pub struct ImportJsonStoredKeyParam {
     #[prost(string, tag="1")]
     pub json: ::prost::alloc::string::String,
+    /// The name of created ACCOUNT
     #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
@@ -361,19 +358,6 @@ pub struct UpdateStoredKeyPasswordParam {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateStoredKeyPasswordResp {
-    #[prost(message, optional, tag="1")]
-    pub stored_key: ::core::option::Option<StoredKeyInfo>,
-}
-/// Update the password of an exisiting StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateStoredKeyNameParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag="2")]
-    pub new_name: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateStoredKeyNameResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
@@ -499,7 +483,7 @@ pub mod mw_request {
         #[prost(message, tag="18")]
         ParamUpdateKeyStorePassword(super::UpdateStoredKeyPasswordParam),
         #[prost(message, tag="19")]
-        ParamUpdateKeyStoreName(super::UpdateStoredKeyNameParam),
+        ParamUpdateStoredKeyAccountName(super::UpdateStoredKeyAccountNameOfAddressParam),
         #[prost(message, tag="20")]
         ParamSignTransaction(super::SignTransactionParam),
         #[prost(message, tag="21")]
@@ -556,7 +540,7 @@ pub mod mw_response {
         #[prost(message, tag="17")]
         RespUpdateKeyStorePassword(super::UpdateStoredKeyPasswordResp),
         #[prost(message, tag="18")]
-        RespUpdateKeyStoreName(super::UpdateStoredKeyNameResp),
+        RespUpdateKeyStoreAccountName(super::UpdateStoredKeyAccountNameOfAddressResp),
         #[prost(message, tag="19")]
         RespSignTransaction(super::SignTransactionResp),
         #[prost(message, tag="20")]

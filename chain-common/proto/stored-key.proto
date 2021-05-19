@@ -23,7 +23,6 @@ message LoadStoredKeyResp {
 
 // Create a new StoredKey with random generated mnemonic, this request will NOT create any account
 message CreateStoredKeyParam {
-    string name = 1;
     string password = 2;
 }
 
@@ -36,7 +35,7 @@ message CreateStoredKeyResp {
 message ImportPrivateStoredKeyParam {
     string privateKey = 1; // Hex encoded private key string
     string password = 2;
-    string name = 3;
+    string name = 3; // The name of created ACCOUNT
     Coin coin = 4;
 }
 
@@ -47,7 +46,6 @@ message ImportPrivateStoredKeyResp {
 // Create a new StoredKey with given mnemonic, this request will NOT create any account
 message ImportMnemonicStoredKeyParam {
     string mnemonic = 1;
-    string name = 2;
     string password = 3;
 }
 
@@ -58,7 +56,7 @@ message ImportMnemonicStoredKeyResp {
 // Create a new StoredKey with JSON, please aware that this request DOES create an account with the specific coin
 message ImportJSONStoredKeyParam {
     string json = 1;
-    string name = 2;
+    string name = 2; // The name of created ACCOUNT
     string password = 3;
     Coin coin = 4;
 }
@@ -75,15 +73,5 @@ message UpdateStoredKeyPasswordParam {
 }
 
 message UpdateStoredKeyPasswordResp {
-    StoredKeyInfo StoredKey = 1;
-}
-
-// Update the password of an exisiting StoredKey
-message UpdateStoredKeyNameParam {
-    bytes StoredKeyData = 1;
-    string newName = 2;
-}
-
-message UpdateStoredKeyNameResp {
     StoredKeyInfo StoredKey = 1;
 }

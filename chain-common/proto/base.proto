@@ -26,16 +26,16 @@ enum StoredKeyExportType {
 
 message StoredKeyInfo {
     string id = 1;
-    string name = 2;
-    string hash = 3; // The unique hash of the StoredKey, users could check whether two StoredKeys are same by comparing the hashes
-    StoredKeyType type = 4;
-    bytes data = 5;  // Raw data of the StoredKey, used in requests required an existing StoredKey
+    string hash = 2; // The unique hash of the StoredKey, users could check whether two StoredKeys are same by comparing the hashes
+    StoredKeyType type = 3;
+    bytes data = 4;  // Raw data of the StoredKey, used in requests required an existing StoredKey
 }
 
 message StoredKeyAccountInfo {
     string address = 1;
-    string derivationPath = 2;
-    string coin = 3;  // Coin id
-    string extendedPublicKey = 4;
+    string name = 2;
+    string derivationPath = 3;
+    string coin = 4;  // Coin id
+    string extendedPublicKey = 5;
 }
 

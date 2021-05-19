@@ -5,21 +5,22 @@ package api;
 import "base.proto";
 
 // Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
-message CreateStoredKeyNewAccountParam {
+message CreateStoredKeyNewAccountAtPathParam {
     bytes StoredKeyData = 1;
-    Coin coin = 2;
-    string derivationPath = 3;
-    string password = 4;
+    string name = 2;
+    Coin coin = 3;
+    string derivationPath = 4;
+    string password = 5;
 }
 
-message CreateStoredKeyNewAccountResp {
+message CreateStoredKeyNewAccountAtPathResp {
     StoredKeyAccountInfo account = 1;
     StoredKeyInfo storedKey = 2;
 }
 
 // Get count of accounts of a StoredKey
 message GetStoredKeyAccountCountParam {
-    bytes data = 1; // StoredKey data returned from other response
+    bytes storedKeyData = 1; // StoredKey data returned from other response
 }
 
 message GetStoredKeyAccountCountResp {
@@ -28,7 +29,7 @@ message GetStoredKeyAccountCountResp {
 
 // Get the account at specific index of a StoredKey
 message GetStoredKeyAccountParam {
-    bytes data = 1;   // StoredKey data returned from other response
+    bytes storedKeyData = 1;   // StoredKey data returned from other response
     uint32 index = 2; // Index of the account, begin from zero
 }
 
@@ -38,7 +39,7 @@ message GetStoredKeyAccountResp {
 
 // Get all accounts information of a StoredKey
 message GetStoredKeyAllAccountParam {
-    bytes data = 1;
+    bytes storedKeyData = 1;
 }
 
 message GetStoredKeyAllAccountResp {
@@ -56,17 +57,15 @@ message GetStoredKeyAccountsOfCoinResp {
     repeated StoredKeyAccountInfo accounts = 2;
 }
 
-// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
-message CreateStoredKeyNewAccountAtPathParam {
-    bytes StoredKeyData = 1;
-    Coin coin = 2;
-    string derivationPath = 3;
-    string password = 4;
+message UpdateStoredKeyAccountNameOfAddressParam {
+    bytes storedKeyData = 1;
+    string address = 2;
+    string name = 3;
 }
 
-message CreateStoredKeyNewAccountAtPathResp {
-    StoredKeyAccountInfo account = 1;
-    StoredKeyInfo storedKey = 2;
+message UpdateStoredKeyAccountNameOfAddressResp {
+    StoredKeyInfo storedKey = 1;
+    StoredKeyAccountInfo account = 2;
 }
 
 // Remove all accounts of specific coin type into a StoredKey

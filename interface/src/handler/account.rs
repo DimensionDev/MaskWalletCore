@@ -5,7 +5,7 @@ use chain_common::api::*;
 use wallet::stored_key::StoredKey;
 
 pub fn get_stored_key_account_count(param: GetStoredKeyAccountCountParam) -> MwResponse {
-    let stored_key: StoredKey = match serde_json::from_slice(&param.data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
@@ -21,7 +21,7 @@ pub fn get_stored_key_account_count(param: GetStoredKeyAccountCountParam) -> MwR
 }
 
 pub fn get_store_key_account(param: GetStoredKeyAccountParam) -> MwResponse {
-    let stored_key: StoredKey = match serde_json::from_slice(&param.data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
@@ -41,7 +41,7 @@ pub fn get_store_key_account(param: GetStoredKeyAccountParam) -> MwResponse {
 }
 
 pub fn get_stored_key_all_accounts(param: GetStoredKeyAllAccountParam) -> MwResponse {
-    let stored_key: StoredKey = match serde_json::from_slice(&param.data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();
@@ -118,6 +118,7 @@ pub fn create_stored_key_account_of_coin_at_path(
         }
     };
     let account = match stored_key.add_new_account_of_coin_and_derivation_path_by_password(
+        &param.name,
         coin.clone(),
         &param.derivation_path,
         &param.password,
