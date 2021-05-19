@@ -6,14 +6,17 @@ This library acts like a `Wallet API Service` by exposing an unified interface w
 
 The project structure is managed using a crate workspace, comprised by different crates:
 
-| Crate        | Description                                                                | Status           |
-| ------------ | -------------------------------------------------------------------------- | ---------------- |
-| cli          | The CLI of the library                                                     | Not implemented  |
-| interface    | The entry of the library, provides `request` function as the only entrance | Work in progress |
-| crypto       | The collections of cryptography implementation used by other crates        | Work in progress |
-| wallet       | The common structs and methods of the wallet                               | Work in progress |
-| chain-common | The common structs and interface of all chain implementation               | Work in progress |
-| chain/\*     | The specific implementation of each chain                                  | Work in progress |
+| Crate         | Description                                                  | Dev Status      | Audit Status |
+| ------------- | ------------------------------------------------------------ | --------------- | ------------ |
+| cli           | The CLI of the library                                       | Not implemented | N/A          |
+| interface     | The entry of the library, provides `request` function as the only entrance | Done            | Not Audited  |
+| crypto        | The collections of cryptography implementation used by other crates | Done            | Not Audited  |
+| wallet        | The common structs and methods of the wallet                 | Done            | Not Audited  |
+| chain-common  | The common structs and interface of all chain implementation, including the proto definition files | Done            | Not Audited  |
+| chain/\*      | The specific implementation of each chain, only Ethereum supported for now | Done            | Not Audited  |
+| package       | The npm library wrapper                                      | Done            | N/A          |
+| target-wasm   | The exposed interface for WebAssembly                        | Done            | Not Audited  |
+| target-mobile | The exposed interface for iOS & Android                      | Done            | Not Audited  |
 
 ## Usage
 
@@ -26,7 +29,9 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-In development
+1. Execute `cargo-lipo --release` in the `target-mobile` directory.
+2. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
+3. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
 
 ### For Android
 
