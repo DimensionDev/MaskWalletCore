@@ -53,7 +53,6 @@ message GetStoredKeyAccountsOfCoinParam {
 }
 
 message GetStoredKeyAccountsOfCoinResp {
-    StoredKeyInfo StoredKey = 1;
     repeated StoredKeyAccountInfo accounts = 2;
 }
 

@@ -129,8 +129,6 @@ pub struct GetStoredKeyAccountsOfCoinParam {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoredKeyAccountsOfCoinResp {
-    #[prost(message, optional, tag="1")]
-    pub stored_key: ::core::option::Option<StoredKeyInfo>,
     #[prost(message, repeated, tag="2")]
     pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
 }
@@ -336,9 +334,13 @@ pub struct ImportJsonStoredKeyParam {
     /// The name of created ACCOUNT
     #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
+    /// Password to decrypt the KeyStoreJson
     #[prost(string, tag="3")]
+    pub key_store_json_password: ::prost::alloc::string::String,
+    /// Password of the created StoredKey
+    #[prost(string, tag="4")]
     pub password: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="4")]
+    #[prost(enumeration="Coin", tag="5")]
     pub coin: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

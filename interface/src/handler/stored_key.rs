@@ -94,7 +94,7 @@ pub fn create_stored_key_with_json(param: ImportJsonStoredKeyParam) -> MwRespons
         }
     };
     let stored_key: StoredKey =
-        match StoredKey::create_with_json(&param.name, &param.password, &param.json, coin) {
+        match StoredKey::create_with_json(&param.name, &param.key_store_json_password, &param.password, &param.json, coin) {
             Ok(key) => key,
             Err(error) => {
                 return get_error_response_by_error(error);

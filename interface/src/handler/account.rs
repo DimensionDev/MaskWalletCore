@@ -88,10 +88,7 @@ pub fn get_stored_key_accounts_of_coin(param: GetStoredKeyAccountsOfCoinParam) -
         .collect();
     MwResponse {
         response: Some(Response::RespGetStoredKeyAccountsOfCoin(
-            GetStoredKeyAccountsOfCoinResp {
-                stored_key: Some(StoredKeyInfo::from(stored_key)),
-                accounts,
-            },
+            GetStoredKeyAccountsOfCoinResp { accounts },
         )),
     }
 }

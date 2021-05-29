@@ -2,6 +2,7 @@ use scrypt::{scrypt, Params};
 use serde::{Deserialize, Serialize};
 
 use super::kdf_params::KdfParamsType;
+use super::number_util::random_iv;
 use crate::Error;
 
 const CREDENTIAL_LEN: usize = 64usize;
@@ -22,7 +23,7 @@ impl Default for ScryptParams {
             p: 1,
             r: 8,
             dklen: 32,
-            salt: "".to_owned(),
+            salt: hex::encode(random_iv(32)),
         }
     }
 }
@@ -33,8 +34,8 @@ impl KdfParamsType for ScryptParams {
         let params = Params::new(log_n as u8, self.r, self.p).or(Err(Error::KdfParamsInvalid))?;
 
         let mut output: [u8; CREDENTIAL_LEN] = [0; CREDENTIAL_LEN];
-        scrypt(password, self.salt.as_bytes(), &params, &mut output)
-            .or(Err(Error::PasswordIncorrect))?;
+        let salt_bytes = hex::decode(&self.salt).or(Err(Error::KdfParamsInvalid))?;
+        scrypt(password, &salt_bytes, &params, &mut output).or(Err(Error::PasswordIncorrect))?;
         Ok(output[0..self.dklen].to_vec())
     }
 }

@@ -1,6 +1,6 @@
 use super::derivation_path::DerivationPath;
 use crate::Error;
-use chain_common::api::StoredKeyAccountInfo;
+use chain_common::api::{ StoredKeyAccountInfo, Coin as ProtoCoin };
 use chain_common::coin::Coin;
 use serde::{Deserialize, Serialize};
 

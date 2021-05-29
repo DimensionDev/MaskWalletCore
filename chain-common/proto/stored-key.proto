@@ -57,8 +57,9 @@ message ImportMnemonicStoredKeyResp {
 message ImportJSONStoredKeyParam {
     string json = 1;
     string name = 2; // The name of created ACCOUNT
-    string password = 3;
-    Coin coin = 4;
+    string keyStoreJsonPassword = 3; // Password to decrypt the KeyStoreJson
+    string password = 4; // Password of the created StoredKey
+    Coin coin = 5;
 }
 
 message ImportJSONStoredKeyResp {

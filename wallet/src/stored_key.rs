@@ -118,15 +118,17 @@ impl StoredKey {
 
     pub fn create_with_json(
         name: &str,
+        key_store_json_password: &str,
         password: &str,
         json: &str,
         coin: &Coin,
     ) -> Result<StoredKey, Error> {
         let key_store_json_struct = KeyStoreJson::from_str(&json)?;
-        let (_, decrypted) =
-            EncryptionParams::new_from_json_struct(&key_store_json_struct, password.as_bytes())?;
-        let decrypted_str = std::str::from_utf8(&decrypted)
-            .map_err(|_| Error::CryptoError(CryptoError::InvalidKeyStoreJson))?;
+        let (_, decrypted) = EncryptionParams::new_from_json_struct(
+            &key_store_json_struct,
+            key_store_json_password.as_bytes(),
+        )?;
+        let decrypted_str = hex::encode(&decrypted);
         if Mnemonic::is_valid(&decrypted_str) {
             return Self::create_with_mnemonic(&password, &decrypted_str);
         }
@@ -499,7 +501,7 @@ mod tests {
     fn test_create_with_mnemonic() {
         let mnemonic =
             "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-        let password = "";
+        let password = "mask";
         let derivation_path = "m/44'/60'/0'/0/0";
         let coin = Coin {
             id: "60".to_owned(),
@@ -535,11 +537,77 @@ mod tests {
         assert_eq!(account.derivation_path.to_string(), derivation_path);
         assert_eq!(account.coin.name, "ethereum");
         assert_eq!(account.extended_public_key, "");
+        assert_eq!(stored_key.export_mnemonic(password).unwrap(), mnemonic);
     }
 
     #[test]
     fn test_create_with_json() {
-        let _json = r#""#;
+        let json = r#"
+        {
+            "version":3,
+            "id":"E511D153-EB10-484A-A649-56A3E015E4D3",
+            "crypto":{
+                "ciphertext":"5c74a0c7513168a602e8fc32892c4c2c0371099073a6a4f504be041c571e2781",
+                "cipherparams":{
+                    "iv":"e83921ccf41447518b27dd1a22129494"
+                },
+                "kdf":"scrypt",
+                "kdfparams":{
+                    "r":8,
+                    "p":1,
+                    "n":1024,
+                    "dklen":32,
+                    "salt":"ae2ef76580540174997df3191d32e577fb44693c037eae3cf1842a22b892c02a"
+                },
+                "mac":"4b85aff1322e833507b574db2471daf80c51663cd00a256c80711eba91cfd47f",
+                "cipher":"aes-128-ctr"
+            }
+        }
+        "#;
+        let address = "0x8F140c590b1E2C8549ca23F22492f281379eb323";
+        let derivation_path = "m/44'/60'/0'/0/0";
+        let coin = Coin {
+            id: "60".to_owned(),
+            name: "ethereum".to_owned(),
+            coin_id: 60,
+            symbol: "ETH".to_owned(),
+            decimals: 18,
+            blockchain: "Ethereum".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "secp256k1".to_owned(),
+            public_key_type: "secp256k1Extended".to_owned(),
+            all_info: HashMap::new(),
+        };
+        let key_store_json_password = "Maskbook123";
+        let stored_key_password = "password";
+        let mut stored_key = StoredKey::create_with_json(
+            "mask",
+            &key_store_json_password,
+            &stored_key_password,
+            &json,
+            &coin,
+        )
+        .unwrap();
+        assert_eq!(stored_key.accounts.len(), 1);
+        assert_eq!(stored_key.accounts[0].address, address);
+
+        // Export and re-import the KeyStoreJson
+        let new_password = "password_new";
+        let new_password2 = "password_new2";
+        let exported_json = stored_key
+            .export_key_store_json_of_address(&stored_key_password, &new_password, &coin, &address)
+            .unwrap();
+        let stored_key2 = StoredKey::create_with_json(
+            "mask",
+            &new_password,
+            &new_password2,
+            &exported_json,
+            &coin,
+        )
+        .unwrap();
+        // Check whether the re-imported StoreKey has the same account
+        assert_eq!(stored_key2.accounts.len(), 1);
+        assert_eq!(stored_key2.accounts[0].address, address);
     }
 
     #[test]
