@@ -29,7 +29,7 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-1. Execute `cargo-lipo --release` in the `target-mobile` directory.
+1. Execute `cargo lipo --release` in the `target-mobile` directory.
 2. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
 3. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
 
