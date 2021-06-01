@@ -46,17 +46,17 @@ impl Error {
         match self {
             Error::KdfParamsInvalid => "-3001".to_owned(),
             Error::PasswordIncorrect => "-3002".to_owned(),
-            Error::InvalidKeyIvLength => "-3004".to_owned(),
+            Error::InvalidKeyIvLength => "-3003".to_owned(),
             Error::InvalidCiphertext => "-3004".to_owned(),
-            Error::InvalidPrivateKey => "-3004".to_owned(),
-            Error::InvalidPublicKey => "-3004".to_owned(),
-            Error::InvalidMnemonic => "-3004".to_owned(),
-            Error::InvalidSeed => "-3004".to_owned(),
-            Error::InvalidDerivationpath => "-3004".to_owned(),
-            Error::InvalidKeyStoreJson => "-3004".to_owned(),
-            Error::NotSupportedPublicKeyType => "-3004".to_owned(),
-            Error::NotSupportedCurve => "-3004".to_owned(),
-            Error::NotSupportedCipher => "-3004".to_owned(),
+            Error::InvalidPrivateKey => "-3005".to_owned(),
+            Error::InvalidPublicKey => "-3006".to_owned(),
+            Error::InvalidMnemonic => "-3007".to_owned(),
+            Error::InvalidSeed => "-3008".to_owned(),
+            Error::InvalidDerivationpath => "-3009".to_owned(),
+            Error::InvalidKeyStoreJson => "-3010".to_owned(),
+            Error::NotSupportedPublicKeyType => "-3011".to_owned(),
+            Error::NotSupportedCurve => "-3012".to_owned(),
+            Error::NotSupportedCipher => "-3013".to_owned(),
         }
     }
 
