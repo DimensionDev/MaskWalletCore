@@ -1,18 +1,8 @@
-use std::vec;
+use getrandom::getrandom;
 
-#[cfg(target_arch = "wasm32")]
 pub fn random_iv(len: usize) -> Vec<u8> {
-    use getrandom::getrandom;
     let mut v = vec![0u8; len];
-    getrandom(&mut v);
-    v
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn random_iv(len: usize) -> Vec<u8> {
-    use rand::{thread_rng, RngCore};
-    let mut v = vec![0u8; len];
-    thread_rng().fill_bytes(&mut v);
+    getrandom(&mut v).unwrap();
     v
 }
 
