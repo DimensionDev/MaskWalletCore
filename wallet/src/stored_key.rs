@@ -314,13 +314,13 @@ impl StoredKey {
     pub fn add_new_account_of_coin_and_derivation_path_by_password(
         &mut self,
         name: &str,
-        coin: Coin,
+        coin: &Coin,
         derivation_path: &str,
         password: &str,
     ) -> Result<Account, Error> {
         let derivation_path_struct = DerivationPath::new(&derivation_path)?;
         let find_account_block = |account: &Account| {
-            account.coin == coin && account.derivation_path == derivation_path_struct
+            account.coin == *coin && account.derivation_path == derivation_path_struct
         };
         if self.accounts.iter().any(find_account_block) {
             Err(Error::AccountAlreadyExist)
@@ -365,7 +365,7 @@ impl StoredKey {
         if !self
             .accounts
             .iter()
-            .any(|account| account.address != address && account.coin != *coin)
+            .any(|account| account.address == address && account.coin == *coin)
         {
             return Err(Error::RequstedAccountNotFound);
         }
@@ -520,7 +520,7 @@ mod tests {
         stored_key
             .add_new_account_of_coin_and_derivation_path_by_password(
                 "mask",
-                coin,
+                &coin,
                 &derivation_path,
                 &password,
             )
@@ -634,12 +634,17 @@ mod tests {
         let account1 = stored_key
             .add_new_account_of_coin_and_derivation_path_by_password(
                 "mask",
-                coin,
+                &coin,
                 &test_derivation_path1,
                 &password,
             )
             .unwrap();
         assert_eq!(account1.derivation_path.to_string(), test_derivation_path1);
+
+        stored_key
+            .remove_account_of_address(&account1.address, &coin)
+            .unwrap();
+        assert_eq!(stored_key.accounts.len(), 0);
     }
 
     #[test]
