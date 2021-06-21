@@ -49,12 +49,8 @@ pub fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) ->
             };
         }
     };
-    let stored_key = StoredKey::create_with_private_key_and_default_address(
-        &param.name,
-        &param.password,
-        &param.private_key,
-        &coin,
-    );
+    let stored_key =
+        StoredKey::create_with_private_key_and_coin(&param.password, &param.private_key, &coin);
     match stored_key {
         Ok(key) => MwResponse {
             response: Some(Response::RespImportPrivateKey(ImportPrivateStoredKeyResp {
@@ -93,13 +89,17 @@ pub fn create_stored_key_with_json(param: ImportJsonStoredKeyParam) -> MwRespons
             };
         }
     };
-    let stored_key: StoredKey =
-        match StoredKey::create_with_json(&param.name, &param.key_store_json_password, &param.password, &param.json, coin) {
-            Ok(key) => key,
-            Err(error) => {
-                return get_error_response_by_error(error);
-            }
-        };
+    let stored_key: StoredKey = match StoredKey::create_with_json(
+        &param.key_store_json_password,
+        &param.password,
+        &param.json,
+        coin,
+    ) {
+        Ok(key) => key,
+        Err(error) => {
+            return get_error_response_by_error(error);
+        }
+    };
     MwResponse {
         response: Some(Response::RespImportJson(ImportJsonStoredKeyResp {
             stored_key: Some(StoredKeyInfo::from(stored_key)),
@@ -281,28 +281,6 @@ pub fn update_key_store_password(param: UpdateStoredKeyPasswordParam) -> MwRespo
             response: Some(Response::RespUpdateKeyStorePassword(
                 UpdateStoredKeyPasswordResp {
                     stored_key: Some(StoredKeyInfo::from(stored_key)),
-                },
-            )),
-        },
-        Err(error) => get_error_response_by_error(error),
-    }
-}
-
-pub fn update_key_store_account_name_of_address(
-    param: UpdateStoredKeyAccountNameOfAddressParam,
-) -> MwResponse {
-    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
-        Ok(key) => key,
-        Err(_) => {
-            return get_json_error_response();
-        }
-    };
-    match stored_key.update_account_name_of_address(&param.address, &param.name) {
-        Ok(account) => MwResponse {
-            response: Some(Response::RespUpdateKeyStoreAccountName(
-                UpdateStoredKeyAccountNameOfAddressResp {
-                    stored_key: Some(StoredKeyInfo::from(stored_key)),
-                    account: Some(StoredKeyAccountInfo::from(&account)),
                 },
             )),
         },
