@@ -176,7 +176,7 @@ pub fn export_private_key_of_path(param: ExportKeyStorePrivateKeyOfPathParam) ->
 }
 
 pub fn export_mnemonic(param: ExportKeyStoreMnemonicParam) -> MwResponse {
-    let mut stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
+    let stored_key: StoredKey = match serde_json::from_slice(&param.stored_key_data) {
         Ok(key) => key,
         Err(_) => {
             return get_json_error_response();

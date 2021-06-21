@@ -530,7 +530,7 @@ mod tests {
             all_info: HashMap::new(),
         };
 
-        let mut stored_key = StoredKey::create_with_mnemonic(&password, &mnemonic).unwrap();
+        let stored_key = StoredKey::create_with_mnemonic(&password, &mnemonic).unwrap();
         let test_derivation_path1 = "m/44'/60'/0'/0/1";
         let account1 = stored_key
             .add_new_account_of_coin_and_derivation_path_by_password(
@@ -555,5 +555,20 @@ mod tests {
         let (stored_key_random, _) = StoredKey::create_with_mnemonic_random(&password).unwrap();
         assert_ne!(stored_key1.hash, stored_key_random.hash);
         assert_ne!(stored_key2.hash, stored_key_random.hash);
+    }
+
+    #[test]
+    fn test_update_password() {
+        let mnemonic1 =
+            "suffer artefact burst review network fantasy easy century mom unique pupil boy";
+        let password1 = "password 1";
+        let password2 = "password 2";
+        let mut stored_key1 = StoredKey::create_with_mnemonic(&password1, &mnemonic1).unwrap();
+        stored_key1.update_password(&password1, &password2).unwrap();
+        let mnemonic2 = stored_key1.export_mnemonic(&password2).unwrap();
+        assert_eq!(mnemonic1, mnemonic2);
+
+        let failed = stored_key1.export_mnemonic(&password1);
+        assert_eq!(failed.is_err(), true);
     }
 }
