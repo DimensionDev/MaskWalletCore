@@ -6,21 +6,21 @@ pub struct SignInput {
     /// hex encoded nonce number
     #[prost(string, tag="2")]
     pub nonce: ::prost::alloc::string::String,
-    /// hex encoded nonce number
+    /// hex encoded gas_price number
     #[prost(string, tag="3")]
     pub gas_price: ::prost::alloc::string::String,
-    /// hex encoded nonce number
+    /// hex encoded gas_limit number
     #[prost(string, tag="4")]
     pub gas_limit: ::prost::alloc::string::String,
-    /// hex encoded nonce number
+    /// hex encoded amount number
     #[prost(string, tag="5")]
     pub amount: ::prost::alloc::string::String,
     /// Recipient's address.
     #[prost(string, tag="6")]
     pub to_address: ::prost::alloc::string::String,
-    /// hex encoded nonce number
-    #[prost(string, tag="7")]
-    pub payload: ::prost::alloc::string::String,
+    /// payload data
+    #[prost(bytes="vec", tag="7")]
+    pub payload: ::prost::alloc::vec::Vec<u8>,
 }
 /// Transaction signing output.
 #[derive(Clone, PartialEq, ::prost::Message)]

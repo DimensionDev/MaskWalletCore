@@ -105,7 +105,7 @@ mod tests {
             gas_limit: "0x5208".to_owned(),
             gas_price: "0x4a817c800".to_owned(),
             amount: "0xde0b6b3a7640000".to_owned(),
-            payload: "".to_owned(),
+            payload: "".as_bytes().to_vec(),
             to_address: "0x3535353535353535353535353535353535353535".to_owned(),
         };
         let transaction = Transaction::try_from(&input).unwrap();
@@ -138,6 +138,42 @@ mod tests {
                 85, 201, 243, 220, 100, 33, 75, 41, 127, 177, 150, 106, 59, 109, 131
             ]
             .to_vec()
+        );
+    }
+
+    #[test]
+    fn test_sign2() {
+        let payload_bytes = hex::decode("6b175474e89094c44da98b954eedeac495271d0f").unwrap();
+        let input = SignInput {
+            chain_id: 1,
+            nonce: "0x0".to_owned(),
+            gas_limit: "0x130b9".to_owned(),
+            gas_price: "0x9c7652400".to_owned(),
+            amount: "0x1bc16d674ec80000".to_owned(),
+            payload: payload_bytes.to_vec(),
+            to_address: "0x5322b34c88ed0691971bf52a7047448f0f4efc84".to_owned(),
+        };
+        let transaction = Transaction::try_from(&input).unwrap();
+        assert_eq!(transaction.amount.to_string(), "2000000000000000000");
+        assert_eq!(transaction.nonce.to_string(), "0");
+        assert_eq!(transaction.gas_limit.to_string(), "78009");
+        assert_eq!(transaction.gas_price.to_string(), "42000000000");
+
+        let private_key = PrivateKey::from_str(
+            "608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151",
+        )
+        .unwrap();
+        let output = Signer::sign(&private_key, &input).unwrap();
+        assert_eq!(output.v, 37);
+        let hex_r = hex::encode(output.r);
+        let hex_s = hex::encode(output.s);
+        assert_eq!(
+            hex_r,
+            "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce"
+        );
+        assert_eq!(
+            hex_s,
+            "032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931"
         );
     }
 }
