@@ -47,7 +47,7 @@ impl TryFrom<&SignInput> for Transaction {
             gas_limit,
             gas_price,
             nonce,
-            payload: input.payload.as_bytes().to_vec(),
+            payload: input.payload.to_vec(),
         })
     }
 }

@@ -7,16 +7,16 @@ message SignInput {
     uint64 chain_id = 1;
     // hex encoded nonce number
     string nonce = 2;
-    // hex encoded nonce number
+    // hex encoded gas_price number
     string gas_price = 3;
-    // hex encoded nonce number
+    // hex encoded gas_limit number
     string gas_limit = 4;
-    // hex encoded nonce number
+    // hex encoded amount number
     string amount = 5;
     // Recipient's address.
     string to_address = 6;
-    // hex encoded nonce number
-    string payload = 7;
+    // payload data
+    bytes payload = 7;
 }
 
 // Transaction signing output.
