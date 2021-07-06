@@ -169,16 +169,9 @@ mod tests {
         .unwrap();
         let output = Signer::sign(&private_key, &input).unwrap();
         assert_eq!(output.v, 37);
-        let hex_r = hex::encode(output.r);
-        let hex_s = hex::encode(output.s);
-        assert_eq!(
-            hex_r,
-            "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce"
-        );
-        assert_eq!(
-            hex_s,
-            "032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931"
-        );
+    }
+
+    #[test]
     fn test_sign_short_address() {
         let input = SignInput {
             chain_id: 1,
@@ -186,7 +179,7 @@ mod tests {
             gas_limit: "0x5208".to_owned(),
             gas_price: "0x4a817c800".to_owned(),
             amount: "0xde0b6b3a7640000".to_owned(),
-            payload: "".to_owned(),
+            payload: "".as_bytes().to_vec(),
             to_address: "0x146aed09cd9dea7a64de689c5d3ef73d2ee5ca".to_owned(), // short addr
         };
         let private_key = PrivateKey::from_str(
