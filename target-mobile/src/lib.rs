@@ -1,3 +1,6 @@
+#[allow(unused_imports)]
+use std::slice;
+
 #[repr(C)]
 pub struct RustByteSlice {
     pub bytes: *const u8,
