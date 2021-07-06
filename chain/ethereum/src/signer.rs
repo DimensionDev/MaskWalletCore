@@ -1,3 +1,4 @@
+use super::address::EthereumAddress;
 use super::transaction::Transaction;
 use chain_common::ethereum::{SignInput, SignOutput};
 use chain_common::private_key::PrivateKey;
@@ -13,6 +14,9 @@ pub struct Signer;
 
 impl Signer {
     pub fn sign(private_key: &PrivateKey, sign_input: &SignInput) -> Result<SignOutput, Error> {
+        if !EthereumAddress::is_valid(&sign_input.to_address) {
+            return Err(Error::InvalidSignInput);
+        }
         let chain_id = sign_input.chain_id;
         let transaction = Transaction::try_from(sign_input)?;
         let hash = Self::hash(&transaction).map_err(|_| Error::InvalidSignInput)?;
@@ -139,5 +143,25 @@ mod tests {
             ]
             .to_vec()
         );
+    }
+
+    #[test]
+    fn test_sign_short_address() {
+        let input = SignInput {
+            chain_id: 1,
+            nonce: "0x9".to_owned(),
+            gas_limit: "0x5208".to_owned(),
+            gas_price: "0x4a817c800".to_owned(),
+            amount: "0xde0b6b3a7640000".to_owned(),
+            payload: "".to_owned(),
+            to_address: "0x146aed09cd9dea7a64de689c5d3ef73d2ee5ca".to_owned(), // short addr
+        };
+        let private_key = PrivateKey::from_str(
+            "4646464646464646464646464646464646464646464646464646464646464646",
+        )
+        .unwrap();
+        let sign_error = Signer::sign(&private_key, &input);
+        assert_eq!(sign_error.is_err(), true);
+        assert_eq!(sign_error.err().unwrap(), Error::InvalidSignInput);
     }
 }
