@@ -268,6 +268,16 @@ pub struct UpdateStoredKeyPasswordResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+/// Generate a random mnemonic
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenerateMnemonicParam {
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenerateMnemonicResp {
+    /// The generated random mnemonic
+    #[prost(string, tag="1")]
+    pub mnemonic: ::prost::alloc::string::String,
+}
 /// Sign a transaction
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignTransactionParam {
@@ -346,7 +356,7 @@ pub struct ValidateResp {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -387,11 +397,13 @@ pub mod mw_request {
         ParamGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeParam),
         #[prost(message, tag="24")]
         ParamGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeParam),
+        #[prost(message, tag="25")]
+        ParamGenerateMnemonic(super::GenerateMnemonicParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -430,6 +442,8 @@ pub mod mw_response {
         RespGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeResp),
         #[prost(message, tag="23")]
         RespGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeResp),
+        #[prost(message, tag="24")]
+        RespGenerateMnemonic(super::GenerateMnemonicResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
