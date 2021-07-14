@@ -35,6 +35,8 @@ message MWRequest {
         ValidateParam param_validation = 22;
         GetKeyStoreSupportImportTypeParam param_get_stored_key_import_type = 23;
         GetKeyStoreSupportExportTypeParam param_get_stored_key_export_type = 24;
+
+        GenerateMnemonicParam param_generate_mnemonic = 25;
     }
 }
 
@@ -63,6 +65,8 @@ message MWResponse {
         ValidateResp resp_validate = 21;
         GetKeyStoreSupportImportTypeResp resp_get_stored_key_import_type = 22;
         GetKeyStoreSupportExportTypeResp resp_get_stored_key_export_type = 23;
+
+        GenerateMnemonicResp resp_generate_mnemonic = 24;
     }
 }
 

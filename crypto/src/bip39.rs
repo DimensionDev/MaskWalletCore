@@ -13,6 +13,17 @@ pub struct Mnemonic {
 }
 
 impl Mnemonic {
+    pub fn generate_mnemonic_string(word_count: u32) -> Result<String, Error> {
+        if !SUPPORT_MNEMONIC_WORDS_COUNT.contains(&word_count) {
+            return Err(Error::InvalidMnemonic);
+        }
+        let entropy_bytes = (word_count / 3) * 4;
+        let entropy = random_iv(entropy_bytes as usize);
+        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
+            .map_err(|_| Error::InvalidMnemonic)?;
+        Ok(mnemonic.to_string())
+    }
+
     pub fn generate(word_count: u32, password: &str) -> Result<Mnemonic, Error> {
         if !SUPPORT_MNEMONIC_WORDS_COUNT.contains(&word_count) {
             return Err(Error::InvalidMnemonic);
@@ -21,8 +32,7 @@ impl Mnemonic {
         let entropy = random_iv(entropy_bytes as usize);
         let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
             .map_err(|_| Error::InvalidMnemonic)?;
-        // let mnemonic =
-        // CryptoMnemonic::generate(word_count as usize).map_err(|_| Error::InvalidMnemonic)?;
+
         let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();

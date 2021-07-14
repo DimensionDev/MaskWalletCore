@@ -31,5 +31,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamSignTransaction(param) => sign::sign_transaction(param),
 
         ParamValidation(param) => validate::validate(param),
+
+        ParamGenerateMnemonic(_) => common::generate_mnemonic(),
     }
 }
