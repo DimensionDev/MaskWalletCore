@@ -49,12 +49,12 @@ impl StoredKey {
         let uuid = Uuid::new_v4();
         let payload = EncryptionParams::new(password.as_bytes(), &data)?;
         let hash = match r#type {
-            StoredKeyType::PrivateKey => hash::dsha256(&data),
+            StoredKeyType::PrivateKey => hash::binary_sha256(&data),
             StoredKeyType::Mnemonic => {
                 let mnemonic_str = std::str::from_utf8(&data)
                     .map_err(|_| Error::CryptoError(CryptoError::PasswordIncorrect))?;
                 let mnemonic = Mnemonic::new(&mnemonic_str, &password)?;
-                hash::dsha256(&mnemonic.seed)
+                hash::binary_sha256(&mnemonic.seed)
             }
         };
         Ok(StoredKey {

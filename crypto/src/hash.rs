@@ -35,9 +35,19 @@ pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
     output.to_vec()
 }
 
-pub fn dsha256(input: &[u8]) -> Vec<u8> {
-    use sha2::{ Digest, Sha256 };
-    Sha256::digest(&Sha256::digest(&input)).to_vec()
+pub fn binary_sha256(input: &[u8]) -> Vec<u8> {
+    use sha2::{Digest, Sha256};
+    let input_len = input.len();
+    if input_len > 1 {
+        let (first_half, second_half) = input.split_at(input_len / 2);
+        let first_hash = &Sha256::digest(&first_half);
+        let second_hash = &Sha256::digest(&second_half);
+        Sha256::digest(&[&first_hash[..], &second_hash[..]].concat()).to_vec()
+    } else {
+        let first_hash = &Sha256::digest(&input);
+        let second_hash = &Sha256::digest(&input);
+        Sha256::digest(&[&first_hash[..], &second_hash[..]].concat()).to_vec()
+    }
 }
 
 #[cfg(test)]
