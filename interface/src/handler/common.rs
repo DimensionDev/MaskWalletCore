@@ -1,7 +1,7 @@
+use crate::response_util::*;
 use chain_common::api::mw_response::Response;
 use chain_common::api::*;
 use crypto::bip39::Mnemonic;
-use crate::response_util::*;
 use std::env;
 
 const VERSION: &str = include_str!(concat!(env!("OUT_DIR"), "/VERSION"));
@@ -22,10 +22,8 @@ pub fn generate_mnemonic() -> MwResponse {
         }
     };
     MwResponse {
-        response: Some(Response::RespGenerateMnemonic(
-            GenerateMnemonicResp {
-                mnemonic: mnemonic,
-            },
-        )),
+        response: Some(Response::RespGenerateMnemonic(GenerateMnemonicResp {
+            mnemonic,
+        })),
     }
 }
