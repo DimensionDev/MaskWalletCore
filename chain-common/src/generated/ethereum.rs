@@ -7,19 +7,28 @@ pub struct SignInput {
     #[prost(string, tag="2")]
     pub nonce: ::prost::alloc::string::String,
     /// hex encoded gas_price number
+    /// If > 0, legacy fee scheme is used; if 0, EIP1559 fee scheme is used
     #[prost(string, tag="3")]
     pub gas_price: ::prost::alloc::string::String,
     /// hex encoded gas_limit number
     #[prost(string, tag="4")]
     pub gas_limit: ::prost::alloc::string::String,
-    /// hex encoded amount number
+    /// hex encoded maxinmum optional inclusion fee (aka tip) (256-bit number)
+    /// used only for EIP1559 fee, disregarded for legacy
     #[prost(string, tag="5")]
+    pub max_inclusion_fee_per_gas: ::prost::alloc::string::String,
+    /// hex encoded maxinmum fee (256-bit number)
+    /// used only for EIP1559 fee, disregarded for legacy
+    #[prost(string, tag="6")]
+    pub max_fee_per_gas: ::prost::alloc::string::String,
+    /// hex encoded amount number
+    #[prost(string, tag="7")]
     pub amount: ::prost::alloc::string::String,
     /// Recipient's address.
-    #[prost(string, tag="6")]
+    #[prost(string, tag="8")]
     pub to_address: ::prost::alloc::string::String,
     /// payload data
-    #[prost(bytes="vec", tag="7")]
+    #[prost(bytes="vec", tag="9")]
     pub payload: ::prost::alloc::vec::Vec<u8>,
 }
 /// Transaction signing output.
