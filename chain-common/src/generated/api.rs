@@ -39,6 +39,7 @@ pub struct StoredKeyAccountInfo {
 pub enum Coin {
     Ethereum = 0,
     Polkadot = 1,
+    Solana = 2,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

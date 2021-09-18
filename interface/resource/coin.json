@@ -44,5 +44,29 @@
           "clientPublic": "",
           "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
         }
+      },
+      {
+        "id": "solana",
+        "name": "Solana",
+        "coin_id": 501,
+        "symbol": "SOL",
+        "decimals": 9,
+        "blockchain": "Solana",
+        "derivation_path": "m/44'/501'/0'",
+        "curve": "ed25519",
+        "public_key_type": "ed25519",
+        "explorer": {
+          "url": "https://solscan.io",
+          "txPath": "/tx/",
+          "accountPath": "/account/",
+          "sampleTx": "5LmxrEKGchhMuYfw6Qut6CbsvE9pVfb8YvwZKvWssSesDVjHioBCmWKSJQh1WhvcM6CpemhpHNmEMA2a36rzwTa8",
+          "sampleAccount": "Bxp8yhH9zNwxyE4UqxP7a7hgJ5xTZfxNNft7YJJ2VRjT"
+        },
+        "info": {
+          "url": "https://solana.com",
+          "source": "https://github.com/solana-labs/solana",
+          "rpc": "https://api.mainnet-beta.solana.com",
+          "documentation": "https://docs.solana.com"
+        }
       }
 ]

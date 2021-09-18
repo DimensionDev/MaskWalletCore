@@ -5,6 +5,7 @@ package api;
 enum Coin {
     Ethereum = 0;
     Polkadot = 1;
+    Solana = 2;
 }
 
 enum StoredKeyType {
