@@ -68,5 +68,27 @@
           "rpc": "https://api.mainnet-beta.solana.com",
           "documentation": "https://docs.solana.com"
         }
+      },
+      {
+        "id": "arweave",
+        "name": "Ar",
+        "coin_id": 999,
+        "symbol": "AR",
+        "decimals": 9,
+        "blockchain": "Arweave",
+        "derivation_path": "",
+        "curve": "",
+        "public_key_type": "rsa",
+        "explorer": {
+          "url": "https://viewblock.io/arweave",
+          "txPath": "/txs/",
+          "accountPath": "/addresses/",
+          "sampleTx": "VuVJ8SYc6awcvNvMVp6FFJ6brkTjj32BhuzNWIOKBg8",
+          "sampleAccount": "3oDgWphQ0m6D5lIBaN9ebDIdznwsH6J"
+        },
+        "info": {
+          "url": "https://www.arweave.org/",
+          "source": "https://github.com/ArweaveTeam/arweave"
+        }
       }
 ]

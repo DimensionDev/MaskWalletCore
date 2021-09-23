@@ -20,7 +20,7 @@ message MWRequest {
         
         
         
-        CreateStoredKeyNewAccountAtPathParam param_create_acccount_of_coin_at_path = 10;
+        CreateStoredKeyNewAccountAtPathParam param_create_account_of_coin_at_path = 10;
         
         
         ExportKeyStorePrivateKeyParam param_export_private_key = 13;
