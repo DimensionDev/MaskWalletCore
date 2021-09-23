@@ -204,4 +204,29 @@ mod tests {
         let extended_public_key = wallet.get_extended_public_key(&coin);
         assert_eq!(extended_public_key, "")
     }
+
+    #[test]
+    fn test_get_address_for_coin_solana() {
+        let wallet = HdWallet::new_with_mnemonic(
+            "shoot island position soft burden budget tooth cruel issue economy destroy above",
+            "",
+        )
+        .unwrap();
+        let derivation_path = "m/44'/501'/0'";
+        let coin = Coin {
+            id: "501".to_owned(),
+            name: "solana".to_owned(),
+            coin_id: 501,
+            symbol: "SOL".to_owned(),
+            decimals: 9,
+            blockchain: "Solana".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "ed25519".to_owned(),
+            public_key_type: "ed25519".to_owned(),
+            all_info: HashMap::new(),
+        };
+        let address1 = wallet.get_address_for_coin(&coin).unwrap();
+        // let address2 = wallet.get_address_for_coin(&coin).unwrap();
+        assert_eq!(address1, "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m");
+    }
 }

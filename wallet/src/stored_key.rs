@@ -571,4 +571,88 @@ mod tests {
         let failed = stored_key1.export_mnemonic(&password1);
         assert_eq!(failed.is_err(), true);
     }
+
+    #[test]
+    fn test_create_solana_account_at_path() {
+        let mnemonic =
+            "shoot island position soft burden budget tooth cruel issue economy destroy above";
+        let password = "";
+        let derivation_path = "m/44'/501'/0'";
+        let coin = Coin {
+            id: "501".to_owned(),
+            name: "solana".to_owned(),
+            coin_id: 501,
+            symbol: "SOL".to_owned(),
+            decimals: 9,
+            blockchain: "Solana".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "ed25519".to_owned(),
+            public_key_type: "ed25519".to_owned(),
+            all_info: HashMap::new(),
+        };
+
+        let stored_key = StoredKey::create_with_mnemonic(&password, &mnemonic).unwrap();
+        let test_derivation_path1 = "m/44'/501'/0'";
+        let account1 = stored_key
+            .add_new_account_of_coin_and_derivation_path_by_password(
+                "mask",
+                &coin,
+                &test_derivation_path1,
+                &password,
+            )
+            .unwrap();
+        assert_eq!(account1.derivation_path.to_string(), "m/44'/501'/0'");
+        assert_eq!(
+            account1.address,
+            "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m"
+        );
+    }
+
+    #[test]
+    fn test_create_solana_account2_at_path() {
+        let mnemonic =
+            "hurt behind mosquito scare enable gym learn unlock render grab reflect world";
+        let password = "";
+        let derivation_path = "m/44'/501'/0'";
+        let coin = Coin {
+            id: "501".to_owned(),
+            name: "solana".to_owned(),
+            coin_id: 501,
+            symbol: "SOL".to_owned(),
+            decimals: 9,
+            blockchain: "Solana".to_owned(),
+            derivation_path: derivation_path.to_owned(),
+            curve: "ed25519".to_owned(),
+            public_key_type: "ed25519".to_owned(),
+            all_info: HashMap::new(),
+        };
+
+        let stored_key = StoredKey::create_with_mnemonic(&password, &mnemonic).unwrap();
+        let test_derivation_path1 = "m/44'/501'/0'/0'";
+        let test_derivation_path2 = "m/44'/501'/1'/0'";
+        let account1 = stored_key
+            .add_new_account_of_coin_and_derivation_path_by_password(
+                "mask",
+                &coin,
+                &test_derivation_path1,
+                &password,
+            )
+            .unwrap();
+        let account2 = stored_key
+            .add_new_account_of_coin_and_derivation_path_by_password(
+                "mask",
+                &coin,
+                &test_derivation_path2,
+                &password,
+            )
+            .unwrap();
+        assert_eq!(
+            account1.address,
+            "HixTFWqKrey5xETK7yibumEttc4VPDVC5QJqj5qcXtM3"
+        );
+        assert_eq!(
+            account2.address,
+            "3TMqEHi5cVT86NeSuXmSfGf4PJZH1NQeh6rzc6bneKZ7"
+        );
+    }
 }

@@ -6,6 +6,7 @@ use chain_common::private_key::PrivateKey;
 use chain_common::public_key::PublicKey;
 use chain_common::Error as ChainError;
 use ethereum::entry::EthereumEntry;
+use solana::entry::SolanaEntry;
 use std::str::FromStr;
 
 pub struct CoinDispatcher {}
@@ -15,6 +16,7 @@ impl CoinDispatcher {
         let coin_proto_type = ProtoCoinType::from_str(&coin.name)?;
         match coin_proto_type {
             ProtoCoinType::Ethereum => Ok(Box::new(EthereumEntry {})),
+            ProtoCoinType::Solana => Ok(Box::new(SolanaEntry {})),
             _ => Err(Error::ChainError(ChainError::NotSupportedCoin)),
         }
     }
