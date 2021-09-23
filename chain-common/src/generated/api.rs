@@ -375,7 +375,7 @@ pub mod mw_request {
         #[prost(message, tag="5")]
         ParamImportJson(super::ImportJsonStoredKeyParam),
         #[prost(message, tag="10")]
-        ParamCreateAcccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathParam),
+        ParamCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathParam),
         #[prost(message, tag="13")]
         ParamExportPrivateKey(super::ExportKeyStorePrivateKeyParam),
         #[prost(message, tag="14")]

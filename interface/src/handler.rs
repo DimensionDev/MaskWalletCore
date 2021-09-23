@@ -25,7 +25,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGetStoredKeyImportType(param) => stored_key::get_supported_import_types(param),
         ParamGetStoredKeyExportType(param) => stored_key::get_supported_export_types(param),
 
-        ParamCreateAcccountOfCoinAtPath(param) => {
+        ParamCreateAccountOfCoinAtPath(param) => {
             account::create_stored_key_account_of_coin_at_path(param)
         }
         ParamSignTransaction(param) => sign::sign_transaction(param),
