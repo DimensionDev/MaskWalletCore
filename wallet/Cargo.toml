@@ -11,6 +11,7 @@ crypto = { path = "../crypto" }
 chain-common = { path = "../chain-common" }
 ethereum = { path = "../chain/ethereum" }
 solana = { path = "../chain/solana" }
+arweave = { path = "../chain/arweave" }
 
 hex = "0.4.3"
 uuid = { version = "0.8", features = ["v4", "wasm-bindgen"] }

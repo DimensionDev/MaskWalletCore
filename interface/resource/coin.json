@@ -78,7 +78,7 @@
         "blockchain": "Arweave",
         "derivation_path": "",
         "curve": "",
-        "public_key_type": "rsa",
+        "public_key_type": "arweave",
         "explorer": {
           "url": "https://viewblock.io/arweave",
           "txPath": "/txs/",

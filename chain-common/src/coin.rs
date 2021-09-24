@@ -50,6 +50,7 @@ impl std::str::FromStr for ProtoCoin {
             "ethereum" => Ok(ProtoCoin::Ethereum),
             "polkadot" => Ok(ProtoCoin::Polkadot),
             "solana" => Ok(ProtoCoin::Solana),
+            "arweave" => Ok(ProtoCoin::Arweave),
             _ => Err(Error::NotSupportedCoin),
         }
     }

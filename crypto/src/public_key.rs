@@ -1,3 +1,4 @@
+use super::jwk;
 use crate::Error;
 use ed25519_dalek;
 use secp256k1;
@@ -8,6 +9,7 @@ pub enum PublicKeyType {
     Secp256k1,
     Secp256k1Extended,
     Ed25519,
+    Arweave,
 }
 
 impl FromStr for PublicKeyType {
@@ -18,6 +20,7 @@ impl FromStr for PublicKeyType {
             "secp256k1" => Ok(Self::Secp256k1),
             "secp256k1extended" => Ok(Self::Secp256k1Extended),
             "ed25519" => Ok(Self::Ed25519),
+            "arweave" => Ok(Self::Arweave),
             _ => Err(()),
         }
     }
@@ -58,6 +61,14 @@ impl PublicKeyConvert for Ed25519Converter {
     }
 }
 
+struct ArweaveConverter;
+
+impl PublicKeyConvert for ArweaveConverter {
+    fn convert(&self, private_key: &[u8]) -> Result<Vec<u8>, Error> {
+        Ok(jwk::jwk_from_bytes(&private_key)?)
+    }
+}
+
 trait PublicKeyConvert {
     fn convert(&self, private_key: &[u8]) -> Result<Vec<u8>, Error>;
 }
@@ -85,5 +96,6 @@ pub fn get_public_key(
             PublickKeyConvertter::convert(Secp256k1ExtendConverter, private_key)
         }
         PublicKeyType::Ed25519 => PublickKeyConvertter::convert(Ed25519Converter, private_key),
+        PublicKeyType::Arweave => PublickKeyConvertter::convert(ArweaveConverter, private_key),
     }
 }

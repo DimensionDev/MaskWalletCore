@@ -2,6 +2,7 @@ pub mod aes;
 pub mod aes_params;
 pub mod curve;
 pub mod hash;
+pub mod jwk;
 pub mod kdf_params;
 pub mod key_store_json;
 pub mod public_key;
