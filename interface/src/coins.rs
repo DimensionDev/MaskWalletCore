@@ -33,7 +33,7 @@ mod tests {
     use super::COINS_MAP;
     #[test]
     fn test_get_coin_info() {
-        assert_eq!(COINS_MAP.len(), 3);
+        assert_eq!(COINS_MAP.len(), 4);
         let coin_info = COINS_MAP.get("ethereum").unwrap();
         assert_eq!(coin_info.curve, "secp256k1");
     }
