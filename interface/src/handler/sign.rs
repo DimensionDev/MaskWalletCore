@@ -49,8 +49,12 @@ pub fn sign_transaction(param: SignTransactionParam) -> MwResponse {
             };
         }
     };
-    let sign_output = match stored_key.sign(&coin, &param.password, &param.address, &encoded_input)
-    {
+    let sign_output = match stored_key.sign(
+        &coin,
+        &param.password,
+        &param.derivation_path,
+        &encoded_input,
+    ) {
         Ok(key) => key,
         Err(error) => {
             return get_error_response_by_error(error);

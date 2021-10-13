@@ -285,7 +285,7 @@ pub struct SignTransactionParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="2")]
-    pub address: ::prost::alloc::string::String,
+    pub derivation_path: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub password: ::prost::alloc::string::String,
     #[prost(enumeration="Coin", tag="4")]
