@@ -7,12 +7,14 @@ pub enum ChainImportType {
     PrivateKey = 0,
     Mnemonic = 1,
     KeyStoreJson = 2,
+    Jwk = 3,
 }
 
 pub enum ChainExportType {
     PrivateKey = 0,
     Mnemonic = 1,
     KeyStoreJson = 2,
+    Jwk = 3,
 }
 
 pub trait Entry {

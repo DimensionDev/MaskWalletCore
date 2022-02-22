@@ -1,7 +1,13 @@
 use super::public_key::PublicKey;
 use crypto::curve::Curve;
+use crypto::jwk;
 use crypto::public_key::PublicKeyType;
 use crypto::Error as CryptoError;
+use rand::rngs::OsRng;
+use rsa::BigUint;
+use rsa::PublicKey as RsaPublicKey;
+use rsa::RsaPrivateKey;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::string::ToString;
 
@@ -78,6 +84,18 @@ impl PrivateKey {
         }
     }
 
+    pub fn new_jwk_key_from_rsa(bit_size: usize) -> Result<PrivateKey, CryptoError> {
+        let exponent = BigUint::from_bytes_be(&[0x01, 0x00, 0x01]);
+        let rsa_priv_key = RsaPrivateKey::new_with_exp(&mut OsRng {}, bit_size, &exponent)
+            .map_err(|_| CryptoError::InvalidSeed)?;
+        let jwk_bytes = jwk::new_jwk(&rsa_priv_key).map_err(|_| CryptoError::InvalidPrivateKey)?;
+        Ok(PrivateKey {
+            data: jwk_bytes.to_vec(),
+            extends_data: vec![],
+            chain_code_bytes: vec![],
+        })
+    }
+
     pub fn get_public_key(&self, public_key_type_str: &str) -> Result<PublicKey, CryptoError> {
         let public_key_type = PublicKeyType::from_str(public_key_type_str)
             .map_err(|_| CryptoError::NotSupportedPublicKeyType)?;
@@ -128,4 +146,11 @@ mod tests {
         let pub_key_hex2 = hex::encode(&pub_key2.data);
         assert_eq!(pub_key_hex2, "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
     }
+
+    // #[test]
+    // fn test_new_rsa_priv_key() {
+    //     let priv_key = PrivateKey::new_jwk_key_from_rsa(4096).unwrap();
+    //     let test = String::from_utf8(priv_key.data.to_vec()).unwrap();
+    //     assert_eq!(test, "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
+    // }
 }

@@ -27,6 +27,7 @@ impl PublicKey {
             PublicKeyType::Ed25519 => {
                 size == ED25519_SIZE || (size == ED25519_SIZE + 1 && data[0] == 0x01)
             }
+            PublicKeyType::Arweave => true,
         }
     }
 
