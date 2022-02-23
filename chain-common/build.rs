@@ -1,7 +1,8 @@
-use std::env;
-extern crate prost_build;
+use prost_build;
 
 fn main() {
-    env::set_var("OUT_DIR", "src/generated");
-    prost_build::compile_protos(&["proto/api.proto"], &["proto/sign/", "proto/"]).unwrap();
+    prost_build::Config::new()
+        .out_dir("src/generated")
+        .compile_protos(&["proto/api.proto"], &["proto/sign/", "proto/"])
+        .unwrap();
 }
