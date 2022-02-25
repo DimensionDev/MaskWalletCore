@@ -32,7 +32,7 @@ then decode the response using protobuf to get the actual returned value.
 **!!IMPORTANT**:
 To generate the static lib:
 
-* make sure crates `cargo-lipo` and `cbindgen` have been installded.
+* Make sure crates `cargo-lipo` and `cbindgen` have been installded.
 * `rust-std`s for `aarch64-apple-ios` and `x86_64-apple-ios` are downloaded (can be dowloaded by excuting `rustup target add x86_64-apple-ios` or `rustup target add aarch64-apple-ios`).
 
 1. Execute `cargo lipo --release` in the `target-mobile` directory.
