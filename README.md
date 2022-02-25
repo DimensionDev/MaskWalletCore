@@ -29,6 +29,12 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
+**!!IMPORTANT**:
+To generate the static lib:
+
+* make sure crates `cargo-lipo` and `cbindgen` have been installded.
+* `rust-std`s for `aarch64-apple-ios` and `x86_64-apple-ios` are downloaded (can be dowloaded by excuting `rustup target add x86_64-apple-ios` or `rustup target add aarch64-apple-ios`).
+
 1. Execute `cargo lipo --release` in the `target-mobile` directory.
 2. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
 3. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
@@ -39,11 +45,15 @@ In development
 
 ## New Chain Integration Checklist
 
-- [ ] Add chain and coin info to `interface/resource/coin.json`
-- [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory
-- [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
-- [ ] Add new enum value to `enum Coin` in `chain-common/proto/Param.proto`
-- [ ] Add the newly added chain to following location in `chain-common/src/coin.rs`
+* [ ] Add chain and coin info to `interface/resource/coin.json`.
+
+* [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory.
+
+* [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
+
+* [ ] Add new enum value to `enum Coin` in `chain-common/proto/Param.proto`.
+
+* [ ] Add the newly added chain to following location in `chain-common/src/coin.rs`.
 
 ```rust
 impl ToString for CoinType {
@@ -57,7 +67,7 @@ impl ToString for CoinType {
 }
 ```
 
-- [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs` as following
+* [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs` as following.
 
 ```rust
 pub fn get_entry(coin: &Coin) -> Result<Box<dyn Entry>, Error> {
