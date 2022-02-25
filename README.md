@@ -29,15 +29,11 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-**!!IMPORTANT**:
-To generate the static lib:
-
-* Make sure crates `cargo-lipo` and `cbindgen` have been installded.
-* `rust-std`s for `aarch64-apple-ios` and `x86_64-apple-ios` are downloaded (can be dowloaded by excuting `rustup target add x86_64-apple-ios` or `rustup target add aarch64-apple-ios`).
-
-1. Execute `cargo lipo --release` in the `target-mobile` directory.
-2. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
-3. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
+1. Make sure crates `cargo-lipo` and `cbindgen` have been installded.
+2. `rust-std`s for `aarch64-apple-ios` and `x86_64-apple-ios` are downloaded (can be downloaded by excuting `rustup target add x86_64-apple-ios` or `rustup target add aarch64-apple-ios`).
+3. Execute `cargo lipo --release` in the `target-mobile` directory.
+4. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
+5. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
 
 ### For Android
 
