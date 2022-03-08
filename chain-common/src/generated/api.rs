@@ -39,6 +39,7 @@ pub struct StoredKeyAccountInfo {
 pub enum Coin {
     Ethereum = 0,
     Polkadot = 1,
+    Solana = 2,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -79,101 +80,6 @@ pub struct CreateStoredKeyNewAccountAtPathResp {
     #[prost(message, optional, tag="1")]
     pub account: ::core::option::Option<StoredKeyAccountInfo>,
     #[prost(message, optional, tag="2")]
-    pub stored_key: ::core::option::Option<StoredKeyInfo>,
-}
-/// Get count of accounts of a StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountCountParam {
-    /// StoredKey data returned from other response
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountCountResp {
-    #[prost(uint32, tag="1")]
-    pub count: u32,
-}
-/// Get the account at specific index of a StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountParam {
-    /// StoredKey data returned from other response
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    /// Index of the account, begin from zero
-    #[prost(uint32, tag="2")]
-    pub index: u32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountResp {
-    #[prost(message, optional, tag="1")]
-    pub account: ::core::option::Option<StoredKeyAccountInfo>,
-}
-/// Get all accounts information of a StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAllAccountParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAllAccountResp {
-    #[prost(message, repeated, tag="1")]
-    pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
-}
-/// Get the accounts of specific coin form a StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountsOfCoinParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(enumeration="Coin", tag="2")]
-    pub coin: i32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetStoredKeyAccountsOfCoinResp {
-    #[prost(message, repeated, tag="2")]
-    pub accounts: ::prost::alloc::vec::Vec<StoredKeyAccountInfo>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateStoredKeyAccountNameOfAddressParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag="2")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
-    pub name: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateStoredKeyAccountNameOfAddressResp {
-    #[prost(message, optional, tag="1")]
-    pub stored_key: ::core::option::Option<StoredKeyInfo>,
-    #[prost(message, optional, tag="2")]
-    pub account: ::core::option::Option<StoredKeyAccountInfo>,
-}
-/// Remove all accounts of specific coin type into a StoredKey
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountOfCoinParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(enumeration="Coin", tag="2")]
-    pub coin: i32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountOfCoinResp {
-    #[prost(message, optional, tag="1")]
-    pub stored_key: ::core::option::Option<StoredKeyInfo>,
-}
-/// Remove account of the specific address and coin type
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountOfAddressParam {
-    #[prost(bytes="vec", tag="1")]
-    pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, tag="2")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(enumeration="Coin", tag="3")]
-    pub coin: i32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RemoveStoredKeyAccountOfAddressResp {
-    #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -363,13 +269,23 @@ pub struct UpdateStoredKeyPasswordResp {
     #[prost(message, optional, tag="1")]
     pub stored_key: ::core::option::Option<StoredKeyInfo>,
 }
+/// Generate a random mnemonic
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenerateMnemonicParam {
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GenerateMnemonicResp {
+    /// The generated random mnemonic
+    #[prost(string, tag="1")]
+    pub mnemonic: ::prost::alloc::string::String,
+}
 /// Sign a transaction
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignTransactionParam {
     #[prost(bytes="vec", tag="1")]
     pub stored_key_data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="2")]
-    pub address: ::prost::alloc::string::String,
+    pub derivation_path: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub password: ::prost::alloc::string::String,
     #[prost(enumeration="Coin", tag="4")]
@@ -441,7 +357,7 @@ pub struct ValidateResp {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -458,20 +374,8 @@ pub mod mw_request {
         ParamImportMnemonic(super::ImportMnemonicStoredKeyParam),
         #[prost(message, tag="5")]
         ParamImportJson(super::ImportJsonStoredKeyParam),
-        #[prost(message, tag="6")]
-        ParamGetStoredKeyAccountCount(super::GetStoredKeyAccountCountParam),
-        #[prost(message, tag="7")]
-        ParamGetStoredKeyAccount(super::GetStoredKeyAccountParam),
-        #[prost(message, tag="8")]
-        ParamGetStoredKeyAllAccounts(super::GetStoredKeyAllAccountParam),
-        #[prost(message, tag="9")]
-        ParamGetStoredKeyAccountsOfCoin(super::GetStoredKeyAccountsOfCoinParam),
         #[prost(message, tag="10")]
-        ParamCreateAcccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathParam),
-        #[prost(message, tag="11")]
-        ParamRemoveAccountsOfCoin(super::RemoveStoredKeyAccountOfCoinParam),
-        #[prost(message, tag="12")]
-        ParamRemoveAccountOfAddress(super::RemoveStoredKeyAccountOfAddressParam),
+        ParamCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathParam),
         #[prost(message, tag="13")]
         ParamExportPrivateKey(super::ExportKeyStorePrivateKeyParam),
         #[prost(message, tag="14")]
@@ -484,8 +388,6 @@ pub mod mw_request {
         ParamExportKeyStoreJsonOfPath(super::ExportKeyStoreJsonOfPathParam),
         #[prost(message, tag="18")]
         ParamUpdateKeyStorePassword(super::UpdateStoredKeyPasswordParam),
-        #[prost(message, tag="19")]
-        ParamUpdateStoredKeyAccountName(super::UpdateStoredKeyAccountNameOfAddressParam),
         #[prost(message, tag="20")]
         ParamSignTransaction(super::SignTransactionParam),
         #[prost(message, tag="21")]
@@ -496,11 +398,13 @@ pub mod mw_request {
         ParamGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeParam),
         #[prost(message, tag="24")]
         ParamGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeParam),
+        #[prost(message, tag="25")]
+        ParamGenerateMnemonic(super::GenerateMnemonicParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -519,20 +423,8 @@ pub mod mw_response {
         RespImportMnemonic(super::ImportMnemonicStoredKeyResp),
         #[prost(message, tag="6")]
         RespImportJson(super::ImportJsonStoredKeyResp),
-        #[prost(message, tag="7")]
-        RespGetStoredKeyAccountCount(super::GetStoredKeyAccountCountResp),
-        #[prost(message, tag="8")]
-        RespGetStoredKeyAccount(super::GetStoredKeyAccountResp),
-        #[prost(message, tag="9")]
-        RespGetStoredKeyAllAccounts(super::GetStoredKeyAllAccountResp),
-        #[prost(message, tag="10")]
-        RespGetStoredKeyAccountsOfCoin(super::GetStoredKeyAccountsOfCoinResp),
         #[prost(message, tag="11")]
         RespCreateAccountOfCoinAtPath(super::CreateStoredKeyNewAccountAtPathResp),
-        #[prost(message, tag="12")]
-        RespRemoveAccountOfCoin(super::RemoveStoredKeyAccountOfCoinResp),
-        #[prost(message, tag="13")]
-        RespRemoveAccountOfAddress(super::RemoveStoredKeyAccountOfAddressResp),
         #[prost(message, tag="14")]
         RespExportPrivateKey(super::ExportKeyStorePrivateKeyResp),
         #[prost(message, tag="15")]
@@ -541,8 +433,6 @@ pub mod mw_response {
         RespExportKeyStoreJson(super::ExportKeyStoreJsonResp),
         #[prost(message, tag="17")]
         RespUpdateKeyStorePassword(super::UpdateStoredKeyPasswordResp),
-        #[prost(message, tag="18")]
-        RespUpdateKeyStoreAccountName(super::UpdateStoredKeyAccountNameOfAddressResp),
         #[prost(message, tag="19")]
         RespSignTransaction(super::SignTransactionResp),
         #[prost(message, tag="20")]
@@ -553,6 +443,8 @@ pub mod mw_response {
         RespGetStoredKeyImportType(super::GetKeyStoreSupportImportTypeResp),
         #[prost(message, tag="23")]
         RespGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeResp),
+        #[prost(message, tag="24")]
+        RespGenerateMnemonic(super::GenerateMnemonicResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -1,6 +1,10 @@
+use super::number_util::random_iv;
 use crate::Error;
+use bip39::Language;
 use bip39::Mnemonic as CryptoMnemonic;
 use std::str::FromStr;
+
+const SUPPORT_MNEMONIC_WORDS_COUNT: [u32; 3] = [12, 18, 24];
 
 pub struct Mnemonic {
     pub words: String,
@@ -9,9 +13,26 @@ pub struct Mnemonic {
 }
 
 impl Mnemonic {
+    pub fn generate_mnemonic_string(word_count: u32) -> Result<String, Error> {
+        if !SUPPORT_MNEMONIC_WORDS_COUNT.contains(&word_count) {
+            return Err(Error::InvalidMnemonic);
+        }
+        let entropy_bytes = (word_count / 3) * 4;
+        let entropy = random_iv(entropy_bytes as usize);
+        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
+            .map_err(|_| Error::InvalidMnemonic)?;
+        Ok(mnemonic.to_string())
+    }
+
     pub fn generate(word_count: u32, password: &str) -> Result<Mnemonic, Error> {
-        let mnemonic =
-            CryptoMnemonic::generate(word_count as usize).map_err(|_| Error::InvalidMnemonic)?;
+        if !SUPPORT_MNEMONIC_WORDS_COUNT.contains(&word_count) {
+            return Err(Error::InvalidMnemonic);
+        }
+        let entropy_bytes = (word_count / 3) * 4;
+        let entropy = random_iv(entropy_bytes as usize);
+        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
+            .map_err(|_| Error::InvalidMnemonic)?;
+
         let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();

@@ -1,5 +1,5 @@
 [package]
-name = "ethereum"
+name = "solana"
 version = "0.1.0"
 authors = ["jk234ert <handan0524@gmail.com>"]
 edition = "2018"
@@ -7,12 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-secp256k1 = {version ="0.20.1", features = ["recovery"] }
-ethereum-types = "0.11.0"
-prost = "0.7"
-hex = "0.4.3"
-rlp = "0.5.0"
-rlp-derive = { version = "0.1.0", default-features = false }
-bytes = "1.0.1"
+bitcoin = { version = "0.26.0" }
+
 crypto = { path = "../../crypto" }
 chain-common = { path = "../../chain-common" }

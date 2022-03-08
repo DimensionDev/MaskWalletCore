@@ -49,6 +49,7 @@ impl std::str::FromStr for ProtoCoin {
         match s.to_lowercase().as_str() {
             "ethereum" => Ok(ProtoCoin::Ethereum),
             "polkadot" => Ok(ProtoCoin::Polkadot),
+            "solana" => Ok(ProtoCoin::Solana),
             _ => Err(Error::NotSupportedCoin),
         }
     }

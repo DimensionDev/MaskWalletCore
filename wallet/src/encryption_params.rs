@@ -87,19 +87,16 @@ impl EncryptionParams {
         let new_encryption_param = Self::new(&new_password.as_bytes(), &decrypted)?;
 
         let new_encrypted_text = hex::encode(&new_encryption_param.encrypted);
-
-        // let new_encrypted_text = std::str::from_utf8(&new_encryption_param.encrypted)
-        //     .map_err(|_| CryptoError::PasswordIncorrect)?;
         let kdf = match new_encryption_param.kdf_params {
             KdfParams::ScryptParam(_) => "scrypt".to_owned(),
         };
         let crypto = Crypto {
             cipher: new_encryption_param.cipher.to_string(),
             cipherparams: new_encryption_param.cipher_params,
-            ciphertext: new_encrypted_text.to_owned(),
+            ciphertext: new_encrypted_text,
             kdf,
             kdfparams: new_encryption_param.kdf_params,
-            mac: new_encryption_param.mac.clone(),
+            mac: new_encryption_param.mac,
         };
         let key_store_json = KeyStoreJson {
             crypto,

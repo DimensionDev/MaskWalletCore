@@ -5,18 +5,33 @@ package ethereum;
 // Input data necessary to create a signed transaction.
 message SignInput {
     uint64 chain_id = 1;
+
     // hex encoded nonce number
     string nonce = 2;
-    // hex encoded nonce number
+
+    // hex encoded gas_price number
+    // If > 0, legacy fee scheme is used; if 0, EIP1559 fee scheme is used
     string gas_price = 3;
-    // hex encoded nonce number
+
+    // hex encoded gas_limit number
     string gas_limit = 4;
-    // hex encoded nonce number
-    string amount = 5;
+
+    // hex encoded maxinmum optional inclusion fee (aka tip) (256-bit number)
+    // used only for EIP1559 fee, disregarded for legacy
+    string max_inclusion_fee_per_gas = 5;
+
+    // hex encoded maxinmum fee (256-bit number)
+    // used only for EIP1559 fee, disregarded for legacy
+    string max_fee_per_gas = 6;
+
+    // hex encoded amount number
+    string amount = 7;
+
     // Recipient's address.
-    string to_address = 6;
-    // hex encoded nonce number
-    string payload = 7;
+    string to_address = 8;
+
+    // payload data
+    bytes payload = 9;
 }
 
 // Transaction signing output.

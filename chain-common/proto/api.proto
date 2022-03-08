@@ -16,25 +16,27 @@ message MWRequest {
         ImportPrivateStoredKeyParam param_import_private_key = 3;
         ImportMnemonicStoredKeyParam param_import_mnemonic = 4;
         ImportJSONStoredKeyParam param_import_json = 5;
-        GetStoredKeyAccountCountParam param_get_stored_key_account_count = 6;
-        GetStoredKeyAccountParam param_get_stored_key_account = 7;
-        GetStoredKeyAllAccountParam param_get_stored_key_all_accounts = 8;
-        GetStoredKeyAccountsOfCoinParam param_get_stored_key_accounts_of_coin = 9;
-        CreateStoredKeyNewAccountAtPathParam param_create_acccount_of_coin_at_path = 10;
-        RemoveStoredKeyAccountOfCoinParam param_remove_accounts_of_coin = 11;
-        RemoveStoredKeyAccountOfAddressParam param_remove_account_of_address = 12;
+        
+        
+        
+        
+        CreateStoredKeyNewAccountAtPathParam param_create_account_of_coin_at_path = 10;
+        
+        
         ExportKeyStorePrivateKeyParam param_export_private_key = 13;
         ExportKeyStorePrivateKeyOfPathParam param_export_private_key_of_path = 14;
         ExportKeyStoreMnemonicParam param_export_mnemonic = 15;
         ExportKeyStoreJSONOfAddressParam param_export_key_store_json_of_address = 16;
         ExportKeyStoreJSONOfPathParam param_export_key_store_json_of_path = 17;
         UpdateStoredKeyPasswordParam param_update_key_store_password = 18;
-        UpdateStoredKeyAccountNameOfAddressParam param_update_stored_key_account_name = 19;
+        
         SignTransactionParam param_sign_transaction = 20;
         GetVersionParam param_get_version = 21;
         ValidateParam param_validation = 22;
         GetKeyStoreSupportImportTypeParam param_get_stored_key_import_type = 23;
         GetKeyStoreSupportExportTypeParam param_get_stored_key_export_type = 24;
+
+        GenerateMnemonicParam param_generate_mnemonic = 25;
     }
 }
 
@@ -46,23 +48,25 @@ message MWResponse {
         ImportPrivateStoredKeyResp resp_import_private_key = 4;
         ImportMnemonicStoredKeyResp resp_import_mnemonic = 5;
         ImportJSONStoredKeyResp resp_import_json = 6;
-        GetStoredKeyAccountCountResp resp_get_stored_key_account_count = 7;
-        GetStoredKeyAccountResp resp_get_stored_key_account = 8;
-        GetStoredKeyAllAccountResp resp_get_stored_key_all_accounts = 9;
-        GetStoredKeyAccountsOfCoinResp resp_get_stored_key_accounts_of_coin = 10;
+        
+        
+        
+        
         CreateStoredKeyNewAccountAtPathResp resp_create_account_of_coin_at_path = 11;
-        RemoveStoredKeyAccountOfCoinResp resp_remove_account_of_coin = 12;
-        RemoveStoredKeyAccountOfAddressResp resp_remove_account_of_address = 13;
+        
+        
         ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
         ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
         ExportKeyStoreJSONResp resp_export_key_store_json = 16;
         UpdateStoredKeyPasswordResp resp_update_key_store_password = 17;
-        UpdateStoredKeyAccountNameOfAddressResp resp_update_key_store_account_name = 18;
+        
         SignTransactionResp resp_sign_transaction = 19;
         GetVersionResp resp_get_version = 20;
         ValidateResp resp_validate = 21;
         GetKeyStoreSupportImportTypeResp resp_get_stored_key_import_type = 22;
         GetKeyStoreSupportExportTypeResp resp_get_stored_key_export_type = 23;
+
+        GenerateMnemonicResp resp_generate_mnemonic = 24;
     }
 }
 

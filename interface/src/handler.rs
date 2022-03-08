@@ -22,23 +22,16 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         }
         ParamExportKeyStoreJsonOfPath(param) => stored_key::export_key_store_json_of_path(param),
         ParamUpdateKeyStorePassword(param) => stored_key::update_key_store_password(param),
-        ParamUpdateStoredKeyAccountName(param) => {
-            stored_key::update_key_store_account_name_of_address(param)
-        }
         ParamGetStoredKeyImportType(param) => stored_key::get_supported_import_types(param),
         ParamGetStoredKeyExportType(param) => stored_key::get_supported_export_types(param),
 
-        ParamGetStoredKeyAccountCount(param) => account::get_stored_key_account_count(param),
-        ParamGetStoredKeyAccount(param) => account::get_store_key_account(param),
-        ParamGetStoredKeyAllAccounts(param) => account::get_stored_key_all_accounts(param),
-        ParamGetStoredKeyAccountsOfCoin(param) => account::get_stored_key_accounts_of_coin(param),
-        ParamCreateAcccountOfCoinAtPath(param) => {
+        ParamCreateAccountOfCoinAtPath(param) => {
             account::create_stored_key_account_of_coin_at_path(param)
         }
-        ParamRemoveAccountsOfCoin(param) => account::remove_stored_key_account_of_coin(param),
-        ParamRemoveAccountOfAddress(param) => account::remove_account_of_address(param),
         ParamSignTransaction(param) => sign::sign_transaction(param),
 
         ParamValidation(param) => validate::validate(param),
+
+        ParamGenerateMnemonic(_) => common::generate_mnemonic(),
     }
 }

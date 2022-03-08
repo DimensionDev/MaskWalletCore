@@ -8,7 +8,7 @@ import "sign/Ethereum.proto";
 // Sign a transaction
 message SignTransactionParam {
     bytes storedKeyData = 1;
-    string address = 2;
+    string derivationPath = 2;
     string password = 3;
     Coin coin = 4;
     oneof input {

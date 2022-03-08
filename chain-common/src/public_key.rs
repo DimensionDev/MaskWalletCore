@@ -6,6 +6,8 @@ const SECP256K1_SIZE: usize = 33;
 
 const SECP256K1EXTENDED_SIZE: usize = 65;
 
+const ED25519_SIZE: usize = 32;
+
 pub struct PublicKey {
     pub r#type: PublicKeyType,
     pub data: Vec<u8>,
@@ -22,6 +24,9 @@ impl PublicKey {
                 size == SECP256K1_SIZE && (data[0] == 0x02 || data[0] == 0x03)
             }
             PublicKeyType::Secp256k1Extended => size == SECP256K1EXTENDED_SIZE && data[0] == 0x04,
+            PublicKeyType::Ed25519 => {
+                size == ED25519_SIZE || (size == ED25519_SIZE + 1 && data[0] == 0x01)
+            }
         }
     }
 

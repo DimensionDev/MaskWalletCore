@@ -76,3 +76,12 @@ message UpdateStoredKeyPasswordParam {
 message UpdateStoredKeyPasswordResp {
     StoredKeyInfo StoredKey = 1;
 }
+
+// Generate a random mnemonic
+message GenerateMnemonicParam {
+    
+}
+
+message GenerateMnemonicResp {
+    string mnemonic = 1; // The generated random mnemonic
+}
