@@ -10,3 +10,7 @@ Cargo.lock
 **/*.rs.bk
 
 /output/
+
+.DS_Store
+
+/target-mobile/*.h
