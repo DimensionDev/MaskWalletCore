@@ -31,8 +31,15 @@ then decode the response using protobuf to get the actual returned value.
 
 1. Make sure crates `cargo-lipo` have been installded.
 2. `rust-std`s for `aarch64-apple-ios` and `x86_64-apple-ios` are downloaded (can be downloaded by excuting `rustup target add x86_64-apple-ios` or `rustup target add aarch64-apple-ios`).
-3. Execute `cargo lipo --release` in the `target-mobile` directory or `sh build-xcframework.sh` in the `target-mobile/iOS` directory.
-4. Add the generated `libmask_wallet_core_mobile.h` in `target-mobile/iOS` directory and `libmask_wallet_core_mobile.a` to your iOS project.
+
+#### Static lib
+
+1. Execute `cargo lipo --release` in the `target-mobile` directory or `sh build-xcframework.sh` in the `target-mobile/iOS` directory.
+2. Add the generated `libmask_wallet_core_mobile.h` in `target-mobile/iOS` directory and `libmask_wallet_core_mobile.a` in `target/release` directory to your iOS project.
+
+#### XCFramework
+
+Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `libmask_wallet_core_mobile.xcframework` will be generated.
 
 ### For Android
 
