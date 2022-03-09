@@ -34,7 +34,7 @@ then decode the response using protobuf to get the actual returned value.
 
 #### Static lib
 
-1. Execute `cargo lipo --release` in the `target-mobile` directory or `sh build-xcframework.sh` in the `target-mobile/iOS` directory.
+1. Execute `cargo lipo --release` in the `target-mobile` directory.
 2. Add the generated `libmask_wallet_core_mobile.h` in `target-mobile/iOS` directory and `libmask_wallet_core_mobile.a` in `target/release` directory to your iOS project.
 
 #### XCFramework
