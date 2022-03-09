@@ -21,7 +21,7 @@
                 <key>LibraryIdentifier</key>
                 <string>ios-arm64</string>
                 <key>LibraryPath</key>
-                <string>MaskWalletCoreMobile.framework</string>
+                <string>libmask_wallet_core_mobile.framework</string>
                 <key>SupportedArchitectures</key>
                 <array>
                     <string>arm64</string>
@@ -33,7 +33,7 @@
                 <key>LibraryIdentifier</key>
                 <string>ios-arm64_x86_64-simulator</string>
                 <key>LibraryPath</key>
-                <string>MaskWalletCoreMobile.framework</string>
+                <string>libmask_wallet_core_mobile.framework</string>
                 <key>SupportedArchitectures</key>
                 <array>
                     <string>arm64</string>

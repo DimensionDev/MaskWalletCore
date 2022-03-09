@@ -31,15 +31,13 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 ####
 
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-TARGET_ROOT="$(cd ../target &>/dev/null && pwd)"
+TARGET_ROOT="$(cd ../../target &>/dev/null && pwd)"
 CARGO="$HOME/.cargo/bin/cargo"
 LIBS_DIR=""
 
 cargo_build() {
     TARGET=$1
     LIBS_DIR="$TARGET_ROOT/$TARGET/$BUILD_PROFILE"
-
-    echo "--$TARGET-- $TARGET_ROOT"
     "$CARGO" "build" --target "$TARGET" --release
 }
 

@@ -1,0 +1,6 @@
+framework module libmask_wallet_core_mobile {
+  umbrella header "libmask_wallet_core_mobile.h"
+
+  export *
+  module * { export * }
+}
