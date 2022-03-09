@@ -9,5 +9,5 @@ fn main() {
         .with_crate(crate_dir)
         .generate()
         .expect("Unable to generate bindings")
-        .write_to_file("rustlib.h");
+        .write_to_file("libmask_wallet_core_mobile.h");
 }
