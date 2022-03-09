@@ -35,23 +35,14 @@ TARGET_ROOT="$(cd ../../target &>/dev/null && pwd)"
 CARGO="$HOME/.cargo/bin/cargo"
 LIBS_DIR=""
 
-cargo_build() {
-    TARGET=$1
-    LIBS_DIR="$TARGET_ROOT/$TARGET/$BUILD_PROFILE"
-    "$CARGO" "build" --target "$TARGET" --release
-}
-
 # Intel iOS simulator
-CFLAGS_x86_64_apple_ios="-target x86_64-apple-ios" \
-    cargo_build x86_64-apple-ios
+cargo build --target x86_64-apple-ios --release
 
 # Hardware iOS targets
-cargo_build aarch64-apple-ios
+cargo build --target aarch64-apple-ios --release
 
-#
 # M1 iOS simulator.
-# CFLAGS_aarch64_apple_ios_sim="--target aarch64-apple-ios-sim" \
-#     cargo_build aarch64-apple-ios-sim
+cargo build --target aarch64-apple-ios-sim --release
 
 ####
 ##
@@ -91,9 +82,9 @@ cp "$TARGET_ROOT/aarch64-apple-ios/$BUILD_PROFILE/$LIB_NAME" "$XCFRAMEWORK_ROOT/
 mkdir -p "$XCFRAMEWORK_ROOT/ios-arm64_x86_64-simulator"
 cp -r "$COMMON" "$XCFRAMEWORK_ROOT/ios-arm64_x86_64-simulator/$FRAMEWORK_NAME.framework"
 lipo -create \
-  -output "$XCFRAMEWORK_ROOT/ios-arm64_x86_64-simulator/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME" \
-  "$TARGET_ROOT/aarch64-apple-ios-sim/$BUILD_PROFILE/$LIB_NAME" \
-  "$TARGET_ROOT/x86_64-apple-ios/$BUILD_PROFILE/$LIB_NAME" 
+    -output "$XCFRAMEWORK_ROOT/ios-arm64_x86_64-simulator/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME" \
+    "$TARGET_ROOT/aarch64-apple-ios-sim/$BUILD_PROFILE/$LIB_NAME" \
+    "$TARGET_ROOT/x86_64-apple-ios/$BUILD_PROFILE/$LIB_NAME"
 
 # Set up the metadata for the XCFramework as a whole.
 
