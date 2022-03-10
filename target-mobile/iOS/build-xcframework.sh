@@ -3,7 +3,7 @@
 # This script builds the Rust crate in its directory into a staticlib XCFramework for iOS.
 
 BUILD_PROFILE="release"
-FRAMEWORK_NAME="libmask_wallet_core_mobile"
+FRAMEWORK_NAME="MaskWalletCoreMobile"
 LIB_NAME="libmask_wallet_core_mobile.a"
 
 # eg. sh build-xcframework.sh --build-profile release --framework-name MaskWallet
