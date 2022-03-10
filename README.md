@@ -39,7 +39,7 @@ then decode the response using protobuf to get the actual returned value.
 
 #### XCFramework
 
-Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `libmask_wallet_core_mobile.xcframework` will be generated.
+Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `MaskWalletCoreMobile.xcframework` will be generated.
 
 ### For Android
 
