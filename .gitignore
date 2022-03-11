@@ -13,7 +13,7 @@ Cargo.lock
 
 .DS_Store
 
-/target-mobile/iOS/*.h
+/target-mobile/*.h
 
 /target-mobile/iOS/*.xcframework
 /target-mobile/iOS/*.zip

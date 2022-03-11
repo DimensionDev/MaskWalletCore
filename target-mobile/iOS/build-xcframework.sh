@@ -34,6 +34,7 @@ THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 TARGET_ROOT="$(cd ../../target &>/dev/null && pwd)"
 CARGO="$HOME/.cargo/bin/cargo"
 LIBS_DIR=""
+HEADERS_DIR=""$(cd .. &>/dev/null && pwd)""
 
 # Intel iOS simulator
 cargo build --target x86_64-apple-ios --release
@@ -65,7 +66,7 @@ mkdir -p "$COMMON/Modules"
 cp "$THIS_DIR/module.modulemap" "$COMMON/Modules/"
 
 mkdir -p "$COMMON/Headers"
-cp "$THIS_DIR/$FRAMEWORK_NAME.h" "$COMMON/Headers"
+cp "$HEADERS_DIR/$FRAMEWORK_NAME.h" "$COMMON/Headers"
 
 # Flesh out the framework for each architecture based on the common files.
 # It's a little fiddly, because we apparently need to put all the simulator targets
