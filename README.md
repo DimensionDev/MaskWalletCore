@@ -29,7 +29,7 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-#### Pre-requirements
+#### Crates And Target Requirements
 
 * Make sure crates `cargo-lipo` have been installded.
 * `rust-std`s for `aarch64-apple-ios`, `aarch64-apple-ios-sim` and `x86_64-apple-ios` are downloaded (can be downloaded by excuting `rustup target add x86_64-apple-ios`, `rustup target add aarch64-apple-ios-sim` or `rustup target add aarch64-apple-ios`).
