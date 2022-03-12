@@ -37,13 +37,13 @@ LIBS_DIR=""
 HEADERS_DIR=""$(cd .. &>/dev/null && pwd)""
 
 # Intel iOS simulator
-cargo build --target x86_64-apple-ios --release
+cargo build --target x86_64-apple-ios --"$BUILD_PROFILE"
 
 # Hardware iOS targets
-cargo build --target aarch64-apple-ios --release
+cargo build --target aarch64-apple-ios --"$BUILD_PROFILE"
 
 # M1 iOS simulator.
-cargo build --target aarch64-apple-ios-sim --release
+cargo build --target aarch64-apple-ios-sim --"$BUILD_PROFILE"
 
 ####
 ##
