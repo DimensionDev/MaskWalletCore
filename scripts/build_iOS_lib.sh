@@ -15,7 +15,7 @@ mkdir output/ios
 mkdir output/ios/proto
 mkdir output/ios/proto/sign
 
-mv ./target-mobile/rust.h ./output/ios/rust.h
+mv ./target-mobile/MaskWalletCoreMobile.h ./output/ios/MaskWalletCoreMobile.h
 cp ./target/universal/release/libmask_wallet_core_mobile.a ./output/ios/
 
 pushd chain-common/proto

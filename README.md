@@ -29,19 +29,20 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-#### Crates And Target Requirements
+#### Crate And Target Requirements
 
 * Make sure crates `cargo-lipo` have been installded.
 * `rust-std`s for `aarch64-apple-ios`, `aarch64-apple-ios-sim` and `x86_64-apple-ios` are downloaded (can be downloaded by excuting `rustup target add x86_64-apple-ios`, `rustup target add aarch64-apple-ios-sim` or `rustup target add aarch64-apple-ios`).
+* Install `swift-protobuf` via `brew install swift-protobuf`.
 
 #### Static lib
 
-1. Execute `cargo lipo --release` in the `target-mobile` directory.
-2. Add the generated `MaskWalletCoreMobile.h` in `target-mobile` directory and `libmask_wallet_core_mobile.a` in `target/release` directory to your iOS project.
+1. Execute `sh build_iOS_lib.sh` under `scripts` directory.
+2. Add the generated `proto`, `MaskWalletCoreMobile.h` and `libmask_wallet_core_mobile.a` in `scripts/ios` directory to your iOS project.
 
 #### XCFramework
 
-Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `MaskWalletCoreMobile.xcframework` will be generated.
+Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `MaskWalletCoreMobile.xcframework` and `Protos` will be generated.
 
 ### For Android
 
