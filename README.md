@@ -38,7 +38,7 @@ then decode the response using protobuf to get the actual returned value.
 #### Static lib
 
 1. Execute `sh build_iOS_lib.sh` under `scripts` directory.
-2. Add the generated `proto`, `MaskWalletCoreMobile.h` and `libmask_wallet_core_mobile.a` in `scripts/ios` directory to your iOS project.
+2. Add the generated `proto`, `MaskWalletCoreMobile.h` and `libmask_wallet_core_mobile.a` in `output/ios` directory to your iOS project.
 
 #### XCFramework
 
