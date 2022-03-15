@@ -2,7 +2,7 @@
 set -x -euo pipefail
 
 pushd target-mobile
-cbindgen src/lib.rs -l c > rust.h
+cbindgen src/lib.rs -l c >MaskWalletCoreMobile.h
 cargo lipo --release
 popd
 
