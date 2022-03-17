@@ -7,7 +7,6 @@ BUILD_PROFILE="release"
 FRAMEWORK_NAME="MaskWalletCoreMobile"
 LIB_NAME="libmask_wallet_core_mobile.a"
 
-
 # eg. sh build-xcframework.sh --build-profile release --framework-name MaskWallet
 while [[ "$#" -gt 0 ]]; do case $1 in
     --build-profile)
@@ -35,17 +34,16 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 TARGET_ROOT="$(cd ../../target &>/dev/null && pwd)"
 CARGO="$HOME/.cargo/bin/cargo"
-LIBS_DIR=""
-HEADERS_DIR=""$(cd .. &>/dev/null && pwd)""
+HEADERS_DIR="$(cd .. &>/dev/null && pwd)"
 
 # Intel iOS simulator
-cargo build --target x86_64-apple-ios --"$BUILD_PROFILE"
+"$CARGO" build --target x86_64-apple-ios --"$BUILD_PROFILE"
 
 # Hardware iOS targets
-cargo build --target aarch64-apple-ios --"$BUILD_PROFILE"
+"$CARGO" build --target aarch64-apple-ios --"$BUILD_PROFILE"
 
 # M1 iOS simulator.
-cargo build --target aarch64-apple-ios-sim --"$BUILD_PROFILE"
+"$CARGO" build --target aarch64-apple-ios-sim --"$BUILD_PROFILE"
 
 ####
 ##
