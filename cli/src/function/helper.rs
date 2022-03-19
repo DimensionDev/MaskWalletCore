@@ -9,20 +9,40 @@ use std::{
     process::Command,
 };
 
-pub(crate) const LIB_NAME: &'static str = "libmask_wallet_core_mobile.a";
+pub(crate) const LIB_NAME: &'static str = "libmask_wallet_core_mobile";
 pub(crate) const FRAMEWORK: &'static str = "MaskWalletCoreMobile";
+pub(crate) const WASM: &'static str = "libmask_wallet_core_wasm";
 
-pub async fn prepare_output_dir() -> Result<()> {
+#[non_exhaustive]
+pub enum Platform {
+    #[allow(non_camel_case_types)]
+    iOS,
+    Wasm,
+}
+
+pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
+    fn check_and_create_dir(path: PathBuf) -> Result<()> {
+        if path.exists() {
+            remove_dir_all(&path)?;
+        }
+        create_dir(&path)?;
+
+        Ok(())
+    }
+
     // mk dir
     let output = env::current_dir()?.parent().unwrap().join("output");
 
     // clean output
-    if output.exists() {
-        remove_dir_all(&output)?;
+    if !output.exists() {
+        create_dir(&output)?;
     }
 
-    create_dir(&output)?;
-    create_dir(&output.join("ios"))?;
+    let path = match platform {
+        Platform::iOS => output.join("ios"),
+        Platform::Wasm => output.join("wasm"),
+    };
+    check_and_create_dir(path)?;
 
     Ok(())
 }

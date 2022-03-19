@@ -5,7 +5,7 @@ use tokio::join;
 use super::*;
 
 pub async fn start_generating_static_lib() -> Result<()> {
-    prepare_output_dir().await?;
+    prepare_output_dir(Platform::iOS).await?;
 
     let output = env::current_dir()?
         .parent()
@@ -33,11 +33,11 @@ async fn generate_static_lib() -> Result<()> {
     let target_lib_path = env::current_dir()?
         .parent()
         .unwrap()
-        .join("target/universal/release/".to_string() + LIB_NAME);
+        .join(format!("target/universal/release/{:}.a", LIB_NAME));
     let lib_path = env::current_dir()?
         .parent()
         .unwrap()
-        .join(format!("output/ios/{:}", LIB_NAME));
+        .join(format!("output/ios/{:}.a", LIB_NAME));
     copy(target_lib_path, lib_path)?;
 
     Ok(())

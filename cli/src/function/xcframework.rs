@@ -14,7 +14,7 @@ pub async fn start_generating_xcframework() -> Result<()> {
         .unwrap()
         .join(format!("output"));
 
-    prepare_output_dir().await?;
+    prepare_output_dir(Platform::iOS).await?;
 
     let prepare_dir = tokio::spawn(prepre_xcframework_dirs());
     let build_release = tokio::spawn(cargo_build_release());
@@ -84,7 +84,7 @@ async fn generate_xcframework() -> Result<()> {
 
     let target_path = env::current_dir()?.parent().unwrap().join("target");
     copy(
-        &target_path.join(format!("aarch64-apple-ios/release/{:}", LIB_NAME)),
+        &target_path.join(format!("aarch64-apple-ios/release/{:}.a", LIB_NAME)),
         &arm64_framework_path.join(format!("{:}", FRAMEWORK)),
     )?;
 
@@ -102,8 +102,8 @@ async fn generate_xcframework() -> Result<()> {
             "ios-arm64_x86_64-simulator/{:}.framework/{:}",
             FRAMEWORK, FRAMEWORK
         )))
-        .arg(target_path.join(format!("aarch64-apple-ios-sim/release/{:}", LIB_NAME)))
-        .arg(target_path.join(format!("x86_64-apple-ios/release/{:}", LIB_NAME)))
+        .arg(target_path.join(format!("aarch64-apple-ios-sim/release/{:}.a", LIB_NAME)))
+        .arg(target_path.join(format!("x86_64-apple-ios/release/{:}.a", LIB_NAME)))
         .spawn()?
         .wait_with_output();
 

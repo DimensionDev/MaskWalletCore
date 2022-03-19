@@ -1,46 +1,54 @@
 use anyhow::Result;
-use clap::{arg, command};
+use clap::command;
 use colored::Colorize;
 use std::env;
 
 mod function;
 use function::start_generating_static_lib;
+use function::start_generating_wasm_lib;
 use function::start_generating_xcframework;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let matches = command!()
-        .arg(
-            arg!(
-                -i --ios [TYPE]... "Generate artifacts of iOS platform, currently support static 'lib' and 'xcframework'"
-            )
-            .takes_value(true)
-            .multiple_values(false),
+        .subcommand(
+            command!("ios")
+                .subcommand(command!("-lib").about("Generate static lib of iOS platform"))
+                .subcommand(
+                    command!("-xcframework").about("Generate xcframework for iOS platform"),
+                ),
         )
+        .subcommand(command!("wasm").about("Generate wasm dylib"))
         .get_matches();
 
-    if matches.is_present("ios") {
-        match matches.value_of("ios") {
-            Some(artifact) => match artifact {
-                "lib" => {
-                    println!("{:}\n", "Start generating static lib for iOS".green());
-                    start_generating_static_lib().await?
-                }
+    match matches.subcommand() {
+        Some(("ios", args)) => match args.subcommand() {
+            Some(("-lib", _)) => {
+                println!("{:}\n", "Start generating static lib for iOS".green());
+                start_generating_static_lib().await?
+            }
 
-                "xcframework" => {
-                    println!("{:}\n", "Start generating xcframework for iOS".green());
-                    start_generating_xcframework().await?
-                }
+            Some(("-xcframework", _)) => {
+                println!("{:}\n", "Start generating xcframework for iOS".green());
+                start_generating_xcframework().await?
+            }
 
-                _ => println!(
+            _ => {
+                println!(
                     "{:}",
                     "Only static lib and xcframework are supported".magenta()
-                ),
-            },
-            _ => println!("{:}\n", "Sepecify an artifact type".magenta()),
+                )
+            }
+        },
+
+        Some(("wasm", _)) => {
+            println!("{:}\n", "Start generating wasm lib".green());
+            start_generating_wasm_lib().await?
         }
-    } else {
-        println!("{:}", "Currently artifacts for iOS are available".magenta());
+
+        _ => {
+            println!("{:}", "Unsupport command".magenta());
+        }
     }
 
     Ok(())
