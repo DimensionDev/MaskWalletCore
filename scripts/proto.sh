@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x -euo pipefail
 
 PUSH="true"
 while [[ "$#" -gt 0 ]]; do case $1 in

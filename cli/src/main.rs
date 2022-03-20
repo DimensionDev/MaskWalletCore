@@ -1,7 +1,8 @@
+use std::env;
+
 use anyhow::Result;
 use clap::command;
 use colored::Colorize;
-use std::env;
 
 mod function;
 use function::start_generating_static_lib;

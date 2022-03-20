@@ -7,6 +7,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     process::Command,
+    // process::Output,
 };
 
 pub(crate) const LIB_NAME: &'static str = "libmask_wallet_core_mobile";
@@ -21,15 +22,6 @@ pub enum Platform {
 }
 
 pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
-    fn check_and_create_dir(path: PathBuf) -> Result<()> {
-        if path.exists() {
-            remove_dir_all(&path)?;
-        }
-        create_dir(&path)?;
-
-        Ok(())
-    }
-
     // mk dir
     let output = env::current_dir()?.parent().unwrap().join("output");
 
@@ -42,7 +34,11 @@ pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
         Platform::iOS => output.join("ios"),
         Platform::Wasm => output.join("wasm"),
     };
-    check_and_create_dir(path)?;
+
+    if path.exists() {
+        remove_dir_all(&path)?;
+    }
+    create_dir(&path)?;
 
     Ok(())
 }
@@ -51,6 +47,7 @@ pub fn finish() {
     println!("{:}\n", "cli ==> Done".green());
 }
 
+/// generate `MaskWalletCoreMobile.h` at `tartet` path
 pub async fn write_header(target: PathBuf) -> Result<()> {
     let cli_path = env::current_dir()?.parent().unwrap().join("target-mobile");
     let target_mobile_lib_path = cli_path.join("src/lib.rs");
@@ -74,6 +71,7 @@ pub async fn write_header(target: PathBuf) -> Result<()> {
     Ok(())
 }
 
+/// copy the files under `from` path recursively
 pub async fn dir_copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V) -> Result<()> {
     let mut stack = Vec::new();
     stack.push(PathBuf::from(from.as_ref()));
@@ -119,14 +117,19 @@ pub async fn dir_copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V) -> Result<
     Ok(())
 }
 
-//
 /// protobuf generation didn't work via this Command, here we use a shell script as a workaround
-/// let _protos_cmd = Command::new("protoc")
-/// .arg("--swift_opt=Visibility=Public")
-/// .arg("--swift_out=/ ".to_string() + &slice)
-/// .arg("-I=./")
-/// .spawn()
-/// .map_err(|_| anyhow!("failed to generato proto in ".to_string() + err_path));
+/// ```
+/// fn proto_cmd() {
+///     let current_dir = env::current_dir()?.parent().unwrap();
+///     let generate_proto_path = current_dir.join("output/ios/proto");
+///     let _protos_cmd = Command::new("protoc")
+///         .arg("--swift_opt=Visibility=Public")
+///         .arg("--swift_out=/".to_string() + &generate_proto_path.to_owned())
+///         .arg("-I=./")
+///         .spawn()
+///         .map_err(|_| anyhow!("failed to generato proto in ".to_string() + err_path));
+/// }
+/// ```
 pub async fn generate_protobuf_files(output: PathBuf) -> Result<()> {
     let current_dir = env::current_dir()?;
     let generate_proto_path = output.join("ios/proto");
@@ -138,12 +141,13 @@ pub async fn generate_protobuf_files(output: PathBuf) -> Result<()> {
     create_dir(&generate_proto_sign_path)?;
 
     env::set_current_dir(&protos_path)?;
-    let _sh = Command::new("sh")
+    let _sh_result = Command::new("sh")
         .arg(script_path.to_owned())
         .arg("--push")
         .arg("false")
         .spawn()?
         .wait_with_output();
+
     env::set_current_dir(&current_dir)?;
 
     Ok(())
