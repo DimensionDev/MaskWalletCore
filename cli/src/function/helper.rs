@@ -14,6 +14,7 @@ pub(crate) const FRAMEWORK: &'static str = "MaskWalletCoreMobile";
 pub(crate) const WASM: &'static str = "libmask_wallet_core_wasm";
 
 #[non_exhaustive]
+#[derive(Debug, Copy, Clone)]
 pub enum Platform {
     #[allow(non_camel_case_types)]
     iOS,
@@ -69,7 +70,7 @@ pub fn finish() {
 }
 
 /// generate `MaskWalletCoreMobile.h` at `tartet` path
-pub async fn write_header(target: PathBuf, platform: &Platform) -> Result<()> {
+pub async fn write_header(target: PathBuf, platform: Platform) -> Result<()> {
     let cli_path = current_dir_for_cli(&platform)?
         .parent()
         .unwrap()
@@ -154,6 +155,7 @@ pub async fn dir_copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V) -> Result<
 ///         .map_err(|_| anyhow!("failed to generato proto in ".to_string() + err_path));
 /// }
 /// ```
+#[allow(dead_code)]
 pub async fn generate_protobuf_files(output: PathBuf) -> Result<()> {
     let current_dir = current_dir_for_cli(&Platform::iOS)?;
     let generate_proto_path = output.join("ios/proto");
