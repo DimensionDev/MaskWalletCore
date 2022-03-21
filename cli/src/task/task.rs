@@ -11,7 +11,7 @@ pub enum Task {
         path: PathBuf,
         recursive: bool,
     },
-    RemoveWholdDir(PathBuf),
+    RemoveDirAll(PathBuf),
     CopyDir {
         from: PathBuf,
         to: PathBuf,

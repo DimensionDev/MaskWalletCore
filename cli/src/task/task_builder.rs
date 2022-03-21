@@ -48,7 +48,7 @@ impl TaskBuilder {
                     Ok(())
                 }),
 
-                Task::RemoveWholdDir(path) => tokio::spawn(async move {
+                Task::RemoveDirAll(path) => tokio::spawn(async move {
                     remove_dir_all(path)?;
                     Ok(())
                 }),

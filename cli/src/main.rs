@@ -217,7 +217,7 @@ async fn main() -> Result<()> {
                             .join("target-mobile/iOS/Info.plist"),
                         to: xcframework_path.join("Info.plist"),
                     })
-                    .task(Task::RemoveWholdDir(xcframework_path.join("common")))
+                    .task(Task::RemoveDirAll(xcframework_path.join("common")))
                     // protobuf files
                     .task(Task::CreateDir {
                         path: cli_path.parent().unwrap().join("output/ios/proto/sign"),
