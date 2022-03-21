@@ -22,6 +22,9 @@ async fn main() -> Result<()> {
         .subcommand(command!("wasm").about("Generate wasm dylib"))
         .get_matches();
 
+    // will call end:set_current_dir for different platform
+    // iOS => ./target-mobile
+    // Wasm => ./target-wasm
     match matches.subcommand() {
         Some(("ios", args)) => match args.subcommand() {
             Some(("-lib", _)) => {

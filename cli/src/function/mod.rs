@@ -4,8 +4,8 @@ mod wasm;
 mod xcframework;
 
 use helper::{
-    dir_copy, finish, generate_protobuf_files, prepare_output_dir, write_header, Platform,
-    FRAMEWORK, LIB_NAME, WASM,
+    current_dir_for_cli, dir_copy, finish, generate_protobuf_files, prepare_output_dir,
+    write_header, Platform, FRAMEWORK, LIB_NAME, WASM,
 };
 
 pub use static_lib::start_generating_static_lib;

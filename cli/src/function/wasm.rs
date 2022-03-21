@@ -7,7 +7,7 @@ use super::*;
 pub async fn start_generating_wasm_lib() -> Result<()> {
     prepare_output_dir(Platform::Wasm).await?;
 
-    let current_path = env::current_dir()?;
+    let current_path = current_dir()?;
     let working_path = current_path.parent().unwrap().join("target-wasm/src");
     let output_dir = current_path.parent().unwrap().join(format!("output/wasm"));
 
@@ -30,6 +30,10 @@ pub async fn start_generating_wasm_lib() -> Result<()> {
     env::set_current_dir(&current_path)?;
 
     Ok(())
+}
+
+fn current_dir() -> Result<PathBuf> {
+    current_dir_for_cli(&Platform::iOS)
 }
 
 enum File {

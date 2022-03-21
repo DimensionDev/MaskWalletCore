@@ -5,9 +5,8 @@ use std::{
     env,
     fs::{copy, create_dir, create_dir_all, metadata, read_dir, remove_dir_all, File},
     io::Write,
-    path::{Path, PathBuf},
+    path::{Component, Path, PathBuf},
     process::Command,
-    // process::Output,
 };
 
 pub(crate) const LIB_NAME: &'static str = "libmask_wallet_core_mobile";
@@ -21,9 +20,31 @@ pub enum Platform {
     Wasm,
 }
 
+#[inline]
+pub(crate) fn current_dir_for_cli(platform: &Platform) -> Result<PathBuf> {
+    let mut current_dir = env::current_dir()?;
+
+    while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
+        if dir_name == "MaskWalletCore" {
+            break;
+        }
+        current_dir.pop();
+    }
+
+    current_dir = match platform {
+        Platform::iOS => current_dir.join(format!("cli")),
+        Platform::Wasm => current_dir.join(format!("cli")),
+    };
+
+    Ok(current_dir)
+}
+
 pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
     // mk dir
-    let output = env::current_dir()?.parent().unwrap().join("output");
+    let output = current_dir_for_cli(&platform)?
+        .parent()
+        .unwrap()
+        .join("output");
 
     // clean output
     if !output.exists() {
@@ -48,8 +69,11 @@ pub fn finish() {
 }
 
 /// generate `MaskWalletCoreMobile.h` at `tartet` path
-pub async fn write_header(target: PathBuf) -> Result<()> {
-    let cli_path = env::current_dir()?.parent().unwrap().join("target-mobile");
+pub async fn write_header(target: PathBuf, platform: &Platform) -> Result<()> {
+    let cli_path = current_dir_for_cli(&platform)?
+        .parent()
+        .unwrap()
+        .join("target-mobile");
     let target_mobile_lib_path = cli_path.join("src/lib.rs");
     let header_file_path = cli_path.join(format!("{:}.h", FRAMEWORK));
     let mut header_file = File::create(&header_file_path)?;
@@ -131,7 +155,7 @@ pub async fn dir_copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V) -> Result<
 /// }
 /// ```
 pub async fn generate_protobuf_files(output: PathBuf) -> Result<()> {
-    let current_dir = env::current_dir()?;
+    let current_dir = current_dir_for_cli(&Platform::iOS)?;
     let generate_proto_path = output.join("ios/proto");
     let protos_path = current_dir.parent().unwrap().join("chain-common/proto");
     let generate_proto_sign_path = output.join("ios/proto/sign");

@@ -1,15 +1,17 @@
-use anyhow::Result;
 use std::{
     env,
     fs::{copy, create_dir, remove_dir_all},
+    path::PathBuf,
     process::Command,
 };
+
+use anyhow::Result;
 use tokio::join;
 
 use super::*;
 
 pub async fn start_generating_xcframework() -> Result<()> {
-    let output = env::current_dir()?
+    let output = current_dir()?
         .parent()
         .unwrap()
         .join(format!("output"));
@@ -26,7 +28,15 @@ pub async fn start_generating_xcframework() -> Result<()> {
     Ok(())
 }
 
+#[inline]
+fn current_dir() -> Result<PathBuf> {
+    current_dir_for_cli(&Platform::iOS)
+}
+
 async fn cargo_build_release() -> Result<()> {
+    let dir = current_dir()?;
+    env::set_current_dir(dir)?;
+
     for target in vec![
         "x86_64-apple-ios",
         "aarch64-apple-ios",
@@ -42,7 +52,7 @@ async fn cargo_build_release() -> Result<()> {
 }
 
 async fn prepre_xcframework_dirs() -> Result<()> {
-    let xcframework_path = env::current_dir()?
+    let xcframework_path = current_dir()?
         .parent()
         .unwrap()
         .join(format!("output/ios/{:}.xcframework", FRAMEWORK));
@@ -56,7 +66,7 @@ async fn prepre_xcframework_dirs() -> Result<()> {
     let module_path = xcframework_path.join(format!("common/{:}.xcframework/Modules", FRAMEWORK));
     create_dir(&module_path)?;
 
-    let module_map_path = env::current_dir()?
+    let module_map_path = current_dir()?
         .as_path()
         .parent()
         .unwrap()
@@ -65,13 +75,17 @@ async fn prepre_xcframework_dirs() -> Result<()> {
 
     let header_path = xcframework_path.join(format!("common/{:}.xcframework/Headers", FRAMEWORK));
     create_dir(&header_path)?;
-    write_header(header_path.join(format!("{:}.h", FRAMEWORK))).await?;
+    write_header(
+        header_path.join(format!("{:}.h", FRAMEWORK)),
+        &Platform::iOS,
+    )
+    .await?;
 
     Ok(())
 }
 
 async fn generate_xcframework() -> Result<()> {
-    let xcframework_path = env::current_dir()?
+    let xcframework_path = current_dir()?
         .parent()
         .unwrap()
         .join(format!("output/ios/{:}.xcframework", FRAMEWORK));
@@ -82,7 +96,7 @@ async fn generate_xcframework() -> Result<()> {
     create_dir(&arm64_framework_path)?;
     dir_copy(&common_path, &arm64_path).await?;
 
-    let target_path = env::current_dir()?.parent().unwrap().join("target");
+    let target_path = current_dir()?.parent().unwrap().join("target");
     copy(
         &target_path.join(format!("aarch64-apple-ios/release/{:}.a", LIB_NAME)),
         &arm64_framework_path.join(format!("{:}", FRAMEWORK)),
