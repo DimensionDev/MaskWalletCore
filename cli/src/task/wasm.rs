@@ -15,7 +15,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.parent().unwrap().join("target-wasm/src").into(),
+                excute_path: build_command_excute_path(&Platform::Wasm)?.into(),
             })
             .task(Task::CopyFile {
                 from: cli_path

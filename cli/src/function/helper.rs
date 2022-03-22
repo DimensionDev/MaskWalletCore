@@ -40,6 +40,25 @@ pub(crate) fn current_dir_for_cli(platform: &Platform) -> Result<PathBuf> {
     Ok(current_dir)
 }
 
+#[inline]
+pub(crate) fn build_command_excute_path(platform: &Platform) -> Result<PathBuf> {
+    let mut current_dir = env::current_dir()?;
+
+    while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
+        if dir_name == "MaskWalletCore" {
+            break;
+        }
+        current_dir.pop();
+    }
+
+    current_dir = match platform {
+        Platform::iOS => current_dir.join(format!("target-mobile")),
+        Platform::Wasm => current_dir.join(format!("target-wasm")),
+    };
+
+    Ok(current_dir)
+}
+
 pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
     // mk dir
     let output = current_dir_for_cli(&platform)?
