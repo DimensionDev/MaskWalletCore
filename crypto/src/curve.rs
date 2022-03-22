@@ -1,6 +1,8 @@
 use crate::Error;
 use std::str::FromStr;
 
+use std::convert::TryFrom;
+
 pub enum Curve {
     Secp256k1,
     Ed25519,
@@ -25,5 +27,13 @@ impl FromStr for Curve {
             "ed25519-cardano-seed" => Ok(Self::Ed25519Extended),
             _ => Err(Error::NotSupportedCurve),
         }
+    }
+}
+
+impl TryFrom<&str> for Curve {
+    type Error = Error;
+
+    fn try_from(s: &str) -> Result<Self, Error> {
+        Self::from_str(s)
     }
 }

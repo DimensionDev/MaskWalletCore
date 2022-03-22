@@ -12,6 +12,13 @@ pub mod bip39;
 
 pub mod number_util;
 
+pub use bitcoin::util::bip32::DerivationPath;
+pub use curve::Curve;
+
+pub fn is_valid_mnomenioc(m: &str) -> bool {
+    bip39::is_valid(m)
+}
+
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
     KdfParamsInvalid,
