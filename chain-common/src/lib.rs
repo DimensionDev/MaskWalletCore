@@ -1,3 +1,7 @@
+use crypto::Error as CryptoError;
+// mod generated;
+use generated::api::MwResponseError;
+
 mod generated;
 pub use generated::api;
 pub use generated::ethereum;
@@ -28,6 +32,15 @@ impl Error {
             Error::NotSupportedCoin => "Not supported coin".to_owned(),
             Error::InvalidSignInput => "Invalid sign input".to_owned(),
             Error::InvalidPrivateKey => "Invalid private key".to_owned(),
+        }
+    }
+}
+
+impl From<CryptoError> for MwResponseError {
+    fn from(err: CryptoError) -> Self {
+        Self {
+            error_code: err.get_code(),
+            error_msg: err.get_message(),
         }
     }
 }

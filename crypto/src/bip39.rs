@@ -61,10 +61,10 @@ impl Mnemonic {
     pub fn is_valid(mnemonic: &str) -> bool {
         CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
     }
-}
 
-pub fn is_valid(mnemonic: &str) -> bool {
-    CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
+    pub fn dada() {
+        
+    }
 }
 
 #[cfg(test)]
