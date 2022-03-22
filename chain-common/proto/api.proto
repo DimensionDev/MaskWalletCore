@@ -8,6 +8,7 @@ import "key-store.proto";
 import "stored-key.proto";
 import "transaction.proto";
 import "validation.proto";
+import "persona.proto";
 
 message MWRequest {
     oneof request {
@@ -17,11 +18,7 @@ message MWRequest {
         ImportMnemonicStoredKeyParam param_import_mnemonic = 4;
         ImportJSONStoredKeyParam param_import_json = 5;
         
-        
-        
-        
         CreateStoredKeyNewAccountAtPathParam param_create_account_of_coin_at_path = 10;
-        
         
         ExportKeyStorePrivateKeyParam param_export_private_key = 13;
         ExportKeyStorePrivateKeyOfPathParam param_export_private_key_of_path = 14;
@@ -37,6 +34,8 @@ message MWRequest {
         GetKeyStoreSupportExportTypeParam param_get_stored_key_export_type = 24;
 
         GenerateMnemonicParam param_generate_mnemonic = 25;
+
+        PersonaGenerationParam param_generate_persona = 26;
     }
 }
 
@@ -48,12 +47,8 @@ message MWResponse {
         ImportPrivateStoredKeyResp resp_import_private_key = 4;
         ImportMnemonicStoredKeyResp resp_import_mnemonic = 5;
         ImportJSONStoredKeyResp resp_import_json = 6;
-        
-        
-        
-        
-        CreateStoredKeyNewAccountAtPathResp resp_create_account_of_coin_at_path = 11;
-        
+
+        CreateStoredKeyNewAccountAtPathResp resp_create_account_of_coin_at_path = 11;      
         
         ExportKeyStorePrivateKeyResp resp_export_private_key = 14;
         ExportKeyStoreMnemonicResp resp_export_mnemonic = 15;
@@ -67,6 +62,8 @@ message MWResponse {
         GetKeyStoreSupportExportTypeResp resp_get_stored_key_export_type = 23;
 
         GenerateMnemonicResp resp_generate_mnemonic = 24;
+
+        PersonaGenerationResp resp_generate_persona = 25;
     }
 }
 

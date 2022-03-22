@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package api;
+
+// Generate a persona
+message PersonaGenerationParam {
+    string mnemonic = 1;
+    string password = 2;
+    string path = 3;
+    string curve = 4;
+}
+
+message PersonaGenerationResp { 
+    string identifier = 1;
+    string privateKey = 2;
+    string publicKey = 3;
+}

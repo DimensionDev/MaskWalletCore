@@ -355,9 +355,30 @@ pub struct ValidateResp {
     #[prost(bool, tag="1")]
     pub valid: bool,
 }
+/// Generate a persona
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PersonaGenerationParam {
+    #[prost(string, tag="1")]
+    pub mnemonic: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub password: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub path: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub curve: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PersonaGenerationResp {
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub private_key: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub public_key: ::prost::alloc::string::String,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -400,11 +421,13 @@ pub mod mw_request {
         ParamGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeParam),
         #[prost(message, tag="25")]
         ParamGenerateMnemonic(super::GenerateMnemonicParam),
+        #[prost(message, tag="26")]
+        ParamGeneratePersona(super::PersonaGenerationParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -445,6 +468,8 @@ pub mod mw_response {
         RespGetStoredKeyExportType(super::GetKeyStoreSupportExportTypeResp),
         #[prost(message, tag="24")]
         RespGenerateMnemonic(super::GenerateMnemonicResp),
+        #[prost(message, tag="25")]
+        RespGeneratePersona(super::PersonaGenerationResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
