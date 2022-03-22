@@ -22,7 +22,9 @@ impl TaskBuilder {
         self.tasks.push(task);
         self
     }
+}
 
+impl TaskBuilder {
     pub async fn run(&self) -> Result<()> {
         fn spawn_handle_for(task: Task) -> JoinHandle<Result<()>> {
             match task {
