@@ -12,7 +12,7 @@ pub mod bip39;
 
 pub mod number_util;
 
-pub use bitcoin::util::bip32::DerivationPath;
+pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
