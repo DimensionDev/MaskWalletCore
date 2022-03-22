@@ -29,9 +29,20 @@ then decode the response using protobuf to get the actual returned value.
 
 ### For iOS
 
-1. Execute `cargo lipo --release` in the `target-mobile` directory.
-2. Execute `cbindgen src/lib.rs -l c > rust.h` in the `target-mobile` directory
-3. Add the generated `rust.h` and `libmask_wallet_core_mobile.a` to your iOS project.
+#### Crate And Target Requirements
+
+* Make sure crates `cargo-lipo` have been installded.
+* `rust-std`s for `aarch64-apple-ios`, `aarch64-apple-ios-sim` and `x86_64-apple-ios` are downloaded (can be downloaded by excuting `rustup target add x86_64-apple-ios`, `rustup target add aarch64-apple-ios-sim` or `rustup target add aarch64-apple-ios`).
+* Install `swift-protobuf` via `brew install swift-protobuf`.
+
+#### Static lib
+
+1. Execute `sh build_iOS_lib.sh` under `scripts` directory.
+2. Add the generated `proto`, `MaskWalletCoreMobile.h` and `libmask_wallet_core_mobile.a` in `output/ios` directory to your iOS project.
+
+#### XCFramework
+
+Excute `sh build-xcframework.sh` in `targe-mobile/iOS` directory, `MaskWalletCoreMobile.xcframework` and `Protos` will be generated.
 
 ### For Android
 
@@ -39,11 +50,15 @@ In development
 
 ## New Chain Integration Checklist
 
-- [ ] Add chain and coin info to `interface/resource/coin.json`
-- [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory
-- [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
-- [ ] Add new enum value to `enum Coin` in `chain-common/proto/Param.proto`
-- [ ] Add the newly added chain to following location in `chain-common/src/coin.rs`
+* [ ] Add chain and coin info to `interface/resource/coin.json`.
+
+* [ ] Add a new crate under `chain`, e.g. to add a new chain named "mask", execute `cargo new mask --lib` in `chain` directory.
+
+* [ ] Implement `chain_common::entry::Entry` trait in the new added chain crate.
+
+* [ ] Add new enum value to `enum Coin` in `chain-common/proto/Param.proto`.
+
+* [ ] Add the newly added chain to following location in `chain-common/src/coin.rs`.
 
 ```rust
 impl ToString for CoinType {
@@ -57,7 +72,7 @@ impl ToString for CoinType {
 }
 ```
 
-- [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs` as following
+* [ ] Add the newly added chain `Entry` to `wallet/src/coin_dispatcher.rs` as following.
 
 ```rust
 pub fn get_entry(coin: &Coin) -> Result<Box<dyn Entry>, Error> {

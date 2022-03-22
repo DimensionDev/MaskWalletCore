@@ -34,8 +34,8 @@ impl Entry for SolanaEntry {
     fn sign(
         &self,
         _coin: &Coin,
-        private_key: &PrivateKey,
-        payload: &[u8],
+        _private_key: &PrivateKey,
+        _payload: &[u8],
     ) -> Result<Vec<u8>, Error> {
         Ok(vec![])
         // let sign_input: SignInput = match SignInput::decode(payload) {
