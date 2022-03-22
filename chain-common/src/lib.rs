@@ -1,6 +1,6 @@
 use crypto::Error as CryptoError;
 // mod generated;
-use generated::api::MwResponseError;
+use generated::api::{mw_response::Response, MwResponse, MwResponseError};
 
 mod generated;
 pub use generated::api;
@@ -50,6 +50,14 @@ impl From<crypto::BIP32Error> for MwResponseError {
         Self {
             error_code: "-1".to_string(),
             error_msg: format!("{:?}", err),
+        }
+    }
+}
+
+impl From<MwResponseError> for MwResponse {
+    fn from(err: MwResponseError) -> Self {
+        Self {
+            response: Some(Response::Error(err)),
         }
     }
 }
