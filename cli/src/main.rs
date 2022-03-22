@@ -4,6 +4,8 @@ use anyhow::Result;
 use clap::command;
 use colored::Colorize;
 
+mod function;
+
 mod task;
 use task::TaskBuilder;
 

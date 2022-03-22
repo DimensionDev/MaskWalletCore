@@ -1,10 +1,13 @@
 mod account;
 mod common;
+mod persona;
 mod sign;
 mod stored_key;
 mod validate;
+
 use chain_common::api::mw_request::Request::*;
 use chain_common::api::{mw_request, MwResponse};
+use persona::generate_persona;
 
 pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
     match request {
@@ -33,5 +36,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamValidation(param) => validate::validate(param),
 
         ParamGenerateMnemonic(_) => common::generate_mnemonic(),
+
+        ParamGeneratePersona(param) => generate_persona(&param),
     }
 }
