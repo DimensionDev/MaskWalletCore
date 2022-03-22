@@ -6,6 +6,7 @@ use super::*;
 impl TaskBuilder {
     pub async fn xcframework() -> Result<()> {
         let cli_path = current_dir_for_cli(&Platform::iOS)?;
+        let command_path = build_command_excute_path(&Platform::iOS)?;
         let xcframework_path = cli_path
             .parent()
             .unwrap()
@@ -47,7 +48,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
+                excute_path: command_path.clone().into(),
             })
             .task(Task::Command {
                 name: "cargo".to_string(),
@@ -55,7 +56,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
+                excute_path: command_path.clone().into(),
             })
             .task(Task::Command {
                 name: "cargo".to_string(),
@@ -63,7 +64,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
+                excute_path: command_path.clone().into(),
             })
             // xcframework dir
             .task(Task::CopyDir {
