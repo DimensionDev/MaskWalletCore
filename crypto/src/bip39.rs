@@ -1,8 +1,10 @@
+use std::str::FromStr;
+
+use bip39::Language;
+pub use bip39::Mnemonic as CryptoMnemonic;
+
 use super::number_util::random_iv;
 use crate::Error;
-use bip39::Language;
-use bip39::Mnemonic as CryptoMnemonic;
-use std::str::FromStr;
 
 const SUPPORT_MNEMONIC_WORDS_COUNT: [u32; 3] = [12, 18, 24];
 
@@ -59,6 +61,10 @@ impl Mnemonic {
     pub fn is_valid(mnemonic: &str) -> bool {
         CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
     }
+}
+
+pub fn is_valid(mnemonic: &str) -> bool {
+    CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
 }
 
 #[cfg(test)]
