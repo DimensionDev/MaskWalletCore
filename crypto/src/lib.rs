@@ -80,3 +80,9 @@ impl Error {
         }
     }
 }
+
+impl From<bip39::BIP39Error> for Error {
+    fn from(_err: bip39::BIP39Error) -> Error {
+        Error::InvalidMnemonic
+    }
+}

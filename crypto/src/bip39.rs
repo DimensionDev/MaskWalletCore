@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+pub use bip39::Error as BIP39Error;
 use bip39::Language;
 pub use bip39::Mnemonic as CryptoMnemonic;
 
@@ -21,8 +22,7 @@ impl Mnemonic {
         }
         let entropy_bytes = (word_count / 3) * 4;
         let entropy = random_iv(entropy_bytes as usize);
-        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
-            .map_err(|_| Error::InvalidMnemonic)?;
+        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)?;
         Ok(mnemonic.to_string())
     }
 
@@ -32,8 +32,7 @@ impl Mnemonic {
         }
         let entropy_bytes = (word_count / 3) * 4;
         let entropy = random_iv(entropy_bytes as usize);
-        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)
-            .map_err(|_| Error::InvalidMnemonic)?;
+        let mnemonic = CryptoMnemonic::from_entropy_in(Language::English, &entropy)?;
 
         let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
@@ -46,8 +45,7 @@ impl Mnemonic {
     }
 
     pub fn new(mnemonic: &str, password: &str) -> Result<Mnemonic, Error> {
-        let mnemonic = CryptoMnemonic::from_str(&mnemonic.to_lowercase())
-            .map_err(|_| Error::InvalidMnemonic)?;
+        let mnemonic = CryptoMnemonic::from_str(&mnemonic.to_lowercase())?;
         let seed = mnemonic.to_seed_normalized(password).to_vec();
         let (arr, len) = mnemonic.to_entropy_array();
         let entropy = arr[0..len].to_vec();
@@ -60,10 +58,6 @@ impl Mnemonic {
 
     pub fn is_valid(mnemonic: &str) -> bool {
         CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
-    }
-
-    pub fn dada() {
-        
     }
 }
 
