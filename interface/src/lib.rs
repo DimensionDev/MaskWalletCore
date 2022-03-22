@@ -9,8 +9,7 @@ pub mod response_util;
 extern crate lazy_static;
 
 use bytes::BytesMut;
-use chain_common::api::mw_response::Response;
-use chain_common::api::{MwRequest, MwResponse, MwResponseError};
+use chain_common::api::{MwRequest, MwResponseError};
 use response_util::get_invalid_proto_resposne;
 
 use handler::dispatch_request;
@@ -31,16 +30,13 @@ pub fn call_api(input: &[u8]) -> Vec<u8> {
             return encode_message(&get_invalid_proto_resposne()).expect("invalid request");
         }
     };
-    let response: MwResponse;
-    if let Some(request) = mw_request.request {
-        response = dispatch_request(request)
-    } else {
-        response = MwResponse {
-            response: Some(Response::Error(MwResponseError {
-                error_code: "-1".to_owned(),
-                error_msg: "Empty Request".to_owned(),
-            })),
-        };
-    }
+    let response = match mw_request.request {
+        Some(request) => dispatch_request(request),
+        None => MwResponseError {
+            error_code: "-1".to_owned(),
+            error_msg: "Empty Request".to_owned(),
+        }
+        .into(),
+    };
     encode_message(&response).expect("invalid request")
 }
