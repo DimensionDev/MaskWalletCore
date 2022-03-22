@@ -47,7 +47,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.clone().into(),
+                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
             })
             .task(Task::Command {
                 name: "cargo".to_string(),
@@ -55,7 +55,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.clone().into(),
+                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
             })
             .task(Task::Command {
                 name: "cargo".to_string(),
@@ -63,7 +63,7 @@ impl TaskBuilder {
                     .into_iter()
                     .map(|x| x.to_string())
                     .collect(),
-                excute_path: cli_path.clone().into(),
+                excute_path: cli_path.parent().unwrap().join("target-mobile").into(),
             })
             // xcframework dir
             .task(Task::CopyDir {
