@@ -7,11 +7,18 @@ message PersonaGenerationParam {
     string mnemonic = 1;
     string password = 2;
     string path = 3;
-    string curve = 4;
+    Curve curve = 4;
 }
 
 message PersonaGenerationResp { 
     string identifier = 1;
     string privateKey = 2;
     string publicKey = 3;
+}
+
+message Curve { 
+    oneof Curve { 
+        string secp256k1 = 1;
+        string ed25519 = 2;
+    }
 }
