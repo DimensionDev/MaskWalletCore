@@ -14,6 +14,12 @@ pub mod number_util;
 
 pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 
+pub use bitcoin::hashes::{
+    hmac::{Hmac, HmacEngine},
+    sha512::Hash as SHA512Hash,
+    Hash, HashEngine,
+};
+
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
     KdfParamsInvalid,

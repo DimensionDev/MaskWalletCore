@@ -23,12 +23,23 @@ impl FromStr for PublicKeyType {
     }
 }
 
+impl From<()> for Error {
+    fn from(_: ()) -> Self {
+        Error::NotSupportedPublicKeyType
+    }
+}
+
+impl From<secp256k1::Error> for Error {
+    fn from(_: secp256k1::Error) -> Self {
+        Error::InvalidPrivateKey
+    }
+}
+
 struct Secp256k1Converter;
 
 impl PublicKeyConvert for Secp256k1Converter {
     fn convert(&self, private_key: &[u8]) -> Result<Vec<u8>, Error> {
-        let secrect_key =
-            secp256k1::SecretKey::from_slice(private_key).map_err(|_| Error::InvalidPrivateKey)?;
+        let secrect_key = secp256k1::SecretKey::from_slice(private_key)?;
         let pub_key =
             secp256k1::PublicKey::from_secret_key(&secp256k1::Secp256k1::new(), &secrect_key);
         Ok(pub_key.serialize().to_vec())
@@ -39,8 +50,7 @@ struct Secp256k1ExtendConverter;
 
 impl PublicKeyConvert for Secp256k1ExtendConverter {
     fn convert(&self, private_key: &[u8]) -> Result<Vec<u8>, Error> {
-        let secrect_key =
-            secp256k1::SecretKey::from_slice(private_key).map_err(|_| Error::InvalidPrivateKey)?;
+        let secrect_key = secp256k1::SecretKey::from_slice(private_key)?;
         let pub_key =
             secp256k1::PublicKey::from_secret_key(&secp256k1::Secp256k1::new(), &secrect_key);
         Ok(pub_key.serialize_uncompressed().to_vec())
@@ -76,8 +86,7 @@ pub fn get_public_key(
     _extend_bytes: &[u8],
     _chain_code_bytes: &[u8],
 ) -> Result<Vec<u8>, Error> {
-    let public_key_type =
-        PublicKeyType::from_str(pub_key_type).map_err(|_| Error::NotSupportedPublicKeyType)?;
+    let public_key_type = PublicKeyType::from_str(pub_key_type)?;
 
     match public_key_type {
         PublicKeyType::Secp256k1 => PublickKeyConvertter::convert(Secp256k1Converter, private_key),

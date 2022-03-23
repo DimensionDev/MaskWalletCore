@@ -364,8 +364,8 @@ pub struct PersonaGenerationParam {
     pub password: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub path: ::prost::alloc::string::String,
-    #[prost(string, tag="4")]
-    pub curve: ::prost::alloc::string::String,
+    #[prost(message, optional, tag="4")]
+    pub curve: ::core::option::Option<Curve>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PersonaGenerationResp {
@@ -375,6 +375,21 @@ pub struct PersonaGenerationResp {
     pub private_key: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub public_key: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Curve {
+    #[prost(oneof="curve::Curve", tags="1, 2")]
+    pub curve: ::core::option::Option<curve::Curve>,
+}
+/// Nested message and enum types in `Curve`.
+pub mod curve {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Curve {
+        #[prost(string, tag="1")]
+        Secp256k1(::prost::alloc::string::String),
+        #[prost(string, tag="2")]
+        Ed25519(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
