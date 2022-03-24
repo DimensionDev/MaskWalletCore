@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 use std::convert::TryFrom;
 
+#[derive(Clone, Debug)]
 pub enum Curve {
     Secp256k1,
     Ed25519,
@@ -11,6 +12,12 @@ pub enum Curve {
     Curve25519,
     Nist256p1,
     Ed25519Extended,
+}
+
+impl Default for Curve {
+    fn default() -> Self {
+        Curve::Secp256k1
+    }
 }
 
 impl FromStr for Curve {

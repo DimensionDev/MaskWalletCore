@@ -1,13 +1,19 @@
 use std::str::FromStr;
 
-use bitcoin::hashes::{
-    hmac::{Hmac, HmacEngine},
-    sha512::Hash as SHA512Hash,
-    Hash, HashEngine,
-};
-
 use super::Error;
 use bip39::Mnemonic;
+use bitcoin::{
+    hashes::{
+        hmac::{Hmac, HmacEngine},
+        sha512::Hash as SHA512Hash,
+        // sha256::Hash as SHA256Hash,
+        Hash, HashEngine,
+    },
+    network::constants::Network,
+    util::bip32::{DerivationPath, ExtendedPrivKey},
+};
+
+use secp256k1::Secp256k1;
 
 #[derive(Default)]
 pub struct JWK<'a> {
@@ -27,6 +33,18 @@ pub trait EncryptEngine {
         let seed = mnemonic.to_seed_normalized(password).to_vec();
 
         Ok((seed, mnemonic))
+    }
+
+    fn hmac512(key: &str, seed: &[u8]) -> (Vec<u8>, Vec<u8>) {
+        let mut engine = HmacEngine::<SHA512Hash>::new(key.as_bytes());
+        engine.input(&seed);
+        let hash = Hmac::<SHA512Hash>::from_engine(engine);
+        let il = hash[0..32]
+            .into_iter()
+            .map(|x| x.clone())
+            .collect::<Vec<_>>();
+        let ir: Vec<u8> = hash[32..].into_iter().map(|x| x.clone()).collect();
+        (il, ir)
     }
 }
 
@@ -59,6 +77,7 @@ impl<T: EncryptEngine> EncryptKey<T> {
 }
 
 pub(crate) mod engine {
+    use super::Secp256k1 as secp256k1;
     use super::*;
     #[derive(Default)]
     pub struct Secp256k1;
@@ -68,63 +87,72 @@ pub(crate) mod engine {
             &self,
             mnemonic_str: &str,
             password: &str,
-            _path: &str,
+            path: &str,
         ) -> Result<JWK, Error> {
             let (seed, _mnemonic) = self.mnemonic_and_seed(mnemonic_str, password)?;
-
-            let mut engine = HmacEngine::<SHA512Hash>::new("Bitcoin seed".as_bytes());
-            engine.input(&seed);
-            let hash = Hmac::<SHA512Hash>::from_engine(engine);
-            let _il = hash[0..32]
-                .into_iter()
-                .map(|x| x.clone())
-                .collect::<Vec<_>>();
-            let _ir: Vec<u8> = hash[32..].into_iter().map(|x| x.clone()).collect();
+            let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed)
+                .map_err(|_| Error::InvalidCiphertext)?;
+            let secp = secp256k1::new();
+            let _derived_key = sk
+                .derive_priv(&secp, &DerivationPath::from_str(path).unwrap())
+                .map_err(|_| Error::InvalidDerivationpath)?;
 
             Ok(JWK::default())
         }
     }
-
-    // struct Ed25519;
 }
 
 #[cfg(test)]
 #[allow(dead_code)]
 mod test {
+    use bitcoin::util::psbt::serialize::Serialize;
+
     use super::*;
 
     #[test]
-    fn suit_test() {
-        fn hmacengine_test(seed: &[u8]) -> (Vec<u8>, Vec<u8>) {
-            let mut engine = HmacEngine::<SHA512Hash>::new("Bitcoin seed".as_bytes());
-            engine.input(&seed);
-            let hash = Hmac::<SHA512Hash>::from_engine(engine);
-            let il = hash[0..32]
-                .into_iter()
-                .map(|x| x.clone())
-                .collect::<Vec<_>>();
-            let ir: Vec<u8> = hash[32..].into_iter().map(|x| x.clone()).collect();
-            (il, ir)
-        }
+    fn secp256k1_test() {
+        for suit in vec![PeronaTestSuit::bulk_suit(), PeronaTestSuit::doss_suit()] {
+            let engine = engine::Secp256k1;
+            let (seed, _mnemonic) = engine.mnemonic_and_seed(suit.mnemonic_str, "").unwrap();
+            // let (il, ir) = engine::Secp256k1::hmac512("Bitcoin seed", &seed);
 
-        for suilt in vec![PeronaTestSuit::bulk_suit(), PeronaTestSuit::doss_suit()] {
-            // let mnemonic = Mnemonic::new(suilt.mnemonic_str, "").unwrap();
-            let password = "";
-            let mnemonic = Mnemonic::from_str(&suilt.mnemonic_str.to_lowercase()).unwrap();
-            let seed = mnemonic.to_seed_normalized(password).to_vec();
-            let (arr, len) = mnemonic.to_entropy_array();
-            let _entropy = arr[0..len].to_vec();
+            let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).unwrap();
 
-            let (il, ir) = hmacengine_test(&seed);
+            let secp = Secp256k1::new();
+            let derived_key = sk
+                .derive_priv(&secp, &DerivationPath::from_str(suit.path_str).unwrap())
+                .unwrap();
+
+            let sk_pub = sk.private_key.public_key(&secp);
+
+            let ser_compressed_pub = sk_pub.serialize();
+
             // master_key test
-            assert_eq!(seed, suilt.preferred_seed);
-            assert_eq!(suilt.master_key.private_key.len(), il.len());
-            assert_eq!(suilt.master_key.chaincode.len(), ir.len());
-            assert_eq!(suilt.master_key.private_key == il, true);
-            assert_eq!(suilt.master_key.chaincode == ir, true);
+            assert_eq!(seed, suit.preferred_seed);
+            assert_eq!(
+                suit.master_key.private_key == sk.private_key.to_bytes(),
+                true
+            );
+            assert_eq!(suit.master_key.chaincode == sk.chain_code.as_bytes(), true);
+            assert_eq!(suit.master_key.public_key == ser_compressed_pub, true);
 
             // derive_key test
+            assert_eq!(
+                suit.derived_key.private_key == derived_key.private_key.to_bytes(),
+                true
+            );
+            assert_eq!(
+                suit.derived_key.chaincode == derived_key.chain_code.as_bytes(),
+                true
+            );
         }
+    }
+
+    #[test]
+    fn test_path_slice() {
+        let path = "m/44'/60'/0'/0/0";
+        let paths = path.split("/").collect::<Vec<&str>>();
+        assert_eq!(paths, vec!["m", "44'", "60'", "0'", "0", "0"]);
     }
 
     struct PeronaTestSuit<'a> {
@@ -187,8 +215,8 @@ mod test {
                 derived_key: Key {
                     algorithm: "secp256k1".to_owned(),
                     chaincode: vec![
-                        189, 111, 110, 248, 19, 75, 7, 113, 184, 224, 71, 24, 55, 13, 80, 14, 10,
-                        11, 7, 81, 11, 14, 81, 24, 10, 54, 79, 23, 57, 14, 12, 47,
+                        189, 111, 110, 248, 19, 75, 7, 113, 184, 224, 71, 241, 55, 139, 80, 142,
+                        102, 116, 7, 81, 114, 14, 81, 241, 105, 54, 79, 238, 57, 14, 12, 47,
                     ],
                     depth: 5,
                     index: 0,
