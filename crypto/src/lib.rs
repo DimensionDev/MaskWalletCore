@@ -14,11 +14,9 @@ pub mod number_util;
 
 pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 
-pub use bitcoin::hashes::{
-    hmac::{Hmac, HmacEngine},
-    sha512::Hash as SHA512Hash,
-    Hash, HashEngine,
-};
+mod persona;
+
+pub use persona::{engine::Secp256k1, EncryptEngine, EncryptKey, JWK};
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
