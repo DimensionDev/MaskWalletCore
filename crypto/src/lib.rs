@@ -12,11 +12,7 @@ pub mod bip39;
 
 pub mod number_util;
 
-pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
-
-mod persona;
-
-pub use persona::{engine::Secp256k1, EncryptEngine, EncryptKey, JWK};
+pub mod jwk;
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
