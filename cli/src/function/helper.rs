@@ -26,11 +26,13 @@ pub(crate) fn current_dir_for_cli(platform: &Platform) -> Result<PathBuf> {
     let mut current_dir = env::current_dir()?;
 
     while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
-        if dir_name == "MaskWalletCore" {
+        if dir_name == "cli" {
             break;
         }
         current_dir.pop();
     }
+
+    current_dir.pop();
 
     current_dir = match platform {
         Platform::iOS => current_dir.join(format!("cli")),
@@ -45,11 +47,13 @@ pub(crate) fn build_command_excute_path(platform: &Platform) -> Result<PathBuf> 
     let mut current_dir = env::current_dir()?;
 
     while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
-        if dir_name == "MaskWalletCore" {
+        if dir_name == "cli" {
             break;
         }
         current_dir.pop();
     }
+
+    current_dir.pop();
 
     current_dir = match platform {
         Platform::iOS => current_dir.join(format!("target-mobile")),
@@ -85,7 +89,7 @@ pub async fn prepare_output_dir(platform: Platform) -> Result<()> {
 }
 
 pub fn finish() {
-    println!("{:}\n", "cli ==> Done".green());
+    println!("{:}\n", "    cli ==> Done".green());
 }
 
 /// generate `MaskWalletCoreMobile.h` at `tartet` path
