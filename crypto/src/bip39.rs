@@ -1,8 +1,7 @@
 use std::str::FromStr;
 
-pub use bip39::Error as BIP39Error;
 use bip39::Language;
-pub use bip39::Mnemonic as CryptoMnemonic;
+pub use bip39::{Error as BIP39Error, Mnemonic as CryptoMnemonic};
 
 use super::number_util::random_iv;
 use crate::Error;

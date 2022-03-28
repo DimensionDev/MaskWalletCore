@@ -1,151 +1,158 @@
-use std::str::FromStr;
+use super::{curve::Curve, Error};
 
-use super::Error;
+use base64_url::encode_to_string;
 use bip39::Mnemonic;
-use bitcoin::{
-    hashes::{
-        hmac::{Hmac, HmacEngine},
-        sha512::Hash as SHA512Hash,
-        // sha256::Hash as SHA256Hash,
-        Hash, HashEngine,
-    },
-    network::constants::Network,
-    util::bip32::{DerivationPath, ExtendedPrivKey},
-};
-
+pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
+use bitcoin::{network::constants::Network, util::bip32::ExtendedPrivKey};
 use secp256k1::Secp256k1;
 
-#[derive(Default)]
-pub struct JWK<'a> {
-    pub crv: &'a str,
-    pub identifier: &'a str,
-}
-
-pub trait EncryptEngine {
-    fn encrypt_content(&self, mnemonic_str: &str, password: &str, path: &str)
-        -> Result<JWK, Error>;
-    fn mnemonic_and_seed(
-        &self,
-        mnemonic_str: &str,
-        password: &str,
-    ) -> Result<(Vec<u8>, Mnemonic), Error> {
-        let mnemonic = Mnemonic::from_str(&mnemonic_str.to_lowercase())?;
-        let seed = mnemonic.to_seed_normalized(password).to_vec();
-
-        Ok((seed, mnemonic))
-    }
-
-    fn hmac512(key: &str, seed: &[u8]) -> (Vec<u8>, Vec<u8>) {
-        let mut engine = HmacEngine::<SHA512Hash>::new(key.as_bytes());
-        engine.input(&seed);
-        let hash = Hmac::<SHA512Hash>::from_engine(engine);
-        let il = hash[0..32]
-            .into_iter()
-            .map(|x| x.clone())
-            .collect::<Vec<_>>();
-        let ir: Vec<u8> = hash[32..].into_iter().map(|x| x.clone()).collect();
-        (il, ir)
-    }
-}
+use std::{convert::Into, str::FromStr};
 
 #[derive(Default)]
-pub struct EncryptKey<T: EncryptEngine> {
-    engine: T,
+pub struct JWK {
+    pub crv: String,
+    pub identifier: Option<String>,
+    pub ext: bool,
+    pub x: String,
+    pub y: String,
+    pub key_ops: Vec<String>,
+    pub kty: String,
+    pub d: Option<String>,
 }
 
-impl<T> EncryptKey<T>
-where
-    T: EncryptEngine,
-{
-    pub fn new(engine: T) -> EncryptKey<T>
-    where
-        T: EncryptEngine,
-    {
-        EncryptKey { engine: engine }
-    }
-}
-
-impl<T: EncryptEngine> EncryptKey<T> {
-    pub fn generate_jwk(
-        &self,
-        mnemonic_str: &str,
+impl JWK {
+    pub fn derive_on(
+        mnemonic: &str,
         password: &str,
         path: &str,
+        curve: Curve,
     ) -> Result<JWK, Error> {
-        self.engine.encrypt_content(mnemonic_str, password, path)
-    }
-}
+        match curve {
+            Curve::Ed25519 => {
+                let seed = Self::derive_seed(mnemonic, password)?;
+                let path = ed25519_dalek_bip32::DerivationPath::from_str(path)
+                    .map_err(|_| Error::InvalidDerivationpath)?;
 
-pub(crate) mod engine {
-    use super::Secp256k1 as secp256k1;
-    use super::*;
-    #[derive(Default)]
-    pub struct Secp256k1;
+                // path limit
+                if !path.path().into_iter().fold(true, |acc, child| {
+                    acc && matches!(child, ed25519_dalek_bip32::ChildIndex::Hardened(_))
+                }) {
+                    return Err(Error::InvalidDerivationpath);
+                }
 
-    impl EncryptEngine for Secp256k1 {
-        fn encrypt_content(
-            &self,
-            mnemonic_str: &str,
-            password: &str,
-            path: &str,
-        ) -> Result<JWK, Error> {
-            let (seed, _mnemonic) = self.mnemonic_and_seed(mnemonic_str, password)?;
-            let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed)
-                .map_err(|_| Error::InvalidCiphertext)?;
-            let secp = secp256k1::new();
-            let _derived_key = sk
-                .derive_priv(&secp, &DerivationPath::from_str(path).unwrap())
-                .map_err(|_| Error::InvalidDerivationpath)?;
+                let derived_key = ed25519_dalek_bip32::ExtendedSecretKey::from_seed(&seed)
+                    .and_then(|extended| extended.derive(&path))
+                    .map_err(|_| Error::InvalidSeed)?;
 
-            Ok(JWK::default())
+                let _sk = derived_key.secret_key.as_bytes();
+                let _pk = derived_key.chain_code;
+                // let identifier = String::from_utf8(pub_key.into());
+                // .map_err(|_| Error::InvalidPublicKey)?
+                // .replace("/", "|");
+
+                Ok(JWK {
+                    crv: "ed25519".to_string(),
+                    identifier: Option::Some(format!("ec_key:ed25519/{:}", "")),
+                    ext: true,
+                    x: "".into(),
+                    y: "".into(),
+                    key_ops: vec!["deriveKey".to_string(), "deriveBits".to_string()],
+                    kty: "EC".to_string(),
+                    d: Option::Some("".into()),
+                })
+            }
+
+            Curve::Secp256k1 => {
+                let seed = Self::derive_seed(mnemonic, password)?;
+
+                let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed)
+                    .map_err(|_| Error::InvalidCiphertext)?;
+                let secp = Secp256k1::new();
+                let path =
+                    DerivationPath::from_str(path).map_err(|_| Error::InvalidDerivationpath)?;
+
+                let derived_key = sk
+                    .derive_priv(&secp, &path)
+                    .map_err(|_| Error::InvalidDerivationpath)?;
+
+                let _finger_print = derived_key.fingerprint(&secp);
+
+                let sk_pub = derived_key.private_key.public_key(&secp);
+                let mut d = String::new();
+                encode_to_string(&derived_key.private_key.to_bytes(), &mut d);
+
+                let ser_uncompressed_pub = sk_pub.key.serialize_uncompressed();
+                let identifier = String::from_utf8(sk_pub.key.serialize().into())
+                    .map_err(|_| Error::InvalidPublicKey)?
+                    .replace("/", "|");
+                let pub_x = &ser_uncompressed_pub[1..33];
+                let pub_y = &ser_uncompressed_pub[33..];
+
+                let mut pubx_string = String::new();
+                encode_to_string(pub_x, &mut pubx_string);
+
+                let mut puby_string = String::new();
+                encode_to_string(pub_y, &mut puby_string);
+
+                Ok(JWK {
+                    crv: "K-256".to_string(),
+                    identifier: Option::Some(format!("ec_key:secp256k1/{:}", identifier)),
+                    ext: true,
+                    x: pubx_string,
+                    y: puby_string,
+                    key_ops: vec!["deriveKey".to_string(), "deriveBits".to_string()],
+                    kty: "EC".to_string(),
+                    d: Option::Some(d),
+                })
+            }
+
+            _ => Err(Error::NotSupportedCurve),
         }
+    }
+
+    fn derive_seed(mnemonic: &str, password: &str) -> Result<Vec<u8>, Error> {
+        let mnemonic = Mnemonic::parse_normalized(&mnemonic.to_lowercase())?;
+        let seed = mnemonic.to_seed_normalized(password).to_vec();
+
+        Ok(seed)
     }
 }
 
 #[cfg(test)]
 #[allow(dead_code)]
 mod test {
-    use bitcoin::util::psbt::serialize::Serialize;
-
     use super::*;
 
     #[test]
-    fn secp256k1_test() {
-        for suit in vec![PeronaTestSuit::bulk_suit(), PeronaTestSuit::doss_suit()] {
-            let engine = engine::Secp256k1;
-            let (seed, _mnemonic) = engine.mnemonic_and_seed(suit.mnemonic_str, "").unwrap();
-            // let (il, ir) = engine::Secp256k1::hmac512("Bitcoin seed", &seed);
+    fn secp256k1_derive_test() {
+        fn results_for(suit: Sec256k1) -> Result<(), Error> {
+            let jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Secp256k1)?;
 
-            let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed).unwrap();
+            assert_eq!(suit.pub_x, jwk.x);
+            assert_eq!(suit.pub_y, jwk.y);
+            assert_eq!(suit.compressed_point, jwk.identifier.unwrap());
 
-            let secp = Secp256k1::new();
-            let derived_key = sk
-                .derive_priv(&secp, &DerivationPath::from_str(suit.path_str).unwrap())
-                .unwrap();
-
-            let sk_pub = sk.private_key.public_key(&secp);
-
-            let ser_compressed_pub = sk_pub.serialize();
-
-            // master_key test
-            assert_eq!(seed, suit.preferred_seed);
-            assert_eq!(
-                suit.master_key.private_key == sk.private_key.to_bytes(),
-                true
-            );
-            assert_eq!(suit.master_key.chaincode == sk.chain_code.as_bytes(), true);
-            assert_eq!(suit.master_key.public_key == ser_compressed_pub, true);
-
-            // derive_key test
-            assert_eq!(
-                suit.derived_key.private_key == derived_key.private_key.to_bytes(),
-                true
-            );
-            assert_eq!(
-                suit.derived_key.chaincode == derived_key.chain_code.as_bytes(),
-                true
-            );
+            Ok(())
         }
+        for suit in vec![Sec256k1::bulk_suit(), Sec256k1::doss_suit()] {
+            let _ = results_for(suit);
+        }
+    }
+
+    #[test]
+    fn ed25519_derive_test() {
+        let suit = Sec256k1::bulk_suit();
+        let _path = "m/44'/60'/0'/0'/0'";
+        // hex::encode(suit.mnemonic_str.as);
+        let _jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Ed25519);
+        // .and_then(|extended| extended.derive(&path));
+        // let child_num = match path.path().last() {
+        //     Some(num) => num.to_u32(),
+        //     None => 0,
+        // };
+        // let pub_key = extended_key.public_key().to_bytes();
+
+        println!("1313");
     }
 
     #[test]
@@ -155,12 +162,15 @@ mod test {
         assert_eq!(paths, vec!["m", "44'", "60'", "0'", "0", "0"]);
     }
 
-    struct PeronaTestSuit<'a> {
+    struct Sec256k1<'a> {
         mnemonic_str: &'a str,
         path_str: &'a str,
         preferred_seed: Vec<u8>,
         master_key: Key,
         derived_key: Key,
+        pub_x: &'a str,
+        pub_y: &'a str,
+        compressed_point: &'a str,
     }
 
     #[derive(Debug, PartialEq, Eq)]
@@ -175,7 +185,7 @@ mod test {
         public_key: Vec<u8>,
     }
 
-    impl<'a> PeronaTestSuit<'a> {
+    impl<'a> Sec256k1<'a> {
         fn bulk_suit() -> Self {
             Self {
                 mnemonic_str:
@@ -235,11 +245,14 @@ mod test {
                         113,
                     ],
                 },
+                pub_x: "nnFZy8awx54l7P1hPUjeMu69EymJrsTolbnWdmCl5XE",
+                pub_y: "5LymtUZeFBMO-SdJqmIq1FVX1cyfXgXuVsmOPkBdkAs",
+                compressed_point: "ec_key:secp256k1/A55xWcvGsMeeJez9YT1I3jLuvRMpia7E6JW51nZgpeVx",
             }
         }
     }
 
-    impl<'a> PeronaTestSuit<'a> {
+    impl<'a> Sec256k1<'a> {
         fn doss_suit() -> Self {
             Self {
                 mnemonic_str:
@@ -297,6 +310,9 @@ mod test {
                         85, 203, 103, 115, 52, 111, 166, 140, 56, 20, 223, 54, 25, 143, 49, 28,
                     ],
                 },
+                pub_x: "qgoeG-gEKz8yP_ki_5Ozs1XLZ3M0b6aMOBTfNhmPMRw",
+                pub_y: "mMGy9l21691y6i7PYMmTO5M11K4pSVc_w58gBDKXhDY",
+                compressed_point: "ec_key:secp256k1/AqoKHhvoBCs/Mj/5Iv+Ts7NVy2dzNG+mjDgU3zYZjzEc",
             }
         }
     }

@@ -13,8 +13,8 @@ impl From<CryptoError> for MwResponseError {
     }
 }
 
-impl From<crypto::BIP32Error> for MwResponseError {
-    fn from(err: crypto::BIP32Error) -> Self {
+impl From<crypto::jwk::BIP32Error> for MwResponseError {
+    fn from(err: crypto::jwk::BIP32Error) -> Self {
         Self {
             error_code: "-1".to_string(),
             error_msg: format!("{:?}", err),

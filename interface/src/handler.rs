@@ -7,7 +7,6 @@ mod validate;
 
 use chain_common::api::mw_request::Request::*;
 use chain_common::api::{mw_request, MwResponse};
-use persona::generate_persona;
 
 pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
     match request {
@@ -37,6 +36,6 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
 
         ParamGenerateMnemonic(_) => common::generate_mnemonic(),
 
-        ParamGeneratePersona(param) => generate_persona(&param),
+        ParamGeneratePersona(param) => persona::generate_persona(&param),
     }
 }
