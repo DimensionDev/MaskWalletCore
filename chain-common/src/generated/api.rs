@@ -364,32 +364,45 @@ pub struct PersonaGenerationParam {
     pub password: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub path: ::prost::alloc::string::String,
-    #[prost(message, optional, tag="4")]
-    pub curve: ::core::option::Option<Curve>,
+    #[prost(enumeration="persona_generation_param::Curve", optional, tag="4")]
+    pub curve: ::core::option::Option<i32>,
+}
+/// Nested message and enum types in `PersonaGenerationParam`.
+pub mod persona_generation_param {
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+    #[repr(i32)]
+    pub enum Curve {
+        Secp256k1 = 0,
+        Ed25519 = 1,
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PersonaGenerationResp {
-    #[prost(string, tag="1")]
-    pub identifier: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub private_key: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
-    pub public_key: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="1")]
+    pub identifier: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(message, optional, tag="2")]
+    pub private_key: ::core::option::Option<JwkResp>,
+    #[prost(message, optional, tag="3")]
+    pub public_key: ::core::option::Option<JwkResp>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Curve {
-    #[prost(oneof="curve::Curve", tags="1, 2")]
-    pub curve: ::core::option::Option<curve::Curve>,
-}
-/// Nested message and enum types in `Curve`.
-pub mod curve {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Curve {
-        #[prost(string, tag="1")]
-        Secp256k1(::prost::alloc::string::String),
-        #[prost(string, tag="2")]
-        Ed25519(::prost::alloc::string::String),
-    }
+pub struct JwkResp {
+    #[prost(string, tag="1")]
+    pub crv: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="2")]
+    pub identifier: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bool, tag="3")]
+    pub ext: bool,
+    #[prost(string, tag="4")]
+    pub x: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub y: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="6")]
+    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="7")]
+    pub kty: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="8")]
+    pub d: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
