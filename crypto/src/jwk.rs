@@ -1,6 +1,6 @@
 use super::{curve::Curve, Error};
 
-use base64_url::encode_to_string;
+use base64::{encode_config, STANDARD_NO_PAD, URL_SAFE_NO_PAD};
 use bip39::Mnemonic;
 pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 use bitcoin::{network::constants::Network, util::bip32::ExtendedPrivKey};
@@ -8,7 +8,7 @@ use secp256k1::Secp256k1;
 
 use std::{convert::Into, str::FromStr};
 
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct JWK {
     pub crv: String,
     pub identifier: Option<String>,
@@ -33,32 +33,30 @@ impl JWK {
                 let path = ed25519_dalek_bip32::DerivationPath::from_str(path)
                     .map_err(|_| Error::InvalidDerivationpath)?;
 
-                // path limit
-                if !path.path().into_iter().fold(true, |acc, child| {
-                    acc && matches!(child, ed25519_dalek_bip32::ChildIndex::Hardened(_))
-                }) {
-                    return Err(Error::InvalidDerivationpath);
-                }
-
+                // TODO: finish ed25519, x, y generation remains to be done
                 let derived_key = ed25519_dalek_bip32::ExtendedSecretKey::from_seed(&seed)
                     .and_then(|extended| extended.derive(&path))
                     .map_err(|_| Error::InvalidSeed)?;
 
-                let _sk = derived_key.secret_key.as_bytes();
-                let _pk = derived_key.chain_code;
-                // let identifier = String::from_utf8(pub_key.into());
-                // .map_err(|_| Error::InvalidPublicKey)?
-                // .replace("/", "|");
+                let sk = derived_key.secret_key.to_bytes();
+                // pubk is compressed;
+                let pubk = derived_key.public_key().to_bytes();
+
+                let base64_config = STANDARD_NO_PAD;
+                let base64_url_config = URL_SAFE_NO_PAD;
+                let mut identifier = encode_config(&pubk, base64_config);
+                identifier = identifier.replace("/", "|");
+                let d = encode_config(&sk, base64_url_config);
 
                 Ok(JWK {
                     crv: "ed25519".to_string(),
-                    identifier: Option::Some(format!("ec_key:ed25519/{:}", "")),
+                    identifier: Option::Some(format!("ec_key:ed25519/{:}", identifier)),
                     ext: true,
                     x: "".into(),
                     y: "".into(),
                     key_ops: vec!["deriveKey".to_string(), "deriveBits".to_string()],
                     kty: "EC".to_string(),
-                    d: Option::Some("".into()),
+                    d: Option::Some(d),
                 })
             }
 
@@ -78,21 +76,21 @@ impl JWK {
                 let _finger_print = derived_key.fingerprint(&secp);
 
                 let sk_pub = derived_key.private_key.public_key(&secp);
-                let mut d = String::new();
-                encode_to_string(&derived_key.private_key.to_bytes(), &mut d);
+                // use standard CharacterSet but with pad set to false
+                let base64_config = STANDARD_NO_PAD;
+                let base64_url_config = URL_SAFE_NO_PAD;
+                let d = encode_config(&derived_key.private_key.to_bytes(), base64_url_config);
 
                 let ser_uncompressed_pub = sk_pub.key.serialize_uncompressed();
-                let identifier = String::from_utf8(sk_pub.key.serialize().into())
-                    .map_err(|_| Error::InvalidPublicKey)?
-                    .replace("/", "|");
+                let ser_compressed_pub = sk_pub.key.serialize();
+
+                let mut identifier = encode_config(&ser_compressed_pub, base64_config);
+                identifier = identifier.replace("/", "|");
+
                 let pub_x = &ser_uncompressed_pub[1..33];
                 let pub_y = &ser_uncompressed_pub[33..];
-
-                let mut pubx_string = String::new();
-                encode_to_string(pub_x, &mut pubx_string);
-
-                let mut puby_string = String::new();
-                encode_to_string(pub_y, &mut puby_string);
+                let pubx_string = encode_config(pub_x, base64_url_config);
+                let puby_string = encode_config(pub_y, base64_url_config);
 
                 Ok(JWK {
                     crv: "K-256".to_string(),
@@ -125,34 +123,14 @@ mod test {
 
     #[test]
     fn secp256k1_derive_test() {
-        fn results_for(suit: Sec256k1) -> Result<(), Error> {
-            let jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Secp256k1)?;
-
+        for suit in vec![Sec256k1::bulk_suit(), Sec256k1::doss_suit()] {
+            let jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Secp256k1);
+            assert_eq!(jwk.is_ok(), true);
+            let jwk = jwk.unwrap();
             assert_eq!(suit.pub_x, jwk.x);
             assert_eq!(suit.pub_y, jwk.y);
             assert_eq!(suit.compressed_point, jwk.identifier.unwrap());
-
-            Ok(())
         }
-        for suit in vec![Sec256k1::bulk_suit(), Sec256k1::doss_suit()] {
-            let _ = results_for(suit);
-        }
-    }
-
-    #[test]
-    fn ed25519_derive_test() {
-        let suit = Sec256k1::bulk_suit();
-        let _path = "m/44'/60'/0'/0'/0'";
-        // hex::encode(suit.mnemonic_str.as);
-        let _jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Ed25519);
-        // .and_then(|extended| extended.derive(&path));
-        // let child_num = match path.path().last() {
-        //     Some(num) => num.to_u32(),
-        //     None => 0,
-        // };
-        // let pub_key = extended_key.public_key().to_bytes();
-
-        println!("1313");
     }
 
     #[test]
@@ -312,7 +290,7 @@ mod test {
                 },
                 pub_x: "qgoeG-gEKz8yP_ki_5Ozs1XLZ3M0b6aMOBTfNhmPMRw",
                 pub_y: "mMGy9l21691y6i7PYMmTO5M11K4pSVc_w58gBDKXhDY",
-                compressed_point: "ec_key:secp256k1/AqoKHhvoBCs/Mj/5Iv+Ts7NVy2dzNG+mjDgU3zYZjzEc",
+                compressed_point: "ec_key:secp256k1/AqoKHhvoBCs|Mj|5Iv+Ts7NVy2dzNG+mjDgU3zYZjzEc",
             }
         }
     }

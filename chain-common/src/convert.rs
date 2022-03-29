@@ -1,7 +1,9 @@
 use std::convert::{From, TryFrom};
 use std::str::FromStr;
 
-use crate::generated::api::{curve::Curve, mw_response::Response, MwResponse, MwResponseError};
+use crate::generated::api::{
+    mw_response::Response, persona_generation_param::Curve, MwResponse, MwResponseError,
+};
 use crypto::Error as CryptoError;
 
 impl From<CryptoError> for MwResponseError {
@@ -47,11 +49,26 @@ impl FromStr for Curve {
     type Err = MwResponseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "secp256k1" | "Secp256k1" => Ok(Curve::Secp256k1(s.to_owned())),
-            "Ed25519" | "ed25519" => Ok(Curve::Ed25519(s.to_owned())),
+            "secp256k1" | "Secp256k1" | "0" => Ok(Curve::Secp256k1),
+            "Ed25519" | "ed25519" | "1" => Ok(Curve::Ed25519),
             _ => Err(MwResponseError {
                 error_code: "-1".to_owned(),
                 error_msg: format!("unsupport curve type: {:}", s),
+            }),
+        }
+    }
+}
+
+impl TryFrom<i32> for Curve {
+    type Error = MwResponseError;
+
+    fn try_from(value: i32) -> Result<Curve, MwResponseError> {
+        match value {
+            0 => Ok(Curve::Secp256k1),
+            1 => Ok(Curve::Ed25519),
+            _ => Err(MwResponseError {
+                error_code: "-1".to_owned(),
+                error_msg: format!("unsupport curve type: {:}", value),
             }),
         }
     }

@@ -7,18 +7,26 @@ message PersonaGenerationParam {
     string mnemonic = 1;
     string password = 2;
     string path = 3;
-    Curve curve = 4;
+    enum Curve { 
+        Secp256k1 = 0;
+        Ed25519 = 1;
+    }
+    optional Curve curve = 4;
 }
 
 message PersonaGenerationResp { 
-    string identifier = 1;
-    string privateKey = 2;
-    string publicKey = 3;
+    optional string identifier = 1;
+    optional JWKResp privateKey = 2;
+    optional JWKResp publicKey = 3;
 }
 
-message Curve { 
-    oneof Curve { 
-        string secp256k1 = 1;
-        string ed25519 = 2;
-    }
+message JWKResp {
+    string crv = 1;
+    optional string identifier = 2;
+    bool ext = 3;
+    string x = 4;
+    string y = 5;
+    repeated string key_ops = 6;
+    string kty = 7;
+    optional string d = 8;
 }
