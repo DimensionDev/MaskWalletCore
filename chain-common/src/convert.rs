@@ -80,3 +80,17 @@ impl TryFrom<&str> for Curve {
         Curve::from_str(s)
     }
 }
+
+impl TryFrom<Option<i32>> for Curve {
+    type Error = MwResponseError;
+
+    fn try_from(s: Option<i32>) -> Result<Self, Self::Error> {
+        match s {
+            Some(s) => Curve::try_from(s),
+            None => Err(MwResponseError {
+                error_code: "-1".to_owned(),
+                error_msg: format!("empty curve type"),
+            }),
+        }
+    }
+}

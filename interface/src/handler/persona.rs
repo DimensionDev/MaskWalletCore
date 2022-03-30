@@ -1,4 +1,4 @@
-use std::convert::{Into, TryFrom};
+use std::convert::TryInto;
 
 use chain_common::api::{
     mw_response::Response, persona_generation_param::Curve, JwkResp, MwResponse, MwResponseError,
@@ -12,34 +12,26 @@ pub fn generate_persona(param: &PersonaGenerationParam) -> MwResponse {
 }
 
 fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, MwResponseError> {
-    let curve = param.curve.map(|x| Curve::try_from(x));
+    let curve = param.curve.try_into();
 
-    let resp = match curve {
-        Some(curve) => {
-            let jwk = match curve {
-                Ok(Curve::Secp256k1) => JWK::derive_on(
-                    &param.mnemonic,
-                    &param.password,
-                    &param.path,
-                    crypto::curve::Curve::Secp256k1,
-                ),
-                Ok(Curve::Ed25519) => JWK::derive_on(
-                    &param.mnemonic,
-                    &param.password,
-                    &param.path,
-                    crypto::curve::Curve::Ed25519,
-                ),
+    let jwk = match curve {
+        Ok(Curve::Secp256k1) => JWK::derive_on(
+            &param.mnemonic,
+            &param.password,
+            &param.path,
+            crypto::curve::Curve::Secp256k1,
+        ),
+        Ok(Curve::Ed25519) => JWK::derive_on(
+            &param.mnemonic,
+            &param.password,
+            &param.path,
+            crypto::curve::Curve::Ed25519,
+        ),
 
-                _ => Err(Error::NotSupportedCurve),
-            }?;
-
-            Ok(JWKWrapper(jwk).resp())
-        }
-
-        None => Err(Error::NotSupportedCurve),
+        _ => Err(Error::NotSupportedCurve),
     }?;
 
-    Ok(Response::RespGeneratePersona(resp))
+    Ok(Response::RespGeneratePersona(JWKWrapper(jwk).resp()))
 }
 
 #[derive(Debug, Clone)]
@@ -57,7 +49,7 @@ impl JWKWrapper {
         }
     }
 
-    fn to_jwkresp(&self, contain_d: bool) -> JwkResp {
+    fn to_jwkresp(&self, include_d: bool) -> JwkResp {
         JwkResp {
             crv: self.0.crv.clone(),
             identifier: self.0.identifier.clone(),
@@ -66,7 +58,7 @@ impl JWKWrapper {
             y: self.0.y.clone(),
             key_ops: self.0.key_ops.clone(),
             kty: self.0.kty.clone(),
-            d: if contain_d { self.0.d.clone() } else { None },
+            d: if include_d { self.0.d.clone() } else { None },
         }
     }
 }
