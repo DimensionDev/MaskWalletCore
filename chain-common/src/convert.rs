@@ -2,8 +2,8 @@ use std::convert::{From, TryFrom};
 use std::str::FromStr;
 
 use crate::generated::api::{
-    mw_response::Response, persona_generation_param::Curve, EncryptVersion, MwResponse,
-    MwResponseError,
+    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve,
+    MwResponse, MwResponseError,
 };
 use crypto::Error as CryptoError;
 
@@ -96,13 +96,13 @@ impl TryFrom<Option<i32>> for Curve {
     }
 }
 
-impl TryFrom<i32> for EncryptVersion {
+impl TryFrom<i32> for Version {
     type Error = MwResponseError;
 
-    fn try_from(value: i32) -> Result<EncryptVersion, MwResponseError> {
+    fn try_from(value: i32) -> Result<Version, MwResponseError> {
         match value {
-            0 => Ok(EncryptVersion::V37),
-            1 => Ok(EncryptVersion::V38),
+            0 => Ok(Version::V37),
+            1 => Ok(Version::V38),
             _ => Err(MwResponseError {
                 error_code: "-1".to_owned(),
                 error_msg: format!("unsupport encryptVersion type: {:}", value),

@@ -34,6 +34,20 @@ pub struct StoredKeyAccountInfo {
     #[prost(string, tag="5")]
     pub extended_public_key: ::prost::alloc::string::String,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EncryptOption {
+    #[prost(enumeration="encrypt_option::Version", tag="1")]
+    pub version: i32,
+}
+/// Nested message and enum types in `EncryptOption`.
+pub mod encrypt_option {
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+    #[repr(i32)]
+    pub enum Version {
+        V37 = 0,
+        V38 = 1,
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Coin {
@@ -60,12 +74,6 @@ pub enum StoredKeyExportType {
     PrivateKeyExportType = 0,
     MnemonicExportType = 1,
     KeyStoreJsonExportType = 2,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum EncryptVersion {
-    V37 = 0,
-    V38 = 1,
 }
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -372,8 +380,8 @@ pub struct PersonaGenerationParam {
     pub path: ::prost::alloc::string::String,
     #[prost(enumeration="persona_generation_param::Curve", optional, tag="4")]
     pub curve: ::core::option::Option<i32>,
-    #[prost(enumeration="EncryptVersion", tag="5")]
-    pub version: i32,
+    #[prost(message, optional, tag="5")]
+    pub option: ::core::option::Option<EncryptOption>,
 }
 /// Nested message and enum types in `PersonaGenerationParam`.
 pub mod persona_generation_param {
@@ -392,8 +400,8 @@ pub struct PersonaGenerationResp {
     pub private_key: ::core::option::Option<JwkResp>,
     #[prost(message, optional, tag="3")]
     pub public_key: ::core::option::Option<JwkResp>,
-    #[prost(enumeration="EncryptVersion", tag="4")]
-    pub version: i32,
+    #[prost(message, optional, tag="4")]
+    pub option: ::core::option::Option<EncryptOption>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct JwkResp {

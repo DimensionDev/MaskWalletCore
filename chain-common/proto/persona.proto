@@ -14,14 +14,14 @@ message PersonaGenerationParam {
         Ed25519 = 1;
     }
     optional Curve curve = 4;
-    EncryptVersion version = 5;
+    EncryptOption option = 5;
 }
 
 message PersonaGenerationResp { 
     optional string identifier = 1;
     optional JWKResp privateKey = 2;
     optional JWKResp publicKey = 3;
-    EncryptVersion version = 4;
+    EncryptOption option = 4;
 }
 
 message JWKResp {
