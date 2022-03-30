@@ -40,3 +40,7 @@ message StoredKeyAccountInfo {
     string extendedPublicKey = 5;
 }
 
+enum EncryptVersion { 
+    V37 = 0;
+    V38 = 1;
+}

@@ -61,6 +61,12 @@ pub enum StoredKeyExportType {
     MnemonicExportType = 1,
     KeyStoreJsonExportType = 2,
 }
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum EncryptVersion {
+    V37 = 0,
+    V38 = 1,
+}
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateStoredKeyNewAccountAtPathParam {
@@ -366,6 +372,8 @@ pub struct PersonaGenerationParam {
     pub path: ::prost::alloc::string::String,
     #[prost(enumeration="persona_generation_param::Curve", optional, tag="4")]
     pub curve: ::core::option::Option<i32>,
+    #[prost(enumeration="EncryptVersion", tag="5")]
+    pub version: i32,
 }
 /// Nested message and enum types in `PersonaGenerationParam`.
 pub mod persona_generation_param {
@@ -384,6 +392,8 @@ pub struct PersonaGenerationResp {
     pub private_key: ::core::option::Option<JwkResp>,
     #[prost(message, optional, tag="3")]
     pub public_key: ::core::option::Option<JwkResp>,
+    #[prost(enumeration="EncryptVersion", tag="4")]
+    pub version: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct JwkResp {
