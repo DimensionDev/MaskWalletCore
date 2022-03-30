@@ -1,8 +1,8 @@
 use std::convert::TryInto;
 
 use chain_common::api::{
-    mw_response::Response, persona_generation_param::Curve, EncryptVersion, JwkResp, MwResponse,
-    MwResponseError, PersonaGenerationParam, PersonaGenerationResp,
+    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve, EncryptOption,
+    JwkResp, MwResponse, MwResponseError, PersonaGenerationParam, PersonaGenerationResp,
 };
 
 use crypto::{jwk::JWK, Error};
@@ -12,10 +12,14 @@ pub fn generate_persona(param: &PersonaGenerationParam) -> MwResponse {
 }
 
 fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, MwResponseError> {
-    let version = param.version.try_into()?;
+    let option = param
+        .option
+        .clone()
+        .ok_or_else(|| Error::NotSupportedCipher)?;
+    let version = option.version.try_into()?;
 
     // currently only support v37
-    if let EncryptVersion::V38 = version {
+    if let Version::V38 = version {
         return Err(Error::NotSupportedCipher.into());
     }
 
@@ -39,7 +43,7 @@ fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, Mw
     }?;
 
     Ok(Response::RespGeneratePersona(
-        JWKWrapper(jwk).resp(param.version),
+        JWKWrapper(jwk).resp(Some(option)),
     ))
 }
 
@@ -47,7 +51,7 @@ fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, Mw
 struct JWKWrapper(JWK);
 
 impl JWKWrapper {
-    fn resp(self, version: i32) -> PersonaGenerationResp {
+    fn resp(self, option: Option<EncryptOption>) -> PersonaGenerationResp {
         let private_key = self.to_jwkresp(true);
         let public_key = self.to_jwkresp(false);
 
@@ -55,7 +59,7 @@ impl JWKWrapper {
             identifier: self.0.identifier,
             private_key: Some(private_key),
             public_key: Some(public_key),
-            version: version,
+            option: option,
         }
     }
 

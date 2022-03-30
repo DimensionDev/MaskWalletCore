@@ -22,38 +22,43 @@ pub enum Platform {
 }
 
 #[inline]
-pub(crate) fn current_dir_for_cli(platform: &Platform) -> Result<PathBuf> {
+pub(crate) fn current_dir_for_cli(_platform: &Platform) -> Result<PathBuf> {
     let mut current_dir = env::current_dir()?;
 
-    while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
-        if dir_name == "cli" {
-            break;
+    let path_str = current_dir
+        .to_str()
+        .ok_or_else(|| anyhow!("invalid path"))?;
+
+    if path_str.contains("cli") {
+        while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
+            if dir_name == "cli" {
+                current_dir.pop();
+                break;
+            }
+            current_dir.pop();
         }
-        current_dir.pop();
     }
 
-    current_dir.pop();
-
-    current_dir = match platform {
-        Platform::iOS => current_dir.join(format!("cli")),
-        Platform::Wasm => current_dir.join(format!("cli")),
-    };
-
-    Ok(current_dir)
+    Ok(current_dir.join(format!("cli")))
 }
 
 #[inline]
 pub(crate) fn build_command_excute_path(platform: &Platform) -> Result<PathBuf> {
     let mut current_dir = env::current_dir()?;
 
-    while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
-        if dir_name == "cli" {
-            break;
-        }
-        current_dir.pop();
-    }
+    let path_str = current_dir
+        .to_str()
+        .ok_or_else(|| anyhow!("invalid path"))?;
 
-    current_dir.pop();
+    if path_str.contains("cli") {
+        while let Some(Component::Normal(dir_name)) = current_dir.components().last() {
+            if dir_name == "cli" {
+                current_dir.pop();
+                break;
+            }
+            current_dir.pop();
+        }
+    }
 
     current_dir = match platform {
         Platform::iOS => current_dir.join(format!("target-mobile")),
