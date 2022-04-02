@@ -27,7 +27,7 @@ pub fn create_stored_key_account_of_coin_at_path(
     };
     let account = match stored_key.add_new_account_of_coin_and_derivation_path_by_password(
         &param.name,
-        &coin,
+        coin,
         &param.derivation_path,
         &param.password,
     ) {

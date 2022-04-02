@@ -52,12 +52,12 @@ impl EncryptionParams {
             mac: json_struct.crypto.mac.clone(),
             kdf_params: json_struct.crypto.kdfparams.clone(),
         };
-        let decrypted = unverified_encryption_param.decrypt(&password)?;
+        let decrypted = unverified_encryption_param.decrypt(password)?;
         Ok((unverified_encryption_param, decrypted))
     }
 
     pub fn decrypt(&self, password: &[u8]) -> Result<Vec<u8>, Error> {
-        let derived_key = self.kdf_params.generate_derived_key(&password)?;
+        let derived_key = self.kdf_params.generate_derived_key(password)?;
         let mac = hash::compute_mac(&derived_key[16..32], &self.encrypted);
         let mac_hex = hex::encode(mac);
         if mac_hex != self.mac {
@@ -81,10 +81,10 @@ impl EncryptionParams {
         new_password: &str,
     ) -> Result<String, Error> {
         // 1. Check the password by using the decrypt method
-        let decrypted = self.decrypt(&password.as_bytes())?;
+        let decrypted = self.decrypt(password.as_bytes())?;
 
         // 2. Generate a temp new EncryptionParam using the new_password
-        let new_encryption_param = Self::new(&new_password.as_bytes(), &decrypted)?;
+        let new_encryption_param = Self::new(new_password.as_bytes(), &decrypted)?;
 
         let new_encrypted_text = hex::encode(&new_encryption_param.encrypted);
         let kdf = match new_encryption_param.kdf_params {
@@ -146,7 +146,7 @@ mod tests {
         }
         "#;
         let key_store_json_password = "Maskbook123";
-        let json_struct = KeyStoreJson::from_str(&json).unwrap();
+        let json_struct = KeyStoreJson::from_str(json).unwrap();
         let cipher = AesType::from_str(&json_struct.crypto.cipher).unwrap();
         let encrypted_hexdecoded = hex::decode(&json_struct.crypto.ciphertext).unwrap();
         let unverified_encryption_param = EncryptionParams {
@@ -154,11 +154,11 @@ mod tests {
             cipher,
             cipher_params: json_struct.crypto.cipherparams.clone(),
             mac: json_struct.crypto.mac.clone(),
-            kdf_params: json_struct.crypto.kdfparams.clone(),
+            kdf_params: json_struct.crypto.kdfparams,
         };
         let derived_key = unverified_encryption_param
             .kdf_params
-            .generate_derived_key(&key_store_json_password.as_bytes())
+            .generate_derived_key(key_store_json_password.as_bytes())
             .unwrap();
         let mac = hash::compute_mac(&derived_key[16..32], &unverified_encryption_param.encrypted);
         let hex_mac = hex::encode(mac);

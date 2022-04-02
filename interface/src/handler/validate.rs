@@ -43,7 +43,7 @@ pub fn validate(param: ValidateParam) -> MwResponse {
                     };
                 }
             };
-            let entry = match CoinDispatcher::get_entry(&coin) {
+            let entry = match CoinDispatcher::get_entry(coin) {
                 Ok(entry) => entry,
                 Err(error) => {
                     return get_error_response_by_error(error);

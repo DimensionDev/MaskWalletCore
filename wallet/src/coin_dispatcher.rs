@@ -27,7 +27,7 @@ pub fn derive_address_with_private_key(
     private_key: &PrivateKey,
 ) -> Result<String, Error> {
     let public_key = private_key.get_public_key(&coin.public_key_type)?;
-    derive_address_with_public_key(&coin, &public_key)
+    derive_address_with_public_key(coin, &public_key)
 }
 
 pub fn derive_address_with_public_key(
@@ -36,9 +36,9 @@ pub fn derive_address_with_public_key(
 ) -> Result<String, Error> {
     let p2pkh = coin.get_value("p2pkh").unwrap_or_default();
     let hrp = coin.get_value("hrp").unwrap_or_default();
-    Ok(CoinDispatcher::get_entry(&coin)?.derive_address(
-        &coin,
-        &public_key,
+    Ok(CoinDispatcher::get_entry(coin)?.derive_address(
+        coin,
+        public_key,
         p2pkh.as_bytes(),
         hrp.as_bytes(),
     )?)

@@ -21,7 +21,7 @@ impl Account {
         derivation_path: &str,
         extended_public_key: &str,
     ) -> Result<Self, Error> {
-        let derivation_path_struct = DerivationPath::new(&derivation_path)?;
+        let derivation_path_struct = DerivationPath::new(derivation_path)?;
         Ok(Account {
             address: address.to_owned(),
             name: name.to_owned(),

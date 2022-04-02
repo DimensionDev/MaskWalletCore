@@ -38,12 +38,13 @@ impl HdNode {
 
     pub fn get_node(seed: &[u8], path: &str, curve: Curve) -> Result<HdNode, Error> {
         let extended_master_key =
-            ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
+            ExtendedPrivKey::new_master(Network::Bitcoin, seed).map_err(|_| Error::InvalidSeed)?;
         let derivation_path =
             DerivationPath::from_str(path).map_err(|_| Error::InvalidDerivationpath)?;
+
         match curve {
             Curve::Ed25519 => {
-                let path = ed25519_dalek_bip32::DerivationPath::from_str(&path)
+                let path = ed25519_dalek_bip32::DerivationPath::from_str(path)
                     .map_err(|_| Error::InvalidDerivationpath)?;
                 let extended_key = ed25519_dalek_bip32::ExtendedSecretKey::from_seed(seed)
                     .and_then(|extended| extended.derive(&path))
@@ -52,26 +53,28 @@ impl HdNode {
                     Some(num) => num.to_u32(),
                     None => 0,
                 };
-                return Ok(HdNode {
+
+                Ok(HdNode {
                     depth: extended_key.depth,
-                    child_num: child_num,
+                    child_num,
                     chain_code: extended_key.chain_code,
                     private_key_bytes: extended_key.secret_key.to_bytes(),
                     private_key_extension: [0; 32],
                     public_key_bytes: [0u8; 33],
                     curve,
-                });
+                })
             }
             _ => {
                 let extended_private_key = extended_master_key
                     .derive_priv(&Secp256k1::new(), &derivation_path)
                     .map_err(|_| Error::InvalidSeed)?;
-                return Ok(HdNode::new_from_extended_private_key(
+
+                Ok(HdNode::new_from_extended_private_key(
                     extended_private_key,
                     curve,
-                ));
+                ))
             }
-        };
+        }
     }
 }
 

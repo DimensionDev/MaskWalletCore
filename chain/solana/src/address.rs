@@ -11,7 +11,7 @@ pub struct SolanaAddress {
 
 impl SolanaAddress {
     pub fn is_valid(address: &str) -> bool {
-        let data = match base58::from(&address) {
+        let data = match base58::from(address) {
             Ok(data) => data,
             Err(_) => return false,
         };
@@ -49,24 +49,24 @@ mod tests {
 
         let test4 = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";
 
-        assert_eq!(SolanaAddress::is_valid(&test1), false);
-        assert_eq!(SolanaAddress::is_valid(&test2), false);
-        assert_eq!(SolanaAddress::is_valid(&test3), false);
-        assert_eq!(SolanaAddress::is_valid(&test4), true);
+        assert!(!SolanaAddress::is_valid(test1));
+        assert!(!SolanaAddress::is_valid(test2));
+        assert!(!SolanaAddress::is_valid(test3));
+        assert!(SolanaAddress::is_valid(test4));
     }
 
     #[test]
     fn test_derive_from_pub_key() {
         let pub_key_str = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";
 
-        let pub_key_data = base58::from(&pub_key_str).unwrap();
+        let pub_key_data = base58::from(pub_key_str).unwrap();
 
         let public_key = PublicKey {
             r#type: PublicKeyType::Ed25519,
             data: pub_key_data.to_vec(),
         };
         let address = SolanaAddress::new(&public_key);
-        assert_eq!(address.is_ok(), true);
+        assert!(address.is_ok());
         let address_str = address.unwrap().to_string();
         assert_eq!(address_str, "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST");
     }

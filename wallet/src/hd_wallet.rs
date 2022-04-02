@@ -30,7 +30,7 @@ impl HdWallet {
     }
 
     pub fn new_with_mnemonic(mnemonic: &str, password: &str) -> Result<HdWallet, Error> {
-        let mnemonic = Mnemonic::new(&mnemonic, &password)?;
+        let mnemonic = Mnemonic::new(mnemonic, password)?;
         Ok(HdWallet {
             seed: mnemonic.seed,
             mnemonic: mnemonic.words,
@@ -60,7 +60,7 @@ impl HdWallet {
     }
 
     pub fn get_address_for_coin(&self, coin: &Coin) -> Result<String, Error> {
-        self.get_address_for_coin_of_path(&coin, &coin.derivation_path)
+        self.get_address_for_coin_of_path(coin, &coin.derivation_path)
     }
 
     pub fn get_address_for_coin_of_path(
@@ -68,20 +68,20 @@ impl HdWallet {
         coin: &Coin,
         derivation_path: &str,
     ) -> Result<String, Error> {
-        let derivation_path = DerivationPath::new(&derivation_path)?;
-        let private_key = self.get_key(&coin, &derivation_path)?;
-        derive_address_with_private_key(&coin, &private_key)
+        let derivation_path = DerivationPath::new(derivation_path)?;
+        let private_key = self.get_key(coin, &derivation_path)?;
+        derive_address_with_private_key(coin, &private_key)
     }
 
     pub fn get_extended_public_key(&self, coin: &Coin) -> String {
-        self.get_extended_public_key_of_path(&coin, &coin.derivation_path)
+        self.get_extended_public_key_of_path(coin, &coin.derivation_path)
     }
 
     pub fn get_extended_public_key_of_path(&self, coin: &Coin, derivation_path: &str) -> String {
         if coin.get_xpub().is_none() {
             return "".to_owned();
         }
-        bip32::get_extended_public_key(&self.seed, &derivation_path)
+        bip32::get_extended_public_key(&self.seed, derivation_path)
             .expect("fail to get extended public key")
     }
 }
@@ -98,8 +98,8 @@ mod tests {
             "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
         let invalid_mnemonic =
             "team engine square letter hero song dizzy scrub tornado fabric divert";
-        assert_eq!(Mnemonic::is_valid(&mnemonic), true);
-        assert_eq!(Mnemonic::is_valid(&invalid_mnemonic), false);
+        assert_eq!(Mnemonic::is_valid(mnemonic), true);
+        assert_eq!(Mnemonic::is_valid(invalid_mnemonic), false);
     }
     #[test]
     fn test_create_new_hd_wallet() {
@@ -174,10 +174,10 @@ mod tests {
         let derivation_path2 = "m/44'/60'/0'/0/1";
         let derivation_path3 = "m/44'/60'/0'/0/2";
         let address2 = wallet
-            .get_address_for_coin_of_path(&coin, &derivation_path2)
+            .get_address_for_coin_of_path(&coin, derivation_path2)
             .unwrap();
         let address3 = wallet
-            .get_address_for_coin_of_path(&coin, &derivation_path3)
+            .get_address_for_coin_of_path(&coin, derivation_path3)
             .unwrap();
 
         assert_eq!(address2, "0xD580E17C2aA4Db55b7079059f04241BEa684aB19");

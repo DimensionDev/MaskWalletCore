@@ -50,7 +50,7 @@ impl ToString for EthereumAddress {
             "wanchain" => ChecksumType::WanChain,
             _ => ChecksumType::Eip55,
         };
-        checksum(&self, checksum_type)
+        checksum(self, checksum_type)
     }
 }
 
@@ -68,10 +68,10 @@ mod tests {
 
         let test4 = "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed";
 
-        assert_eq!(EthereumAddress::is_valid(&test1), false);
-        assert_eq!(EthereumAddress::is_valid(&test2), false);
-        assert_eq!(EthereumAddress::is_valid(&test3), false);
-        assert_eq!(EthereumAddress::is_valid(&test4), true);
+        assert!(!EthereumAddress::is_valid(test1));
+        assert!(!EthereumAddress::is_valid(test2));
+        assert!(!EthereumAddress::is_valid(test3));
+        assert!(EthereumAddress::is_valid(test4));
     }
 
     #[test]
@@ -85,7 +85,7 @@ mod tests {
             data: pub_key_data.to_vec(),
         };
         let address = EthereumAddress::new(&public_key, "ethereum");
-        assert_eq!(address.is_ok(), true);
+        assert!(address.is_ok());
         let address_str = address.unwrap().to_string();
         assert_eq!(address_str, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
     }
