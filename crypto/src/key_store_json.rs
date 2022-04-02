@@ -67,9 +67,7 @@ mod tests {
             key_store_json_struct.crypto.cipherparams.iv,
             "83dbcc02d8ccb40e466191a123791e0e"
         );
-        let scrypt_param = match key_store_json_struct.crypto.kdfparams {
-            KdfParams::ScryptParam(param) => param,
-        };
+        let KdfParams::ScryptParam(scrypt_param) = key_store_json_struct.crypto.kdfparams;
         assert_eq!(scrypt_param.n, 262144);
         assert_eq!(scrypt_param.dklen, 32);
         assert_eq!(scrypt_param.r, 1);

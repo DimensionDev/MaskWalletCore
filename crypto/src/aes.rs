@@ -61,17 +61,17 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes128Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes128Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes192Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes192Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes256Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes256Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
         };
@@ -91,17 +91,17 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes128Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes128Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes192Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes192Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes256Ctr::new(&key, &iv).apply_keystream(&mut data_copy)
+                Aes256Ctr::new(key, iv).apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
         };
@@ -121,17 +121,17 @@ mod tests {
         let data = "MaskWallet".as_bytes();
         let key = hex::decode("01020304010203040102030401020304").unwrap();
         let iv = hex::decode("01020304010203040102030401020304").unwrap();
-        let ret = encrypt(&data, &key, &iv, 128).expect("encrypt nopadding data");
+        let ret = encrypt(data, &key, &iv, 128).expect("encrypt nopadding data");
         let ret_hex = ret.encode_hex::<String>();
 
         assert_eq!("f89074571af13f467cd4", ret_hex);
 
         let wrong_len_key = hex::decode("010203040102030401020304").unwrap();
-        let ret = encrypt(&data, &wrong_len_key, &iv, 128);
+        let ret = encrypt(data, &wrong_len_key, &iv, 128);
         assert!(ret.is_err());
 
         let wrong_len_iv = hex::decode("010203040102030401020304").unwrap();
-        let ret = encrypt(&data, &key, &wrong_len_iv, 128);
+        let ret = encrypt(data, &key, &wrong_len_iv, 128);
         assert!(ret.is_err());
     }
 
@@ -151,11 +151,11 @@ mod tests {
         );
 
         let wrong_len_key = hex::decode("010203040102030401020304").unwrap();
-        let ret = decrypt(&data, &wrong_len_key, &iv, 128);
+        let ret = decrypt(data, &wrong_len_key, &iv, 128);
         assert!(ret.is_err());
 
         let wrong_len_iv = hex::decode("010203040102030401020304").unwrap();
-        let ret = decrypt(&data, &key, &wrong_len_iv, 128);
+        let ret = decrypt(data, &key, &wrong_len_iv, 128);
         assert!(ret.is_err());
     }
 }

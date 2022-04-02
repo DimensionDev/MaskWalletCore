@@ -8,7 +8,7 @@ pub struct Hasher;
 
 impl Hasher {
     pub fn hash<T: Hashable>(h: T, input: &[u8]) -> Result<Vec<u8>, Error> {
-        h.hash(&input)
+        h.hash(input)
     }
 }
 
@@ -17,7 +17,7 @@ impl Hashable for Keccak256 {
     fn hash(&self, input: &[u8]) -> Result<Vec<u8>, Error> {
         use tiny_keccak::{Hasher as KeccakHasher, Keccak};
         let mut hasher = Keccak::v256();
-        hasher.update(&input);
+        hasher.update(input);
         let mut output = [0u8; 32];
         hasher.finalize(&mut output);
         Ok(output.to_vec())
@@ -27,7 +27,7 @@ impl Hashable for Keccak256 {
 /* Helper hash functions */
 pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
     use tiny_keccak::{Hasher as KeccakHasher, Keccak};
-    let result = [&derived_key, encrypted_text].concat();
+    let result = [derived_key, encrypted_text].concat();
     let mut hasher = Keccak::v256();
     hasher.update(&result);
     let mut output = [0u8; 32];
@@ -37,7 +37,7 @@ pub fn compute_mac(derived_key: &[u8], encrypted_text: &[u8]) -> Vec<u8> {
 
 pub fn dsha256(input: &[u8]) -> Vec<u8> {
     use sha2::{ Digest, Sha256 };
-    Sha256::digest(&Sha256::digest(&input)).to_vec()
+    Sha256::digest(&Sha256::digest(input)).to_vec()
 }
 
 #[cfg(test)]

@@ -80,7 +80,7 @@ impl HdNode {
 
 pub fn get_extended_public_key(seed: &[u8], path: &str) -> Result<String, Error> {
     let extended_master_key =
-        ExtendedPrivKey::new_master(Network::Bitcoin, &seed).map_err(|_| Error::InvalidSeed)?;
+        ExtendedPrivKey::new_master(Network::Bitcoin, seed).map_err(|_| Error::InvalidSeed)?;
     let derivation_path =
         DerivationPath::from_str(path).map_err(|_| Error::InvalidDerivationpath)?;
     let extended_private_key = extended_master_key
@@ -113,7 +113,7 @@ mod tests {
 
         let derivation_path = "m/0'/1/2'/2";
         let curve = Curve::Secp256k1;
-        let node = HdNode::get_node(&seed_bytes, &derivation_path, curve).unwrap();
+        let node = HdNode::get_node(&seed_bytes, derivation_path, curve).unwrap();
         assert_eq!(node.depth, 4);
         assert_eq!(node.child_num, 2);
 

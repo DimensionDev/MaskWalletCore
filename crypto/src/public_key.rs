@@ -61,7 +61,7 @@ struct Ed25519Converter;
 
 impl PublicKeyConvert for Ed25519Converter {
     fn convert(&self, private_key: &[u8]) -> Result<Vec<u8>, Error> {
-        let secret_key = ed25519_dalek::SecretKey::from_bytes(&private_key)
+        let secret_key = ed25519_dalek::SecretKey::from_bytes(private_key)
             .map_err(|_| Error::InvalidPrivateKey)?;
         let pub_key = ed25519_dalek::PublicKey::from(&secret_key);
         Ok(pub_key.to_bytes().to_vec())
@@ -76,7 +76,7 @@ struct PublickKeyConvertter;
 
 impl PublickKeyConvertter {
     fn convert<T: PublicKeyConvert>(g: T, private_key: &[u8]) -> Result<Vec<u8>, Error> {
-        g.convert(&private_key)
+        g.convert(private_key)
     }
 }
 

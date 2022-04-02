@@ -114,9 +114,9 @@ mod tests {
         let path4_str = "m/44'/60'/0'/0/2";
         let path4 = DerivationPath::new(path4_str).unwrap();
 
-        assert_eq!(path1 != path2, true);
-        assert_eq!(path2 == path3, true);
-        assert_eq!(path1 != path3, true);
-        assert_eq!(path3 != path4, true);
+        assert!(path1 != path2);
+        assert!(path2 == path3);
+        assert!(path1 != path3);
+        assert!(path3 != path4);
     }
 }
