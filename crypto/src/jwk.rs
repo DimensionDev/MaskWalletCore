@@ -1,7 +1,7 @@
+use super::bip39::Mnemonic;
 use super::{curve::Curve, Error};
 
 use base64::{encode_config, STANDARD_NO_PAD, URL_SAFE_NO_PAD};
-use bip39::Mnemonic;
 pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 use bitcoin::{network::constants::Network, util::bip32::ExtendedPrivKey};
 use secp256k1::Secp256k1;
@@ -11,7 +11,7 @@ use std::{convert::Into, str::FromStr};
 #[derive(Default, Clone, Debug)]
 pub struct JWK {
     pub crv: String,
-    pub identifier: Option<String>,
+    pub identifier: String,
     pub ext: bool,
     pub x: String,
     pub y: String,
@@ -22,14 +22,14 @@ pub struct JWK {
 
 impl JWK {
     pub fn derive_on(
-        mnemonic: &str,
+        mnemonic_str: &str,
         password: &str,
         path: &str,
         curve: Curve,
     ) -> Result<JWK, Error> {
         match curve {
             Curve::Ed25519 => {
-                let seed = Self::derive_seed(mnemonic, password)?;
+                let seed = Mnemonic::derive_seed(mnemonic_str, password)?;
                 let path = ed25519_dalek_bip32::DerivationPath::from_str(path)
                     .map_err(|_| Error::InvalidDerivationpath)?;
 
@@ -50,7 +50,7 @@ impl JWK {
 
                 Ok(JWK {
                     crv: "ed25519".to_string(),
-                    identifier: Option::Some(format!("ec_key:ed25519/{:}", identifier)),
+                    identifier: format!("ec_key:ed25519/{:}", identifier),
                     ext: true,
                     x: "".into(),
                     y: "".into(),
@@ -61,7 +61,7 @@ impl JWK {
             }
 
             Curve::Secp256k1 => {
-                let seed = Self::derive_seed(mnemonic, password)?;
+                let seed = Mnemonic::derive_seed(mnemonic_str, password)?;
 
                 let sk = ExtendedPrivKey::new_master(Network::Bitcoin, &seed)
                     .map_err(|_| Error::InvalidCiphertext)?;
@@ -94,7 +94,7 @@ impl JWK {
 
                 Ok(JWK {
                     crv: "K-256".to_string(),
-                    identifier: Option::Some(format!("ec_key:secp256k1/{:}", identifier)),
+                    identifier: format!("ec_key:secp256k1/{:}", identifier),
                     ext: true,
                     x: pubx_string,
                     y: puby_string,
@@ -107,13 +107,6 @@ impl JWK {
             _ => Err(Error::NotSupportedCurve),
         }
     }
-
-    fn derive_seed(mnemonic: &str, password: &str) -> Result<Vec<u8>, Error> {
-        let mnemonic = Mnemonic::parse_normalized(&mnemonic.to_lowercase())?;
-        let seed = mnemonic.to_seed_normalized(password).to_vec();
-
-        Ok(seed)
-    }
 }
 
 #[cfg(test)]
@@ -125,18 +118,18 @@ mod test {
     fn secp256k1_derive_test() {
         for suit in vec![Sec256k1::bulk_suit(), Sec256k1::doss_suit()] {
             let jwk = JWK::derive_on(suit.mnemonic_str, "", suit.path_str, Curve::Secp256k1);
-            assert_eq!(jwk.is_ok(), true);
+            assert!(jwk.is_ok());
             let jwk = jwk.unwrap();
             assert_eq!(suit.pub_x, jwk.x);
             assert_eq!(suit.pub_y, jwk.y);
-            assert_eq!(suit.compressed_point, jwk.identifier.unwrap());
+            assert_eq!(suit.compressed_point, jwk.identifier);
         }
     }
 
     #[test]
     fn test_path_slice() {
         let path = "m/44'/60'/0'/0/0";
-        let paths = path.split("/").collect::<Vec<&str>>();
+        let paths = path.split('/').collect::<Vec<&str>>();
         assert_eq!(paths, vec!["m", "44'", "60'", "0'", "0", "0"]);
     }
 

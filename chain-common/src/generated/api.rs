@@ -378,8 +378,8 @@ pub struct PersonaGenerationParam {
     pub password: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub path: ::prost::alloc::string::String,
-    #[prost(enumeration="persona_generation_param::Curve", optional, tag="4")]
-    pub curve: ::core::option::Option<i32>,
+    #[prost(enumeration="persona_generation_param::Curve", tag="4")]
+    pub curve: i32,
     #[prost(message, optional, tag="5")]
     pub option: ::core::option::Option<EncryptOption>,
 }
@@ -394,8 +394,8 @@ pub mod persona_generation_param {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PersonaGenerationResp {
-    #[prost(string, optional, tag="1")]
-    pub identifier: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="1")]
+    pub identifier: ::prost::alloc::string::String,
     #[prost(message, optional, tag="2")]
     pub private_key: ::core::option::Option<JwkResp>,
     #[prost(message, optional, tag="3")]
@@ -407,8 +407,8 @@ pub struct PersonaGenerationResp {
 pub struct JwkResp {
     #[prost(string, tag="1")]
     pub crv: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="2")]
-    pub identifier: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="2")]
+    pub identifier: ::prost::alloc::string::String,
     #[prost(bool, tag="3")]
     pub ext: bool,
     #[prost(string, tag="4")]
