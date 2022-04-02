@@ -30,7 +30,7 @@ impl Signer {
                     .sign_recoverable(
                         &secp256k1::Message::from_slice(&hash)
                             .map_err(|_| Error::InvalidSignInput)?,
-                        &secrect_key,
+                        secrect_key,
                     )
                     .serialize_compact();
                 let mut r = signature[0..32].to_vec();
@@ -69,7 +69,7 @@ impl Signer {
                     .sign_recoverable(
                         &secp256k1::Message::from_slice(&hash)
                             .map_err(|_| Error::InvalidSignInput)?,
-                        &secrect_key,
+                        secrect_key,
                     )
                     .serialize_compact();
                 let mut r = signature[0..32].to_vec();
@@ -99,7 +99,7 @@ mod tests {
     use super::*;
     use chain_common::ethereum::SignInput;
     use chain_common::private_key::PrivateKey;
-    use hex;
+
     use std::convert::TryFrom;
     use std::str::FromStr;
     #[test]
@@ -194,7 +194,7 @@ mod tests {
         )
         .unwrap();
         let sign_error = Signer::sign(&private_key, &input);
-        assert_eq!(sign_error.is_err(), true);
+        assert!(sign_error.is_err());
         assert_eq!(sign_error.err().unwrap(), Error::InvalidSignInput);
     }
 

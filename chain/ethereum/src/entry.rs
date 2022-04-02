@@ -25,7 +25,7 @@ impl Entry for EthereumEntry {
     }
 
     fn validate_address(&self, address: &str) -> bool {
-        EthereumAddress::is_valid(&address)
+        EthereumAddress::is_valid(address)
     }
 
     fn derive_address(
@@ -50,7 +50,7 @@ impl Entry for EthereumEntry {
             Err(_) => return Err(Error::InvalidPrivateKey),
         };
         let output =
-            Signer::sign(&private_key, &sign_input).map_err(|_| Error::InvalidPrivateKey)?;
+            Signer::sign(private_key, &sign_input).map_err(|_| Error::InvalidPrivateKey)?;
 
         let mut buf = BytesMut::with_capacity(output.encoded_len());
         output

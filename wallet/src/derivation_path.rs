@@ -20,7 +20,7 @@ impl DerivationPath {
             let child_str: &str;
             let hardened = child.ends_with('\'');
             if hardened {
-                child_str = child.strip_suffix("'").unwrap();
+                child_str = child.strip_suffix('\'').unwrap();
             } else {
                 child_str = child;
             }
@@ -48,7 +48,7 @@ impl ToString for DerivationPath {
             path.push('/');
         });
         if path.ends_with('/') {
-            path.strip_suffix("/").unwrap().to_owned()
+            path.strip_suffix('/').unwrap().to_owned()
         } else {
             path
         }
@@ -90,29 +90,29 @@ mod tests {
     fn test_derivation_path_parse() {
         let invalid_test_path_str = "m/m44'/60'/0'/0/0";
         assert_eq!(
-            DerivationPath::new(&invalid_test_path_str).unwrap_err(),
+            DerivationPath::new(invalid_test_path_str).unwrap_err(),
             Error::CryptoError(CryptoError::InvalidDerivationpath)
         );
 
         let test_path_str = "m/44'/60'/0'/0/0";
         let derivation_path =
-            DerivationPath::new(&test_path_str).expect("fail to parse test derivation path str");
+            DerivationPath::new(test_path_str).expect("fail to parse test derivation path str");
         assert_eq!(derivation_path.to_string(), test_path_str);
     }
 
     #[test]
     fn test_derivation_path_eq() {
         let path1_str = "m/44'/60'/0'/0/0";
-        let path1 = DerivationPath::new(&path1_str).unwrap();
+        let path1 = DerivationPath::new(path1_str).unwrap();
 
         let path2_str = "m/44'/60'/0'/0/1";
-        let path2 = DerivationPath::new(&path2_str).unwrap();
+        let path2 = DerivationPath::new(path2_str).unwrap();
 
         let path3_str = "m/44'/60'/0'/0/1";
-        let path3 = DerivationPath::new(&path3_str).unwrap();
+        let path3 = DerivationPath::new(path3_str).unwrap();
 
         let path4_str = "m/44'/60'/0'/0/2";
-        let path4 = DerivationPath::new(&path4_str).unwrap();
+        let path4 = DerivationPath::new(path4_str).unwrap();
 
         assert_eq!(path1 != path2, true);
         assert_eq!(path2 == path3, true);

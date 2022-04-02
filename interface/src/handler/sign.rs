@@ -50,7 +50,7 @@ pub fn sign_transaction(param: SignTransactionParam) -> MwResponse {
         }
     };
     let sign_output = match stored_key.sign(
-        &coin,
+        coin,
         &param.password,
         &param.derivation_path,
         &encoded_input,

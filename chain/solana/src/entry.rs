@@ -17,7 +17,7 @@ impl Entry for SolanaEntry {
     }
 
     fn validate_address(&self, address: &str) -> bool {
-        SolanaAddress::is_valid(&address)
+        SolanaAddress::is_valid(address)
     }
 
     fn derive_address(

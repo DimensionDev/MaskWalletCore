@@ -9,9 +9,9 @@ use std::{
     process::Command,
 };
 
-pub(crate) const LIB_NAME: &'static str = "libmask_wallet_core_mobile";
-pub(crate) const FRAMEWORK: &'static str = "MaskWalletCoreMobile";
-pub(crate) const WASM: &'static str = "libmask_wallet_core_wasm";
+pub(crate) const LIB_NAME: &str = "libmask_wallet_core_mobile";
+pub(crate) const FRAMEWORK: &str = "MaskWalletCoreMobile";
+pub(crate) const WASM: &str = "libmask_wallet_core_wasm";
 
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone)]
@@ -39,7 +39,7 @@ pub(crate) fn current_dir_for_cli(_platform: &Platform) -> Result<PathBuf> {
         }
     }
 
-    Ok(current_dir.join(format!("cli")))
+    Ok(current_dir.join("cli".to_string()))
 }
 
 #[inline]
@@ -61,8 +61,8 @@ pub(crate) fn build_command_excute_path(platform: &Platform) -> Result<PathBuf> 
     }
 
     current_dir = match platform {
-        Platform::iOS => current_dir.join(format!("target-mobile")),
-        Platform::Wasm => current_dir.join(format!("target-wasm")),
+        Platform::iOS => current_dir.join("target-mobile".to_string()),
+        Platform::Wasm => current_dir.join("target-wasm".to_string()),
     };
 
     Ok(current_dir)
@@ -126,8 +126,8 @@ pub async fn write_header(target: PathBuf, platform: Platform) -> Result<()> {
 
 /// copy the files under `from` path recursively
 pub async fn dir_copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V) -> Result<()> {
-    let mut stack = Vec::new();
-    stack.push(PathBuf::from(from.as_ref()));
+    let path = PathBuf::from(from.as_ref());
+    let mut stack = vec![path];
 
     let output_root = PathBuf::from(to.as_ref());
     let input_root = PathBuf::from(from.as_ref()).components().count();
@@ -196,7 +196,7 @@ pub async fn generate_protobuf_files(output: PathBuf) -> Result<()> {
 
     env::set_current_dir(&protos_path)?;
     let _sh_result = Command::new("sh")
-        .arg(script_path.to_owned())
+        .arg(script_path)
         .arg("--push")
         .arg("false")
         .spawn()?

@@ -31,7 +31,7 @@ impl PublicKey {
     }
 
     pub fn new(r#type: PublicKeyType, data: &[u8]) -> Result<Self, CryptoError> {
-        if !Self::is_valid_data(&data, &r#type) {
+        if !Self::is_valid_data(data, &r#type) {
             return Err(CryptoError::InvalidPublicKey);
         }
         Ok(PublicKey {
@@ -51,6 +51,6 @@ impl PublicKey {
             false => 0,
         };
         let hash = hasher.hash(&self.data[offset..])?;
-        Ok([&prefix, &hash[..]].concat())
+        Ok([prefix, &hash[..]].concat())
     }
 }

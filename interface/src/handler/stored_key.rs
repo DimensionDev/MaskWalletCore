@@ -9,7 +9,7 @@ pub fn load_stored_keys(param: LoadStoredKeyParam) -> MwResponse {
     let stored_keys_result: Result<Vec<StoredKey>, _> = param
         .data
         .iter()
-        .map(|json| serde_json::from_slice(&json))
+        .map(|json| serde_json::from_slice(json))
         .collect();
     match stored_keys_result {
         Ok(stored_keys) => MwResponse {
@@ -50,7 +50,7 @@ pub fn create_stored_key_with_private_key(param: ImportPrivateStoredKeyParam) ->
         }
     };
     let stored_key =
-        StoredKey::create_with_private_key_and_coin(&param.password, &param.private_key, &coin);
+        StoredKey::create_with_private_key_and_coin(&param.password, &param.private_key, coin);
     match stored_key {
         Ok(key) => MwResponse {
             response: Some(Response::RespImportPrivateKey(ImportPrivateStoredKeyResp {
@@ -301,7 +301,7 @@ pub fn get_supported_import_types(param: GetKeyStoreSupportImportTypeParam) -> M
             };
         }
     };
-    let entry = match CoinDispatcher::get_entry(&coin) {
+    let entry = match CoinDispatcher::get_entry(coin) {
         Ok(entry) => entry,
         Err(error) => {
             return get_error_response_by_error(error);
@@ -332,7 +332,7 @@ pub fn get_supported_export_types(param: GetKeyStoreSupportExportTypeParam) -> M
             };
         }
     };
-    let entry = match CoinDispatcher::get_entry(&coin) {
+    let entry = match CoinDispatcher::get_entry(coin) {
         Ok(entry) => entry,
         Err(error) => {
             return get_error_response_by_error(error);
