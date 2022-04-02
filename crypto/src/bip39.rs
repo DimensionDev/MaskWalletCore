@@ -74,16 +74,15 @@ mod tests {
     #[test]
     fn test_generate_new_mnenomic() {
         let mnemonic = Mnemonic::generate(12, "").unwrap();
-        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
+        assert!(Mnemonic::is_valid(&mnemonic.words));
 
         let mnemonic = Mnemonic::generate(18, "").unwrap();
-        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
+        assert!(Mnemonic::is_valid(&mnemonic.words));
 
         let mnemonic = Mnemonic::generate(24, "").unwrap();
-        assert_eq!(Mnemonic::is_valid(&mnemonic.words), true);
-
-        assert_eq!(Mnemonic::generate(25, "").is_err(), true);
-        assert_eq!(Mnemonic::generate(11, "").is_err(), true);
+        assert!(Mnemonic::is_valid(&mnemonic.words));
+        assert!(Mnemonic::generate(25, "").is_err());
+        assert!(Mnemonic::generate(11, "").is_err());
     }
 
     #[test]
@@ -92,14 +91,14 @@ mod tests {
             "Depth bachelor empower life rapid album medal royal gorilla grace impact build";
         let test_mnemonic_jpn = "ぐこう　いわい　けんすう　そまつ　にっさん　あわてる　たたかう　のこぎり　じてん　しねん　ずほう　えんしゅう";
         let test_mnemonic_chn = "育 内 充 敢 炭 说 旗 伦 茶 硫 亮 农";
-        let is_valid_eng = Mnemonic::is_valid(&test_mnemonic_eng);
-        let is_valid_jpn = Mnemonic::is_valid(&test_mnemonic_jpn);
-        let is_valid_chn = Mnemonic::is_valid(&test_mnemonic_chn);
-        assert_eq!(is_valid_eng, true);
-        assert_eq!(is_valid_jpn, true);
-        assert_eq!(is_valid_chn, true);
+        let is_valid_eng = Mnemonic::is_valid(test_mnemonic_eng);
+        let is_valid_jpn = Mnemonic::is_valid(test_mnemonic_jpn);
+        let is_valid_chn = Mnemonic::is_valid(test_mnemonic_chn);
+        assert!(is_valid_eng);
+        assert!(is_valid_jpn);
+        assert!(is_valid_chn);
 
-        let mnemonic_eng = Mnemonic::new(&test_mnemonic_eng, "password1").unwrap();
+        let mnemonic_eng = Mnemonic::new(test_mnemonic_eng, "password1").unwrap();
         assert_eq!(mnemonic_eng.words, test_mnemonic_eng.to_lowercase());
     }
 }

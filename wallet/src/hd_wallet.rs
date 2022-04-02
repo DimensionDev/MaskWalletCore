@@ -98,34 +98,25 @@ mod tests {
             "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
         let invalid_mnemonic =
             "team engine square letter hero song dizzy scrub tornado fabric divert";
-        assert_eq!(Mnemonic::is_valid(mnemonic), true);
-        assert_eq!(Mnemonic::is_valid(invalid_mnemonic), false);
+        assert!(Mnemonic::is_valid(mnemonic));
+        assert!(!Mnemonic::is_valid(invalid_mnemonic));
     }
     #[test]
     fn test_create_new_hd_wallet() {
         let word_count = 12;
         let wallet = HdWallet::new(word_count, "").unwrap();
-        assert_eq!(
-            wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(),
-            word_count as usize
-        );
-        assert_eq!(Mnemonic::is_valid(&wallet.mnemonic), true);
+        assert_eq!(wallet.mnemonic.split(' ').count(), word_count as usize);
+        assert!(Mnemonic::is_valid(&wallet.mnemonic));
 
         let word_count = 18;
         let wallet = HdWallet::new(word_count, "").unwrap();
-        assert_eq!(
-            wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(),
-            word_count as usize
-        );
-        assert_eq!(Mnemonic::is_valid(&wallet.mnemonic), true);
+        assert_eq!(wallet.mnemonic.split(' ').count(), word_count as usize);
+        assert!(Mnemonic::is_valid(&wallet.mnemonic));
 
         let word_count = 24;
         let wallet = HdWallet::new(word_count, "").unwrap();
-        assert_eq!(
-            wallet.mnemonic.split(' ').collect::<Vec<&str>>().len(),
-            word_count as usize
-        );
-        assert_eq!(Mnemonic::is_valid(&wallet.mnemonic), true);
+        assert_eq!(wallet.mnemonic.split(' ').count(), word_count as usize);
+        assert!(Mnemonic::is_valid(&wallet.mnemonic));
     }
 
     #[test]

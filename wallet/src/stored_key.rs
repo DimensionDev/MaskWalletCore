@@ -420,7 +420,7 @@ mod tests {
                 password,
             )
             .unwrap();
-        assert_eq!(stored_key.r#type == StoredKeyType::Mnemonic, true);
+        assert!(stored_key.r#type == StoredKeyType::Mnemonic);
         let decrypted = stored_key.payload.decrypt(password.as_bytes()).unwrap();
         assert_eq!(&decrypted, mnemonic.as_bytes());
         assert_eq!(
@@ -473,13 +473,9 @@ mod tests {
         };
         let key_store_json_password = "Maskbook123";
         let stored_key_password = "password";
-        let mut stored_key = StoredKey::create_with_json(
-            key_store_json_password,
-            stored_key_password,
-            json,
-            &coin,
-        )
-        .unwrap();
+        let mut stored_key =
+            StoredKey::create_with_json(key_store_json_password, stored_key_password, json, &coin)
+                .unwrap();
         let account = stored_key
             .add_new_account_of_coin_and_derivation_path_by_password(
                 "mask",
@@ -569,7 +565,7 @@ mod tests {
         assert_eq!(mnemonic1, mnemonic2);
 
         let failed = stored_key1.export_mnemonic(password1);
-        assert_eq!(failed.is_err(), true);
+        assert!(failed.is_err());
     }
 
     #[test]
