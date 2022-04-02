@@ -2,8 +2,8 @@ use std::convert::{From, TryFrom};
 use std::str::FromStr;
 
 use crate::generated::api::{
-    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve,
-    MwResponse, MwResponseError,
+    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve, MwResponse,
+    MwResponseError,
 };
 use crypto::Error as CryptoError;
 
@@ -89,8 +89,8 @@ impl TryFrom<Option<i32>> for Curve {
         match s {
             Some(s) => Curve::try_from(s),
             None => Err(MwResponseError {
-                error_code: "-1".to_owned(),
-                error_msg: format!("empty curve type"),
+                error_code: "-1".to_string(),
+                error_msg: "empty curve type".to_string(),
             }),
         }
     }

@@ -12,10 +12,7 @@ pub fn generate_persona(param: &PersonaGenerationParam) -> MwResponse {
 }
 
 fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, MwResponseError> {
-    let option = param
-        .option
-        .clone()
-        .ok_or_else(|| Error::NotSupportedCipher)?;
+    let option = param.option.clone().ok_or(Error::NotSupportedCipher)?;
     let version = option.version.try_into()?;
 
     // currently only support v37
@@ -24,7 +21,6 @@ fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, Mw
     }
 
     let curve = param.curve.try_into();
-
     let jwk = match curve {
         Ok(Curve::Secp256k1) => JWK::derive_on(
             &param.mnemonic,
@@ -39,7 +35,7 @@ fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, Mw
             crypto::curve::Curve::Ed25519,
         ),
 
-        _ => Err(Error::NotSupportedCurve),
+        Err(e) => return Err(e),
     }?;
 
     Ok(Response::RespGeneratePersona(
@@ -57,9 +53,9 @@ impl JWKWrapper {
 
         PersonaGenerationResp {
             identifier: self.0.identifier,
-            private_key: Some(private_key),
-            public_key: Some(public_key),
-            option: option,
+            private_key: private_key,
+            public_key: public_key,
+            option,
         }
     }
 
@@ -67,7 +63,7 @@ impl JWKWrapper {
         JwkResp {
             crv: self.0.crv.clone(),
             identifier: self.0.identifier.clone(),
-            ext: self.0.ext.clone(),
+            ext: self.0.ext,
             x: self.0.x.clone(),
             y: self.0.y.clone(),
             key_ops: self.0.key_ops.clone(),

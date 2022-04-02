@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
+pub use bip39::Error as BIP39Error;
 use bip39::Language;
-pub use bip39::{Error as BIP39Error, Mnemonic as CryptoMnemonic};
+use bip39::Mnemonic as CryptoMnemonic;
 
 use super::number_util::random_iv;
 use crate::Error;
@@ -57,6 +58,13 @@ impl Mnemonic {
 
     pub fn is_valid(mnemonic: &str) -> bool {
         CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase()).is_ok()
+    }
+
+    pub fn derive_seed(mnemonic: &str, password: &str) -> Result<Vec<u8>, Error> {
+        let mnemonic = CryptoMnemonic::parse_normalized(&mnemonic.to_lowercase())?;
+        let seed = mnemonic.to_seed_normalized(password).to_vec();
+
+        Ok(seed)
     }
 }
 
