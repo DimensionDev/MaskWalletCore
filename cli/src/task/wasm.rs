@@ -8,8 +8,8 @@ impl TaskBuilder {
         let cli_path = current_dir_for_cli(&Platform::iOS)?;
 
         TaskBuilder::new()
-            .task(Task::PrepareCliDir(Platform::Wasm))
-            .task(Task::Command {
+            .task(CliTask::PrepareCliDir(Platform::Wasm))
+            .task(CliTask::Command {
                 name: "cargo".to_owned(),
                 args: ["build", "--release"]
                     .into_iter()
@@ -17,7 +17,7 @@ impl TaskBuilder {
                     .collect(),
                 excute_path: build_command_excute_path(&Platform::Wasm)?.into(),
             })
-            .task(Task::CopyFile {
+            .task(CliTask::CopyFile {
                 from: cli_path
                     .parent()
                     .unwrap()
@@ -27,7 +27,7 @@ impl TaskBuilder {
                     .unwrap()
                     .join(format!("output/wasm/{:}.{:}", WASM, "dylib")),
             })
-            .task(Task::CopyFile {
+            .task(CliTask::CopyFile {
                 from: cli_path
                     .parent()
                     .unwrap()

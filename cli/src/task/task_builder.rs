@@ -10,7 +10,7 @@ use tokio::task::JoinHandle;
 use super::*;
 
 pub struct TaskBuilder {
-    pub tasks: Vec<Task>,
+    pub tasks: Vec<CliTask>,
 }
 
 impl TaskBuilder {
@@ -18,7 +18,7 @@ impl TaskBuilder {
         Self { tasks: vec![] }
     }
 
-    pub fn task(mut self, task: Task) -> Self {
+    pub fn task(mut self, task: CliTask) -> Self {
         self.tasks.push(task);
         self
     }
@@ -26,11 +26,11 @@ impl TaskBuilder {
 
 impl TaskBuilder {
     pub async fn run(&self) -> Result<()> {
-        fn spawn_handle_for(task: Task) -> JoinHandle<Result<()>> {
+        fn spawn_handle_for(task: CliTask) -> JoinHandle<Result<()>> {
             match task {
-                Task::PrepareCliDir(platform) => tokio::spawn(prepare_output_dir(platform)),
+                CliTask::PrepareCliDir(platform) => tokio::spawn(prepare_output_dir(platform)),
 
-                Task::CopyDir { from, to } => tokio::spawn(async {
+                CliTask::CopyDir { from, to } => tokio::spawn(async {
                     if !to.exists() {
                         create_dir_all(to.clone())?;
                     }
@@ -40,7 +40,7 @@ impl TaskBuilder {
                     Ok(())
                 }),
 
-                Task::CreateDir { path, recursive } => tokio::spawn(async move {
+                CliTask::CreateDir { path, recursive } => tokio::spawn(async move {
                     if recursive {
                         create_dir_all(path)?;
                     } else {
@@ -50,17 +50,17 @@ impl TaskBuilder {
                     Ok(())
                 }),
 
-                Task::RemoveDirAll(path) => tokio::spawn(async move {
+                CliTask::RemoveDirAll(path) => tokio::spawn(async move {
                     remove_dir_all(path)?;
                     Ok(())
                 }),
 
-                Task::CopyFile { from, to } => tokio::spawn(async {
+                CliTask::CopyFile { from, to } => tokio::spawn(async {
                     copy(from, to)?;
                     Ok(())
                 }),
 
-                Task::Command {
+                CliTask::Command {
                     name,
                     args,
                     excute_path,
@@ -85,7 +85,7 @@ impl TaskBuilder {
                     Ok(())
                 }),
 
-                Task::WriteDotHHeader { to, platform } => tokio::spawn(write_header(to, platform)),
+                CliTask::WriteDotHHeader { to, platform } => tokio::spawn(write_header(to, platform)),
             }
         }
 

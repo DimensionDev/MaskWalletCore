@@ -5,7 +5,7 @@ use super::*;
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 #[non_exhaustive]
-pub enum Task {
+pub enum CliTask {
     PrepareCliDir(Platform),
     CreateDir {
         path: PathBuf,

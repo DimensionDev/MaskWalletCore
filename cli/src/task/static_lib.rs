@@ -6,9 +6,9 @@ impl TaskBuilder {
     pub async fn static_lib() -> Result<()> {
         let cli_path = current_dir_for_cli(&Platform::iOS)?;
         TaskBuilder::new()
-            .task(Task::PrepareCliDir(Platform::iOS))
+            .task(CliTask::PrepareCliDir(Platform::iOS))
             // generate header file at output path
-            .task(Task::WriteDotHHeader {
+            .task(CliTask::WriteDotHHeader {
                 to: cli_path
                     .parent()
                     .unwrap()
@@ -16,7 +16,7 @@ impl TaskBuilder {
                 platform: Platform::iOS,
             })
             // build static lib
-            .task(Task::Command {
+            .task(CliTask::Command {
                 name: "cargo".to_string(),
                 args: ["lipo", "--release"]
                     .into_iter()
@@ -24,7 +24,7 @@ impl TaskBuilder {
                     .collect(),
                 excute_path: Option::None,
             })
-            .task(Task::CopyFile {
+            .task(CliTask::CopyFile {
                 from: cli_path
                     .parent()
                     .unwrap()
@@ -35,11 +35,11 @@ impl TaskBuilder {
                     .join(format!("output/ios/{:}.a", LIB_NAME)),
             })
             // protobuf files
-            .task(Task::CreateDir {
+            .task(CliTask::CreateDir {
                 path: cli_path.parent().unwrap().join("output/ios/proto/sign"),
                 recursive: true,
             })
-            .task(Task::Command {
+            .task(CliTask::Command {
                 name: "sh".to_string(),
                 args: [
                     cli_path
