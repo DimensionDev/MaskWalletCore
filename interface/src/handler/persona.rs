@@ -48,18 +48,18 @@ struct JWKWrapper(JWK);
 
 impl JWKWrapper {
     fn resp(self, option: Option<EncryptOption>) -> PersonaGenerationResp {
-        let private_key = self.to_jwkresp(true);
-        let public_key = self.to_jwkresp(false);
+        let private_key = self.as_private_key();
+        let public_key = self.as_public_key();
 
         PersonaGenerationResp {
             identifier: self.0.identifier,
-            private_key: private_key,
-            public_key: public_key,
+            private_key: Some(private_key),
+            public_key: Some(public_key),
             option,
         }
     }
 
-    fn to_jwkresp(&self, include_d: bool) -> JwkResp {
+    fn as_public_key(&self) -> JwkResp {
         JwkResp {
             crv: self.0.crv.clone(),
             identifier: self.0.identifier.clone(),
@@ -68,7 +68,20 @@ impl JWKWrapper {
             y: self.0.y.clone(),
             key_ops: self.0.key_ops.clone(),
             kty: self.0.kty.clone(),
-            d: if include_d { self.0.d.clone() } else { None },
+            d: None,
+        }
+    }
+
+    fn as_private_key(&self) -> JwkResp {
+        JwkResp {
+            crv: self.0.crv.clone(),
+            identifier: self.0.identifier.clone(),
+            ext: self.0.ext,
+            x: self.0.x.clone(),
+            y: self.0.y.clone(),
+            key_ops: self.0.key_ops.clone(),
+            kty: self.0.kty.clone(),
+            d: self.0.d.clone(),
         }
     }
 }
