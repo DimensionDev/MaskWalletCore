@@ -40,10 +40,15 @@ impl ToString for AesType {
 
 pub mod ctr {
     use aes::cipher::generic_array::GenericArray;
-    use aes::cipher::{NewCipher, StreamCipher};
-    use aes::{Aes128Ctr, Aes192Ctr, Aes256Ctr};
+    use aes::cipher::{KeyIvInit, StreamCipher};
+    use aes::{Aes128, Aes192, Aes256};
+    use ctr::Ctr128BE;
 
     use crate::Error;
+
+    type Aes128Ctr128BE = Ctr128BE<Aes128>;
+    type Aes192Ctr128BE = Ctr128BE<Aes192>;
+    type Aes256Ctr128BE = Ctr128BE<Aes256>;
 
     type CryptoResult<T> = Result<T, Error>;
 
@@ -61,17 +66,20 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes128Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes128Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes192Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes192Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes256Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes256Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
         };
@@ -91,17 +99,20 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes128Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes128Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes192Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes192Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                Aes256Ctr::new(key, iv).apply_keystream(&mut data_copy)
+                let mut cipher = Aes256Ctr128BE::new(&key, &iv);
+                cipher.apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
         };
