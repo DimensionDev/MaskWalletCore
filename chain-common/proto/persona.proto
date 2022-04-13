@@ -27,7 +27,6 @@ message PersonaGenerationResp {
 
 message JWKResp {
     string crv = 1;
-    string identifier = 2;
     bool ext = 3;
     string x = 4;
     string y = 5;
