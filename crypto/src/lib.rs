@@ -13,6 +13,7 @@ pub mod bip39;
 pub mod number_util;
 
 pub mod jwk;
+pub mod pbkdf2;
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {

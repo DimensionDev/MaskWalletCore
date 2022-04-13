@@ -1,9 +1,9 @@
 use super::curve::Curve;
 use crate::Error;
+use bitcoin::secp256k1::Secp256k1;
 use bitcoin::util::bip32::{ChildNumber, DerivationPath, ExtendedPrivKey, ExtendedPubKey};
 use bitcoin::Network;
 use ed25519_dalek_bip32;
-use secp256k1::Secp256k1;
 use std::convert::TryInto;
 use std::str::FromStr;
 
@@ -97,10 +97,10 @@ pub fn get_extended_public_key(seed: &[u8], path: &str) -> Result<String, Error>
 mod tests {
     use crate::bip32::HdNode;
     use crate::curve::Curve;
+    use bitcoin::secp256k1::Secp256k1;
     use bitcoin::util::bip32::{DerivationPath, ExtendedPrivKey};
     use bitcoin::Network;
     use hex;
-    use secp256k1::Secp256k1;
     use std::str::FromStr;
     #[test]
     fn test_derive_from_seed() {

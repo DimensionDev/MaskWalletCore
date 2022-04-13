@@ -2,9 +2,9 @@ use super::bip39::Mnemonic;
 use super::{curve::Curve, Error};
 
 use base64::{encode_config, STANDARD_NO_PAD, URL_SAFE_NO_PAD};
+use bitcoin::secp256k1::Secp256k1;
 pub use bitcoin::util::bip32::{DerivationPath, Error as BIP32Error};
 use bitcoin::{network::constants::Network, util::bip32::ExtendedPrivKey};
-use secp256k1::Secp256k1;
 
 use std::{convert::Into, str::FromStr};
 
@@ -105,6 +105,27 @@ impl JWK {
             }
 
             _ => Err(Error::NotSupportedCurve),
+        }
+    }
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct AesJWK {
+    pub alg: String,
+    pub ext: bool,
+    pub k: String,
+    pub key_ops: Vec<String>,
+    pub kty: String,
+}
+
+impl AesJWK {
+    pub fn new(key: &[u8]) -> Self {
+        Self {
+            alg: "A256GCM".to_string(),
+            ext: true,
+            k: encode_config(&key, URL_SAFE_NO_PAD),
+            key_ops: vec!["encrypt".to_string(), "decrypt".to_string()],
+            kty: "oct".to_string(),
         }
     }
 }

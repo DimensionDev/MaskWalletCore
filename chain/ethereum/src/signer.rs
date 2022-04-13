@@ -27,7 +27,7 @@ impl Signer {
                     .hash(chain_id)
                     .map_err(|_| Error::InvalidSignInput)?;
                 let (v_id, signature) = secp
-                    .sign_recoverable(
+                    .sign_ecdsa_recoverable(
                         &secp256k1::Message::from_slice(&hash)
                             .map_err(|_| Error::InvalidSignInput)?,
                         secrect_key,
@@ -66,7 +66,7 @@ impl Signer {
                     .hash(chain_id)
                     .map_err(|_| Error::InvalidSignInput)?;
                 let (v_id, signature) = secp
-                    .sign_recoverable(
+                    .sign_ecdsa_recoverable(
                         &secp256k1::Message::from_slice(&hash)
                             .map_err(|_| Error::InvalidSignInput)?,
                         secrect_key,

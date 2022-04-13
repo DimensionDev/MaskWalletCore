@@ -14,4 +14,4 @@ name = "mask_wallet_core_mobile"
 crate-type = ["staticlib"]
 
 [build-dependencies]
-cbindgen = "0.20.0"
+cbindgen = "0.21.0"
