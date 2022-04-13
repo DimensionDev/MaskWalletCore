@@ -401,6 +401,8 @@ pub struct PersonaGenerationResp {
     #[prost(message, optional, tag="3")]
     pub public_key: ::core::option::Option<JwkResp>,
     #[prost(message, optional, tag="4")]
+    pub local_key: ::core::option::Option<AesJwkResp>,
+    #[prost(message, optional, tag="5")]
     pub option: ::core::option::Option<EncryptOption>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -421,6 +423,19 @@ pub struct JwkResp {
     pub kty: ::prost::alloc::string::String,
     #[prost(string, optional, tag="8")]
     pub d: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AesJwkResp {
+    #[prost(string, tag="1")]
+    pub alg: ::prost::alloc::string::String,
+    #[prost(bool, tag="2")]
+    pub ext: bool,
+    #[prost(string, tag="3")]
+    pub k: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="4")]
+    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="5")]
+    pub kty: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
