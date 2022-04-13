@@ -83,7 +83,6 @@ impl JWKWrapper {
     fn as_public_key(&self) -> JwkResp {
         JwkResp {
             crv: self.0.crv.clone(),
-            identifier: self.0.identifier.clone(),
             ext: self.0.ext,
             x: self.0.x.clone(),
             y: self.0.y.clone(),
@@ -96,7 +95,6 @@ impl JWKWrapper {
     fn as_private_key(&self) -> JwkResp {
         JwkResp {
             crv: self.0.crv.clone(),
-            identifier: self.0.identifier.clone(),
             ext: self.0.ext,
             x: self.0.x.clone(),
             y: self.0.y.clone(),

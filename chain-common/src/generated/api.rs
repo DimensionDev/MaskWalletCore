@@ -409,8 +409,6 @@ pub struct PersonaGenerationResp {
 pub struct JwkResp {
     #[prost(string, tag="1")]
     pub crv: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub identifier: ::prost::alloc::string::String,
     #[prost(bool, tag="3")]
     pub ext: bool,
     #[prost(string, tag="4")]
