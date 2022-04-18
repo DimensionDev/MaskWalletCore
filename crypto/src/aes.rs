@@ -66,19 +66,19 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes128Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes128Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes192Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes192Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes256Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes256Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
@@ -99,19 +99,19 @@ pub mod ctr {
             128 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes128Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes128Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             192 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes192Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes192Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             256 => {
                 let key = GenericArray::from_slice(key);
                 let iv = GenericArray::from_slice(iv);
-                let mut cipher = Aes256Ctr128BE::new(&key, &iv);
+                let mut cipher = Aes256Ctr128BE::new(key, iv);
                 cipher.apply_keystream(&mut data_copy)
             }
             _ => return Err(Error::NotSupportedCipher),
