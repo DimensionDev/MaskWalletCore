@@ -37,7 +37,7 @@ fn generate_persona_inner(param: &PersonaGenerationParam) -> Result<Response, Mw
     let local_key: Option<AesJWK> = match version {
         Version::V38 => {
             let password = format!("{}{}", &jwk.x, &jwk.y);
-            let key = pbkdf2::derive_key(&password.as_bytes(), &param.mnemonic.as_bytes(), 100_000);
+            let key = pbkdf2::derive_key(password.as_bytes(), param.mnemonic.as_bytes(), 100_000);
             Some(AesJWK::new(&key))
         }
         _ => None,

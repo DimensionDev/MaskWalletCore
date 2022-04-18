@@ -22,7 +22,7 @@ mod tests {
             "qtSrDPyn8eOEZ1-Zr5yWNBqhJZTNW5A43ypKx--CLrM"
         );
 
-        let derived_key = derive_key(&password.as_bytes(), &test_salt.as_bytes(), 100_000);
+        let derived_key = derive_key(password.as_bytes(), test_salt.as_bytes(), 100_000);
         let base64_url_config = URL_SAFE_NO_PAD;
         let d = encode_config(&derived_key, base64_url_config);
         assert_eq!(d, "zG3NAz9demftsEMpiCBNr9TgEWvBFy3LV8R5BMycVZ8");
