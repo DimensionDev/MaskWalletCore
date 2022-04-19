@@ -1,0 +1,17 @@
+[package]
+name = "maskwalletcore-dotnet"
+version = "0.1.0"
+authors = ["Tlaster <tlaster@outlook.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "maskwalletcore_dotnet"
+crate-type = ["cdylib"]
+
+[dependencies]
+interface = { path = "../../interface" }
+libc = "0.2.124"
+
+[workspace]
