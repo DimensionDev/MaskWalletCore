@@ -1,0 +1,11 @@
+<controls:Page xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Dimension.MaskCore.Lifecycle.Controls"
+             xmlns:persona="clr-namespace:Dimension.MaskCore.UI.Pages.Persona"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Dimension.MaskCore.UI.Pages.Persona.PersonaPage"
+             x:DataType="persona:PersonaViewModel">
+    Welcome to Avalonia!
+</controls:Page>
