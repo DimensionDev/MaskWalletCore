@@ -15,17 +15,12 @@ namespace Dimension.MaskCore.Data.Repository;
 
 internal class PersonaRepository
 {
-    const string _path = "m/44'/60'/0'/0/0";
-    const string _password = "";
+    private const string Path = "m/44'/60'/0'/0/0";
+    private const string Password = "";
     
-    private readonly Realm _realm = Ioc.Default.GetRequiredService<Realm>();
-    public IObservable<IReadOnlyCollection<UiPersonaModel>> Personas;
-
-    public PersonaRepository()
-    {
-        Personas = _realm.All<DbPersonaModel>().AsObservable()
-            .Select(it => it.Select(UiPersonaModel.FromDb).ToImmutableList());
-    }
+    private static readonly Realm _realm = Ioc.Default.GetRequiredService<Realm>();
+    public IObservable<IReadOnlyCollection<UiPersonaModel>> Personas { get; } = _realm.All<DbPersonaModel>().AsObservable()
+        .Select(it => it.Select(UiPersonaModel.FromDb).ToImmutableList());
 
     public async Task CreatePersonaFromMnemonic(string mnemonic, string name)
     {
@@ -40,14 +35,40 @@ internal class PersonaRepository
 
         var persona = await Task.Run(() => PersonaKey.Create(
             mnemonic,
-            _password,
-            _path,
+            Password,
+            Path,
             CurveType.Secp256k1,
             new EncryptionOption(EncryptionOption.EncVersion.V38)
         ));
         _realm.Write(() =>
         {
-            _realm.Add(DbPersonaModel.FromPersona(persona, mnemonic, _path, _password, false, name));
+            _realm.Add(DbPersonaModel.FromPersona(persona, mnemonic, Path, Password, false, name));
+        });
+    }
+    
+    public void UpdatePersonaName(UiPersonaModel item, string name)
+    {
+        var dbPersona = _realm.All<DbPersonaModel>().FirstOrDefault(it => it.Identifier == item.Identifier);
+        if (dbPersona == null)
+        {
+            return;
+        }
+        _realm.Write(() =>
+        {
+            dbPersona.Name = name;
+        });
+    }
+    
+    public void DeletePersona(UiPersonaModel persona)
+    {
+        var item = _realm.All<DbPersonaModel>().FirstOrDefault(it => it.Identifier == persona.Identifier);
+        if (item == null)
+        {
+            return;
+        }
+        _realm.Write(() =>
+        {
+            _realm.Remove(item);
         });
     }
 }
