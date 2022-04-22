@@ -8,5 +8,5 @@ internal partial class CreatePersonaViewModel : ViewModel
 {
     public string[] Mnemonic { get; } = MnemonicHelper.GenerateMnemonic().Split(' ');
     [ObservableProperty]
-    private string _name;
+    private string _name = string.Empty;
 }

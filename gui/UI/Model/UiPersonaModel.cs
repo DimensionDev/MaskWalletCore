@@ -6,3 +6,5 @@ internal record UiPersonaModel(string Name, string Identifier)
 {
     public static UiPersonaModel FromDb(DbPersonaModel model) => new(model.Name, model.Identifier);
 }
+
+internal record MnemonicModel(string Word, int Index);

@@ -58,7 +58,7 @@
                 <Control Height="8"/>
                 <TextBox Text="{CompiledBinding Name, Mode=TwoWay}"/>
                 <Control Height="8"/>
-                <Button Content="Next" Classes="accent" HorizontalAlignment="Stretch"/>
+                <Button Content="Next" Classes="accent" HorizontalAlignment="Stretch" Click="NextClicked"/>
             </StackPanel>
         </Grid>
     </Grid>

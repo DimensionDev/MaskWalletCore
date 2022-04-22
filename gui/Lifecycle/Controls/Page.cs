@@ -9,6 +9,22 @@ using FluentAvalonia.UI.Navigation;
 
 namespace Dimension.MaskCore.Lifecycle.Controls;
 
+public class Page<T, R> : Page<T> where T : ViewModel.ViewModel, new() where R : class
+{
+    protected override void OnCreated(object parameter)
+    {
+        base.OnCreated(parameter);
+        if (parameter is R r)
+        {
+            OnCreated(r);
+        }
+    }
+    
+    protected virtual void OnCreated(R parameter)
+    {
+    }
+}
+
 public class Page<T> : Page where T : ViewModel.ViewModel, new()
 {
     public T ViewModel => (DataContext as T)!;
