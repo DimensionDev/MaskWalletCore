@@ -4,20 +4,9 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Dimension.MaskCore</RootNamespace>
-        <IsWindows Condition="$([MSBuild]::IsOSPlatform('Windows'))">true</IsWindows>
-        <IsLinux Condition="$([MSBuild]::IsOSPlatform('Linux'))">true</IsLinux>
-        <IsOSX Condition="$([MSBuild]::IsOSPlatform('OSX'))">true</IsOSX>
-        <RuntimeIdentifier Condition="'$(IsWindows)'=='true'">win-x64</RuntimeIdentifier>
-        <RuntimeIdentifier Condition="'$(IsLinux)'=='true'">linux-x64</RuntimeIdentifier>
-        <RuntimeIdentifier Condition="'$(IsOSX)'=='true'">osx-arm64</RuntimeIdentifier>
-        <PublishSingleFile>true</PublishSingleFile>
-        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-        <PublishTrimmed>true</PublishTrimmed>
-        <SelfContained>true</SelfContained>
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
-        <TrimMode Condition="'$(IsWindows)'=='true'">copyused</TrimMode>
-        <BuiltInComInteropSupport Condition="'$(IsWindows)'=='true'">true</BuiltInComInteropSupport>
+        <TrimMode>copyused</TrimMode>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     </PropertyGroup>
     <ItemGroup>
         <None Remove=".gitignore"/>

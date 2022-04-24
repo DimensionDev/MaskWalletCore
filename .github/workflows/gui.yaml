@@ -1,0 +1,75 @@
+name: gui
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Install dependencies
+      working-directory: ./gui
+      run: dotnet restore
+    - name: Publish
+      working-directory: ./gui
+      run: dotnet publish -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:PublishTrimmed=true
+    - name: Archive publish artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: maskcore_linux-x64
+        path: gui/bin/Release/net6.0/linux-x64/publish
+
+  win:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Install dependencies
+      working-directory: ./gui
+      run: dotnet restore
+    - name: Publish
+      working-directory: ./gui
+      run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:PublishTrimmed=true
+    - name: Archive publish artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: maskcore_win-x64
+        path: gui/bin/Release/net6.0/win-x64/publish
+
+  osx:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Install dependencies
+      working-directory: ./gui
+      run: dotnet restore
+    - name: Publish
+      working-directory: ./gui
+      run: dotnet publish -c Release -r osx-x64 --self-contained true /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:PublishTrimmed=true
+    - name: Archive publish artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: maskcore_osx-x64
+        path: gui/bin/Release/net6.0/osx-x64/publish 
