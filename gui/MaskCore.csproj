@@ -4,6 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Dimension.MaskCore</RootNamespace>
+        <ApplicationIcon>Assets/favicon.ico</ApplicationIcon>
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -37,5 +38,8 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\target-dotnet\src\MaskWalletCore.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 </Project>
