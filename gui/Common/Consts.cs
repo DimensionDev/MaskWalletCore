@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Dimension.MaskCore.Common;
@@ -10,14 +12,14 @@ internal class Consts
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return System.IO.Path.Combine(
-                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
+                return Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                     "Mask");
             }
-            return System.IO.Path.Combine(
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".mask");
         }
     }
-
 }

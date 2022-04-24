@@ -21,7 +21,8 @@ internal class DbPersonaModel : RealmObject
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-    public static DbPersonaModel FromPersona(PersonaKey persona, string mnemonic, string path, string password, bool withPassword, string name)
+    public static DbPersonaModel FromPersona(PersonaKey persona, string mnemonic, string path, string password,
+        bool withPassword, string name)
     {
         return new DbPersonaModel
         {
@@ -33,7 +34,7 @@ internal class DbPersonaModel : RealmObject
             Password = password,
             PrivateKey = JsonSerializer.Serialize(persona.PrivateKey),
             PublicKey = JsonSerializer.Serialize(persona.PrivateKey with { d = null }),
-            LocalKey = persona.LocalKey == null ? null : JsonSerializer.Serialize(persona.LocalKey),
+            LocalKey = persona.LocalKey == null ? null : JsonSerializer.Serialize(persona.LocalKey)
         };
     }
 }

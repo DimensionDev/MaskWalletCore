@@ -1,17 +1,17 @@
-<controls:Page
+﻿<controls:Page
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Dimension.MaskCore.Lifecycle.Controls"
+    xmlns:createWallet="clr-namespace:Dimension.MaskCore.UI.Pages.Wallet.CreateWallet"
     xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:createPersona="clr-namespace:Dimension.MaskCore.UI.Pages.Persona.CreatePersona"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:DataType="createPersona:CreatePersonaViewModel"
-    x:Class="Dimension.MaskCore.UI.Pages.Persona.CreatePersona.CreatePersonaPage">
+    x:DataType="createWallet:CreateWalletViewModel"
+    x:Class="Dimension.MaskCore.UI.Pages.Wallet.CreateWallet.CreateWalletPage">
     <controls:Page.DataContext>
-        <createPersona:CreatePersonaViewModel />
+        <createWallet:CreateWalletViewModel />
     </controls:Page.DataContext>
     <Grid RowDefinitions="Auto, 16, *" Margin="16">
         <Grid HorizontalAlignment="Stretch" ColumnDefinitions="Auto, *, Auto">
@@ -27,7 +27,7 @@
                 <controls1:CommandBarSeparator />
                 <Control Width="8" />
                 <TextBlock
-                    Text="Create Persona"
+                    Text="Create Wallet"
                     VerticalAlignment="Center" />
                 <Separator />
             </StackPanel>
@@ -57,7 +57,7 @@
             </StackPanel>
             <controls1:CommandBarSeparator Grid.Column="1" />
             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center" MaxWidth="300">
-                <TextBlock Text="Your Persona Name" />
+                <TextBlock Text="Your Wallet Name" />
                 <Control Height="8" />
                 <TextBox Text="{CompiledBinding Name, Mode=TwoWay}" />
                 <Control Height="8" />

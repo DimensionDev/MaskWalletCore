@@ -8,8 +8,7 @@ internal static class EnumerabsleExtension
 {
     public static IEnumerable<T> Randomize<T>(this IEnumerable<T> source)
     {
-        Random rnd = new Random();
-        return source.OrderBy((item) => rnd.Next());
+        var rnd = new Random();
+        return source.OrderBy(item => rnd.Next());
     }
-
 }

@@ -12,6 +12,8 @@ public class Dialog<T> : Dialog where T : ViewModel.ViewModel
 
 public class Dialog : ContentDialog, IStyleable
 {
+    Type IStyleable.StyleKey => typeof(ContentDialog);
+
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromLogicalTree(e);
@@ -20,7 +22,4 @@ public class Dialog : ContentDialog, IStyleable
             disposable.Dispose();
         }
     }
-    
-    
-    Type IStyleable.StyleKey => typeof(ContentDialog);
 }

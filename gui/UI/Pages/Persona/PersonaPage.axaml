@@ -22,17 +22,17 @@
                     <MenuFlyout Placement="Bottom">
                         <MenuItem Header="From file">
                             <MenuItem.Icon>
-                                <controls1:SymbolIcon Symbol="OpenFile"/>
+                                <controls1:SymbolIcon Symbol="OpenFile" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="From mnemonic">
                             <MenuItem.Icon>
-                                <controls1:SymbolIcon Symbol="ClipboardCode"/>
+                                <controls1:SymbolIcon Symbol="ClipboardCode" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="From private key">
                             <MenuItem.Icon>
-                                <controls1:SymbolIcon Symbol="Permissions"/>
+                                <controls1:SymbolIcon Symbol="Permissions" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuFlyout>
@@ -55,28 +55,33 @@
                       IsVisible="{CompiledBinding !!Personas^.Count}">
             <ItemsRepeater Items="{CompiledBinding Personas^}">
                 <ItemsRepeater.Layout>
-                    <UniformGridLayout MinColumnSpacing="8" MinRowSpacing="8"/>
+                    <StackLayout Spacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate DataType="model:UiPersonaModel">
-                        <Button Classes="AppBarButton" CornerRadius="8">
+                        <Button Classes="AppBarButton" CornerRadius="8" HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch">
                             <Grid ColumnDefinitions="Auto, *, Auto">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{CompiledBinding Name}"/>
-                                    <Control Height="4"/>
-                                    <TextBlock Text="{CompiledBinding Identifier}" Classes="CaptionTextBlockStyle"/>
+                                    <TextBlock Text="{CompiledBinding Name}" />
+                                    <Control Height="4" />
+                                    <TextBlock Text="{CompiledBinding Identifier}" Classes="CaptionTextBlockStyle" />
                                 </StackPanel>
                                 <Button Grid.Column="2">
                                     <Button.Flyout>
-                                        <MenuFlyout>
-                                            <MenuItem Header="Rename">
+                                        <MenuFlyout Placement="Bottom">
+                                            <MenuItem Header="Rename"
+                                                      Command="{Binding $parent[persona:PersonaPage].RenamePersona}"
+                                                      CommandParameter="{CompiledBinding}">
                                                 <MenuItem.Icon>
-                                                    <controls1:SymbolIcon Symbol="Edit"/>
+                                                    <controls1:SymbolIcon Symbol="Edit" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Delete">
+                                            <MenuItem Header="Delete"
+                                                      Command="{Binding $parent[persona:PersonaPage].ViewModel.DeletePersonaCommand}"
+                                                      CommandParameter="{CompiledBinding}">
                                                 <MenuItem.Icon>
-                                                    <controls1:SymbolIcon Symbol="Delete"/>
+                                                    <controls1:SymbolIcon Symbol="Delete" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </MenuFlyout>

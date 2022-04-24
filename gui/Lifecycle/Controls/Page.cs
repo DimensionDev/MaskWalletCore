@@ -3,25 +3,31 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
+using Dimension.MaskCore.Lifecycle.ViewModel;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Media.Animation;
 using FluentAvalonia.UI.Navigation;
 
 namespace Dimension.MaskCore.Lifecycle.Controls;
 
-public class Page<T, R> : Page<T> where T : ViewModel.ViewModel, new() where R : class
+public class Page<TViewModel, TParameter> : Page<TViewModel>
+    where TViewModel : ViewModel.ViewModel, new() where TParameter : class
 {
     protected override void OnCreated(object parameter)
     {
         base.OnCreated(parameter);
-        if (parameter is R r)
+        if (parameter is TParameter r)
         {
             OnCreated(r);
         }
     }
-    
-    protected virtual void OnCreated(R parameter)
+
+    protected virtual void OnCreated(TParameter parameter)
     {
+        if (ViewModel is IParameterizedViewModel<TParameter> parameterizedViewModel)
+        {
+            parameterizedViewModel.Initialize(parameter);
+        }
     }
 }
 
@@ -63,11 +69,11 @@ public class Page : UserControl
             }
         }
     }
-    
+
     protected virtual void OnCreated(object parameter)
     {
     }
-    
+
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromLogicalTree(e);
@@ -85,12 +91,25 @@ public class Page : UserControl
 
     protected void GoBack()
     {
-        this.FindAncestorOfType<Frame>().GoBack(new SlideNavigationTransitionInfo
+        Frame?.GoBack(new SlideNavigationTransitionInfo
             { Effect = SlideNavigationTransitionEffect.FromLeft });
     }
 
     protected void Navigate<T>(object? parameter = null)
     {
         Frame?.Navigate(typeof(T), parameter, new SlideNavigationTransitionInfo());
+    }
+
+    protected void Navigate(Type page, object? parameter = null)
+    {
+        Frame?.NavigateToType(page, parameter, new FrameNavigationOptions
+        {
+            TransitionInfoOverride = new SlideNavigationTransitionInfo()
+        });
+    }
+
+    protected void ClearBackStack()
+    {
+        Frame?.BackStack?.Clear();
     }
 }

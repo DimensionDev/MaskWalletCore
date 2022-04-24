@@ -6,15 +6,13 @@ using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Dimension.MaskCore.Common;
 using Dimension.MaskCore.Data.Repository;
-using Dimension.MaskCore.UI;
+using Dimension.MaskCore.UI.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Realms;
-using RootShell = Dimension.MaskCore.UI.Shell.RootShell;
-using RootWindow = Dimension.MaskCore.UI.Shell.RootWindow;
 
 namespace Dimension.MaskCore;
 
-internal partial class App : Application
+internal class App : Application
 {
     public override void Initialize()
     {

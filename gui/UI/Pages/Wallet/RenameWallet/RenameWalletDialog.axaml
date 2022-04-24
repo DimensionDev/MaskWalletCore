@@ -1,0 +1,18 @@
+﻿<controls:Dialog xmlns="https://github.com/avaloniaui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:renameWallet="clr-namespace:Dimension.MaskCore.UI.Pages.Wallet.RenameWallet"
+                 xmlns:controls="clr-namespace:Dimension.MaskCore.Lifecycle.Controls"
+                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                 Title="Rename Wallet"
+                 CloseButtonText="Cancel"
+                 PrimaryButtonText="Rename"
+                 PrimaryButtonCommand="{CompiledBinding RenameCommand}"
+                 x:DataType="renameWallet:RenameWalletViewModel"
+                 x:Class="Dimension.MaskCore.UI.Pages.Wallet.RenameWallet.RenameWalletDialog">
+    <controls:Dialog.DataContext>
+        <renameWallet:RenameWalletViewModel />
+    </controls:Dialog.DataContext>
+    <TextBox Text="{CompiledBinding Name, Mode=TwoWay}" />
+</controls:Dialog>

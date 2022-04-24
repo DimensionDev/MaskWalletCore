@@ -1,12 +1,12 @@
-using Avalonia.Interactivity;
+﻿using Avalonia.Interactivity;
 using Dimension.MaskCore.Lifecycle.Controls;
-using Dimension.MaskCore.UI.Pages.Persona.MnemonicValidate;
+using Dimension.MaskCore.UI.Pages.Wallet.MnemonicValidate;
 
-namespace Dimension.MaskCore.UI.Pages.Persona.CreatePersona;
+namespace Dimension.MaskCore.UI.Pages.Wallet.CreateWallet;
 
-internal partial class CreatePersonaPage : Page<CreatePersonaViewModel>
+internal partial class CreateWalletPage : Page<CreateWalletViewModel>
 {
-    public CreatePersonaPage()
+    public CreateWalletPage()
     {
         InitializeComponent();
     }
@@ -18,7 +18,7 @@ internal partial class CreatePersonaPage : Page<CreatePersonaViewModel>
 
     private void NextClicked(object? sender, RoutedEventArgs e)
     {
-        Navigate<PersonaMnemonicValidatePage>(new PersonaMnemonicValidateParameter(
+        Navigate<WalletMnemonicValidatePage>(new WalletMnemonicValidateParameter(
                 string.Join(" ", ViewModel.Mnemonic),
                 ViewModel.Name
             )
