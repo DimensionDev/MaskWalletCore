@@ -58,10 +58,10 @@ jobs:
         dotnet-version: 6.0.x
     - name: Install dependencies
       working-directory: ./gui
-      run: dotnet restore
+      run: dotnet restore -r osx-x64
     - name: Publish
       working-directory: ./gui
-      run: dotnet publish -c Release -r osx-x64 --self-contained true /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:PublishTrimmed=true
+      run: dotnet msbuild -t:BundleApp -p:RuntimeIdentifier=osx-x64 -property:Configuration=Release -p:UseAppHost=true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -p:SelfContained=true
     - name: Archive publish artifacts
       uses: actions/upload-artifact@v3
       with:
