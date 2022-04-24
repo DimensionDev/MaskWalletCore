@@ -8,7 +8,6 @@
         <CFBundleVersion>0.1.0</CFBundleVersion>
         <CFBundleShortVersionString>0.1.0</CFBundleShortVersionString>
         <CFBundleIdentifier>com.dimension</CFBundleIdentifier>
-        <CFBundleIconFile>icon.icns</CFBundleIconFile> 
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
