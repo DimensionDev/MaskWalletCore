@@ -1,0 +1,40 @@
+﻿<controls:Page
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:Dimension.MaskCore.Lifecycle.Controls"
+    xmlns:mnemonicValidate="clr-namespace:Dimension.MaskCore.UI.Pages.Wallet.MnemonicValidate"
+    xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:controls2="clr-namespace:Dimension.MaskCore.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:DataType="mnemonicValidate:WalletMnemonicValidateViewModel"
+    x:Class="Dimension.MaskCore.UI.Pages.Wallet.MnemonicValidate.WalletMnemonicValidatePage">
+    <controls:Page.DataContext>
+        <mnemonicValidate:WalletMnemonicValidateViewModel />
+    </controls:Page.DataContext>
+    <Grid RowDefinitions="Auto, 16, *" Margin="16">
+        <Grid HorizontalAlignment="Stretch" ColumnDefinitions="Auto, *, Auto">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <Button Click="BackClicked">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <controls1:SymbolIcon Symbol="Back" />
+                        <Control Width="4" />
+                        <TextBlock Text="Back" />
+                    </StackPanel>
+                </Button>
+                <Control Width="8" />
+                <controls1:CommandBarSeparator />
+                <Control Width="8" />
+                <TextBlock
+                    Text="Verify Mnemonic"
+                    VerticalAlignment="Center" />
+                <Separator />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" />
+        </Grid>
+        <controls1:NavigationViewItemSeparator Grid.Row="1" />
+        <controls2:MnemonicValidateControl Grid.Row="2" MnemonicWords="{CompiledBinding Words}"
+                                           ConfirmCommand="{CompiledBinding ConfirmCommand}" />
+    </Grid>
+</controls:Page>

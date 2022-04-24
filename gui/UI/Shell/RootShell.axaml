@@ -1,0 +1,138 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:uip="clr-namespace:FluentAvalonia.UI.Controls.Primitives;assembly=FluentAvalonia"
+             xmlns:settings="clr-namespace:Dimension.MaskCore.UI.Pages.Settings"
+             xmlns:persona="clr-namespace:Dimension.MaskCore.UI.Pages.Persona"
+             xmlns:wallet="clr-namespace:Dimension.MaskCore.UI.Pages.Wallet"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Dimension.MaskCore.UI.Shell.RootShell">
+    <UserControl.Styles>
+        <Style Selector="ui|NavigationView.RootNav">
+            <Setter Property="IsPaneToggleButtonVisible" Value="False" />
+            <Setter Property="OpenPaneLength" Value="72" />
+        </Style>
+
+        <Style Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter">
+            <Setter Property="Width" Value="72" />
+            <Setter Property="MinHeight" Value="60" />
+            <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="LayoutRoot"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Margin="4 2"
+                            TemplatedControl.IsTemplateFocusTarget="True">
+                        <Panel>
+                            <Panel HorizontalAlignment="Left"
+                                   VerticalAlignment="Center">
+
+                                <Border Name="SelectionIndicator"
+                                        Background="{DynamicResource NavigationViewSelectionIndicatorForeground}"
+                                        Width="3"
+                                        Opacity="0"
+                                        VerticalAlignment="Center"
+                                        Height="20"
+                                        CornerRadius="{StaticResource ControlCornerRadius}" />
+                            </Panel>
+
+
+                            <DockPanel>
+                                <ContentPresenter Name="ContentPresenter"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Bottom"
+                                                  TextBlock.FontSize="10"
+                                                  Padding="0 4"
+                                                  Margin="0 -15 0 3"
+                                                  DockPanel.Dock="Bottom">
+                                    <ContentPresenter.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="TextWrapping" Value="Wrap" />
+                                        </Style>
+                                    </ContentPresenter.Styles>
+                                </ContentPresenter>
+
+                                <Viewbox Name="IconBox"
+                                         Height="28"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center">
+                                    <ContentPresenter Name="Icon"
+                                                      Content="{TemplateBinding Icon}" />
+                                </Viewbox>
+
+                            </DockPanel>
+                        </Panel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:pointerover /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:pointerover /template/ ContentPresenter#Icon">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:pressed /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:pressed /template/ ContentPresenter#Icon">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:selected /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style
+            Selector="ui|NavigationViewItem.RootNav uip|NavigationViewItemPresenter:selected /template/ ContentPresenter#Icon">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <ui:NavigationView
+            IsPaneToggleButtonVisible="False"
+            IsBackEnabled="False"
+            IsBackButtonVisible="False"
+            IsSettingsVisible="False"
+            AlwaysShowHeader="False"
+            PaneDisplayMode="Left"
+            IsPaneOpen="True"
+            Classes="RootNav"
+            SelectedItem="{Binding #PersonaNavItem}"
+            Name="RootNav">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Name="PersonaNavItem" Classes="RootNav" Content="Persona"
+                                       Tag="{x:Type persona:PersonaPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Contact" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Classes="RootNav" Content="Wallet" Tag="{x:Type wallet:WalletPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Read" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem Classes="RootNav" Tag="{x:Type settings:SettingsPage}" Content="Settings">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Setting" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+            <ui:Frame Name="NavFrame" SourcePageType="{Binding #RootNav.SelectedItem.Tag}" />
+        </ui:NavigationView>
+    </Panel>
+</UserControl>
