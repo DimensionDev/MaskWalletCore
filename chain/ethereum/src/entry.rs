@@ -14,8 +14,8 @@ pub struct EthereumEntry;
 impl Entry for EthereumEntry {
     fn get_supported_import_types(&self) -> Vec<ChainImportType> {
         vec![
-            ChainImportType::PrivateKey,
             ChainImportType::Mnemonic,
+            ChainImportType::PrivateKey,
             ChainImportType::KeyStoreJson,
         ]
     }
