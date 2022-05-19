@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Dimension.MaskWalletCore</RootNamespace>
+        <Title>MaskWalletCore</Title>
+        <Authors>Dimension</Authors>
+        <PackageProjectUrl>https://github.com/DimensionDev/MaskWalletCore</PackageProjectUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/DimensionDev/MaskWalletCore/master/LICENSE</PackageLicenseUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="..\..\chain-common\proto\**\*.proto"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\chain-common\proto\**\*.proto" Package="Dimension.MaskWalletCore"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="protobuf-net" Version="3.0.101"/>
+        <PackageReference Include="protobuf-net.BuildTools" Version="3.0.115" PrivateAssets="all" IncludeAssets="runtime;build;native;contentfiles;analyzers;buildtransitive"/>
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <RustRootDirectory>../rust</RustRootDirectory>
+    </PropertyGroup>
+
+    <Target Name="CargoClean" BeforeTargets="BeforeClean">
+        <Exec Command="cargo clean" WorkingDirectory="$(RustRootDirectory)"/>
+    </Target>
+    <Target Name="CargoBuildDebug" BeforeTargets="PreBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+        <Exec Command="cargo build" WorkingDirectory="$(RustRootDirectory)"/>
+        <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+            <Content Include="$(RustRootDirectory)/target/debug/*maskwalletcore_dotnet.*">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                <PackagePath>.\lib</PackagePath>
+            </Content>
+        </ItemGroup>
+    </Target>
+    <Target Name="CargoBuildRelease" BeforeTargets="PreBuildEvent" Condition=" '$(Configuration)' == 'Release' ">
+        <Exec Command="cargo build --release" WorkingDirectory="$(RustRootDirectory)"/>
+        <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+            <Content Include="$(RustRootDirectory)/target/release/*maskwalletcore_dotnet.*">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                <PackagePath>.\lib</PackagePath>
+            </Content>
+        </ItemGroup>
+    </Target>
+
+</Project>
