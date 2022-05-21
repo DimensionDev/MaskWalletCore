@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+message PostEncryptionParam {
+    string content = 1;
+    string network = 2;
+    string authorKey = 3;
+}

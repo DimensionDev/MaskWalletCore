@@ -11,6 +11,7 @@ pub mod bip32;
 pub mod bip39;
 
 pub mod number_util;
+pub mod post_encryption;
 
 pub mod jwk;
 pub mod pbkdf2;
