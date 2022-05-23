@@ -16,6 +16,13 @@ impl From<CryptoError> for MwResponseError {
     }
 }
 
+impl From<CryptoError> for MwResponse {
+    fn from(err: CryptoError) -> Self {
+        let resp_error: MwResponseError = err.into();
+        resp_error.into()
+    }
+}
+
 impl From<crypto::jwk::BIP32Error> for MwResponseError {
     fn from(err: crypto::jwk::BIP32Error) -> Self {
         Self {

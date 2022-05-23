@@ -8,4 +8,9 @@ message PostEncryptionParam {
     string content = 1;
     string network = 2;
     string authorKey = 3;
+    bytes meta = 4;
+}
+
+message PostEncrypedResp { 
+    string content = 1;
 }
