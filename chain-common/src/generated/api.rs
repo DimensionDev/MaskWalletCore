@@ -75,6 +75,12 @@ pub enum StoredKeyExportType {
     MnemonicExportType = 1,
     KeyStoreJsonExportType = 2,
 }
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum Curve {
+    Secp256k1 = 0,
+    Ed25519 = 1,
+}
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateStoredKeyNewAccountAtPathParam {
@@ -378,19 +384,10 @@ pub struct PersonaGenerationParam {
     pub password: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub path: ::prost::alloc::string::String,
-    #[prost(enumeration="persona_generation_param::Curve", tag="4")]
+    #[prost(enumeration="Curve", tag="4")]
     pub curve: i32,
     #[prost(message, optional, tag="5")]
     pub option: ::core::option::Option<EncryptOption>,
-}
-/// Nested message and enum types in `PersonaGenerationParam`.
-pub mod persona_generation_param {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-    #[repr(i32)]
-    pub enum Curve {
-        Secp256k1 = 0,
-        Ed25519 = 1,
-    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PersonaGenerationResp {
@@ -436,8 +433,32 @@ pub struct AesJwkResp {
     pub kty: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PostEncryptionParam {
+    #[prost(string, tag="1")]
+    pub content: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub network: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub author_key: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="4")]
+    pub meta: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="5")]
+    pub author: ::prost::alloc::string::String,
+    #[prost(enumeration="Curve", tag="6")]
+    pub author_public_key_algr: i32,
+    #[prost(bytes="vec", tag="7")]
+    pub author_public_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(enumeration="encrypt_option::Version", tag="8")]
+    pub version: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PostEncrypedResp {
+    #[prost(string, tag="1")]
+    pub content: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -482,11 +503,13 @@ pub mod mw_request {
         ParamGenerateMnemonic(super::GenerateMnemonicParam),
         #[prost(message, tag="26")]
         ParamGeneratePersona(super::PersonaGenerationParam),
+        #[prost(message, tag="27")]
+        ParamPostEncryption(super::PostEncryptionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -529,6 +552,8 @@ pub mod mw_response {
         RespGenerateMnemonic(super::GenerateMnemonicResp),
         #[prost(message, tag="25")]
         RespGeneratePersona(super::PersonaGenerationResp),
+        #[prost(message, tag="26")]
+        RespPostEncryption(super::PostEncrypedResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

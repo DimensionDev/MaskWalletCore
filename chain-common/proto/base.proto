@@ -40,6 +40,11 @@ message StoredKeyAccountInfo {
     string extendedPublicKey = 5;
 }
 
+enum Curve { 
+    Secp256k1 = 0;
+    Ed25519 = 1;
+}
+
 message EncryptOption { 
     enum Version { 
         V37 = 0;

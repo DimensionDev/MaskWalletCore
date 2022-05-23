@@ -1,7 +1,11 @@
 use super::number_util::random_iv;
 use super::Error;
 
-use aes_gcm::aead::{Aead, NewAead};
+use aes_gcm::aead::{
+    // rand_core::{CryptoRng, RngCore},
+    Aead,
+    NewAead,
+};
 use aes_gcm::aes::{cipher::consts::U16, Aes256};
 use aes_gcm::{AesGcm, Key, Nonce};
 
@@ -24,7 +28,7 @@ enum Index {
     Data = 6,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Payload {
     author_network: String,
     author_id: String,
@@ -34,22 +38,9 @@ struct Payload {
     data: Vec<u8>,
 }
 
-impl Default for Payload {
-    fn default() -> Self {
-        Payload {
-            author_network: String::new(),
-            author_id: String::new(),
-            author_public_key_algorithm: 0,
-            author_public_key: Vec::new(),
-            encryption: Vec::new(),
-            data: Vec::new(),
-        }
-    }
-}
-
 pub fn encrypt(
     network: &str,
-    authorId: &str,
+    author_id: &str,
     algr: u8,
     author_pub_key: &[u8],
     message: &[u8],
@@ -57,12 +48,12 @@ pub fn encrypt(
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);
 
-    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &message)?;
+    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, message)?;
     let output = encode_with_container(
         network,
-        authorId,
+        author_id,
         algr,
-        &author_pub_key,
+        author_pub_key,
         &post_key_iv,
         &post_iv,
         &encrypted_message,
@@ -72,8 +63,8 @@ pub fn encrypt(
 }
 
 fn aes_encrypt(iv: &[u8], key: &[u8], content: &[u8]) -> Result<Vec<u8>, Error> {
-    let key = Key::from_slice(&key);
-    let nonce = Nonce::from_slice(&iv);
+    let key = Key::from_slice(key);
+    let nonce = Nonce::from_slice(iv);
     let cipher = Aes256GCM::new(key);
     cipher
         .encrypt(nonce, content)
@@ -82,7 +73,7 @@ fn aes_encrypt(iv: &[u8], key: &[u8], content: &[u8]) -> Result<Vec<u8>, Error> 
 
 fn aes_decrypt(iv: &[u8], key: &[u8], encrypted_content: &[u8]) -> Result<Vec<u8>, Error> {
     let nonce = Nonce::from_slice(iv);
-    let key = Key::from_slice(&key);
+    let key = Key::from_slice(key);
     let cipher = Aes256GCM::new(key);
 
     cipher
@@ -92,7 +83,7 @@ fn aes_decrypt(iv: &[u8], key: &[u8], encrypted_content: &[u8]) -> Result<Vec<u8
 
 fn encode_with_container(
     network: &str,
-    authorId: &str,
+    author_id: &str,
     algr: u8,
     author_pub_key: &[u8],
     aes_key: &[u8],
@@ -100,13 +91,13 @@ fn encode_with_container(
     encrypted: &[u8],
 ) -> Result<Vec<u8>, Error> {
     let encoded_without_container = encode_v37(
-        &network,
-        &authorId,
+        network,
+        author_id,
         algr,
-        &author_pub_key,
-        &aes_key,
-        &iv,
-        &encrypted,
+        author_pub_key,
+        aes_key,
+        iv,
+        encrypted,
     )
     .map_err(|_| Error::InvalidCiphertext)?;
     let mut buf = Vec::new();
@@ -118,7 +109,7 @@ fn encode_with_container(
 
 fn encode_v37(
     network: &str,
-    authorId: &str,
+    author_id: &str,
     algr: u8,
     author_pub_key: &[u8],
     aes_key: &[u8],
@@ -126,37 +117,41 @@ fn encode_v37(
     encrypted: &[u8],
 ) -> Result<Vec<u8>, Error> {
     let mut buf = Vec::new();
-    write_map_len(&mut buf, 6).map_err(|_| Error::InvalidCiphertext)?;
+    write_map_len(&mut buf, 6)?;
 
-    write_sint(&mut buf, Index::AuthorNetwork as i64).map_err(|_| Error::InvalidCiphertext)?;
-    write_str(&mut buf, &network).map_err(|_| Error::InvalidCiphertext)?;
+    write_sint(&mut buf, Index::AuthorNetwork as i64)?;
+    write_str(&mut buf, network)?;
 
-    write_sint(&mut buf, Index::AuthorID as i64).map_err(|_| Error::InvalidCiphertext)?;
-    write_str(&mut buf, &authorId).map_err(|_| Error::InvalidCiphertext)?;
+    write_sint(&mut buf, Index::AuthorID as i64)?;
+    write_str(&mut buf, author_id)?;
 
-    write_sint(&mut buf, Index::AuthorPublicKeyAlgorithm as i64)
-        .map_err(|_| Error::InvalidCiphertext)?;
-    write_sint(&mut buf, algr as i64).map_err(|_| Error::InvalidCiphertext)?;
+    write_sint(&mut buf, Index::AuthorPublicKeyAlgorithm as i64)?;
+    write_sint(&mut buf, algr as i64)?;
 
-    write_sint(&mut buf, Index::AuthorPublicKey as i64).map_err(|_| Error::InvalidCiphertext)?;
-    write_bin(&mut buf, &author_pub_key);
+    write_sint(&mut buf, Index::AuthorPublicKey as i64)?;
+    write_bin(&mut buf, author_pub_key)?;
 
-    write_sint(&mut buf, Index::Encryption as i64).map_err(|_| Error::InvalidCiphertext)?;
-    write_array_len(&mut buf, 3).map_err(|_| Error::InvalidCiphertext)?;
-    write_sint(&mut buf, 0).map_err(|_| Error::InvalidCiphertext)?;
-    write_bin(&mut buf, &aes_key);
-    write_bin(&mut buf, &iv);
+    write_sint(&mut buf, Index::Encryption as i64)?;
+    write_array_len(&mut buf, 3)?;
+    write_sint(&mut buf, 0)?;
+    write_bin(&mut buf, aes_key)?;
+    write_bin(&mut buf, iv)?;
 
-    write_sint(&mut buf, Index::Data as i64).map_err(|_| Error::InvalidCiphertext)?;
-    write_bin(&mut buf, &encrypted).map_err(|_| Error::InvalidCiphertext)?;
+    write_sint(&mut buf, Index::Data as i64)?;
+    write_bin(&mut buf, encrypted)?;
 
     Ok(buf.to_vec())
+}
+
+impl From<ValueWriteError> for Error {
+    fn from(_: ValueWriteError) -> Error {
+        Error::InvalidCiphertext
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rmp::encode::*;
 
     const IV: [u8; 16] = [
         150, 13, 224, 121, 241, 237, 66, 179, 38, 88, 203, 177, 192, 239, 197, 189,
@@ -182,7 +177,7 @@ mod tests {
         write_sint(&mut buf, 1).unwrap();
         write_sint(&mut buf, 1).unwrap();
         write_nil(&mut buf).unwrap();
-        write_str(&mut buf, &"sample text").unwrap();
+        write_str(&mut buf, "sample text").unwrap();
         println!("{:?}", &buf[..]);
         assert_eq!(&buf[..], &ENCODED_MESSAGE);
     }
@@ -192,7 +187,7 @@ mod tests {
         let iv: [u8; 16] = [1; 16];
         let key: [u8; 32] = [2; 32];
         let content = "sample text";
-        let encrypted = aes_encrypt(&iv, &key, &content.as_bytes()).unwrap();
+        let encrypted = aes_encrypt(&iv, &key, content.as_bytes()).unwrap();
         let decrypted = aes_decrypt(&iv, &key, &encrypted).unwrap();
         assert_eq!(decrypted, content.as_bytes());
     }
@@ -204,14 +199,14 @@ mod tests {
         let author_key = random_iv(33);
         let content = "sample text";
 
-        let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &content.as_bytes()).unwrap();
+        let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, content.as_bytes()).unwrap();
         let message = "hello world";
         let network = "localhost";
-        let authorId = "alice";
+        let author_id = "alice";
         let algr = 2;
         let encode_with_no_sign = encode_with_container(
-            &network,
-            &authorId,
+            network,
+            author_id,
             algr,
             &author_key,
             &post_key_iv,
@@ -229,12 +224,12 @@ mod tests {
         let author_key = random_iv(33);
         let content = "sample text";
 
-        let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &content.as_bytes()).unwrap();
+        let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, content.as_bytes()).unwrap();
         let message = "hello world";
         let network = "localhost";
-        let authorId = "alice";
+        let author_id = "alice";
         let algr = 2;
-        let output = encrypt(&network, &authorId, algr, &author_key, &content.as_bytes()).unwrap();
+        let output = encrypt(network, author_id, algr, &author_key, content.as_bytes()).unwrap();
 
         assert_eq!(&output, "1".as_bytes());
     }

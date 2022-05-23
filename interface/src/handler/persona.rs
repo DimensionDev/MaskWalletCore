@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 
 use chain_common::api::{
-    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve, AesJwkResp,
+    encrypt_option::Version, mw_response::Response, Curve, AesJwkResp,
     EncryptOption, JwkResp, MwResponse, MwResponseError, PersonaGenerationParam,
     PersonaGenerationResp,
 };
