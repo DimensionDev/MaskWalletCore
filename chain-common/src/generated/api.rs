@@ -441,12 +441,10 @@ pub struct PostEncryptionParam {
     #[prost(bytes="vec", optional, tag="3")]
     pub author_public_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(string, optional, tag="4")]
-    pub meta: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="5")]
     pub author_user_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(enumeration="PublicKeyAlgorithm", optional, tag="6")]
+    #[prost(enumeration="PublicKeyAlgorithm", optional, tag="5")]
     pub author_public_key_algr: ::core::option::Option<i32>,
-    #[prost(enumeration="encrypt_option::Version", tag="7")]
+    #[prost(enumeration="encrypt_option::Version", tag="6")]
     pub version: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

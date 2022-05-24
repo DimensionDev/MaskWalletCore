@@ -14,10 +14,9 @@ message PostEncryptionParam {
     string content = 1;
     optional string network = 2;
     optional bytes authorPublicKeyData = 3;
-    optional string meta = 4;
-    optional string authorUserId = 5;
-    optional PublicKeyAlgorithm authorPublicKeyAlgr = 6;
-    EncryptOption.Version version = 7;
+    optional string authorUserId = 4;
+    optional PublicKeyAlgorithm authorPublicKeyAlgr = 5;
+    EncryptOption.Version version = 6;
 }
 
 message PostEncrypedResp { 
