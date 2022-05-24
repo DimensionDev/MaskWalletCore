@@ -4,15 +4,20 @@ package api;
 
 import "base.proto";
 
+enum PublicKeyAlgorithm { 
+    Ed25519Algr = 0;
+    Secp256p1Algr = 1;
+    Secp256k1Algr = 2;
+}
+
 message PostEncryptionParam {
     string content = 1;
-    string network = 2;
-    string authorKey = 3;
+    optional string network = 2;
+    optional bytes authorPublicKeyData = 3;
     optional string meta = 4;
-    string author = 5;
-    Curve authorPublicKeyAlgr = 6;
-    bytes authorPublicKeyData = 7; 
-    EncryptOption.Version version = 8;
+    optional string authorUserId = 5;
+    optional PublicKeyAlgorithm authorPublicKeyAlgr = 6;
+    EncryptOption.Version version = 7;
 }
 
 message PostEncrypedResp { 

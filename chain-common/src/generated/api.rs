@@ -436,25 +436,30 @@ pub struct AesJwkResp {
 pub struct PostEncryptionParam {
     #[prost(string, tag="1")]
     pub content: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub network: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
-    pub author_key: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="2")]
+    pub network: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bytes="vec", optional, tag="3")]
+    pub author_public_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(string, optional, tag="4")]
     pub meta: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="5")]
-    pub author: ::prost::alloc::string::String,
-    #[prost(enumeration="Curve", tag="6")]
-    pub author_public_key_algr: i32,
-    #[prost(bytes="vec", tag="7")]
-    pub author_public_key_data: ::prost::alloc::vec::Vec<u8>,
-    #[prost(enumeration="encrypt_option::Version", tag="8")]
+    #[prost(string, optional, tag="5")]
+    pub author_user_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(enumeration="PublicKeyAlgorithm", optional, tag="6")]
+    pub author_public_key_algr: ::core::option::Option<i32>,
+    #[prost(enumeration="encrypt_option::Version", tag="7")]
     pub version: i32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PostEncrypedResp {
     #[prost(string, tag="1")]
     pub content: ::prost::alloc::string::String,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum PublicKeyAlgorithm {
+    Ed25519Algr = 0,
+    Secp256p1Algr = 1,
+    Secp256k1Algr = 2,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {

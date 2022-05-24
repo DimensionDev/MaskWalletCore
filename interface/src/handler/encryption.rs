@@ -1,24 +1,33 @@
-use crypto::post_encryption::encrypt;
+use crypto::post_encryption::{encrypt, Target, Version};
 
 use chain_common::api::{mw_response::Response, MwResponse, PostEncrypedResp, PostEncryptionParam};
 
 pub fn encode(param: PostEncryptionParam) -> MwResponse {
+    let version = match param.version {
+        0 => Version::V37,
+        1 => Version::V38,
+        _ => Version::V38,
+    };
+    let algr = match param.author_public_key_algr {
+        Some(algr) => Some(algr as u8),
+        None => None,
+    };
     let result = encrypt(
-        "",
-        param.content.as_str(),
-        0,
-        param.network.as_bytes(),
-        param.content.as_bytes(),
+        version,
+        Target::Public,
+        param.network.as_deref(),
+        param.author_user_id.as_deref(),
+        algr,
+        param.author_public_key_data.as_deref(),
+        &param.content.as_bytes(),
     );
 
     match result {
         Ok(encrypted_message) => {
             // TODO: finish implementation
             let content = PostEncrypedResp {
-                content: "".to_string(),
+                content: encrypted_message,
             };
-            let _ = encrypted_message;
-
             Response::RespPostEncryption(content).into()
         }
 

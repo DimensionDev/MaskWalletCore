@@ -26,7 +26,7 @@ pub fn encrypt(
     target: Target,
     network: Option<&str>,
     author_id: Option<&str>,
-    algr: u8,
+    algr: Option<u8>,
     author_pub_key: Option<&[u8]>,
     message: &[u8],
 ) -> Result<String, Error> {
@@ -35,8 +35,8 @@ pub fn encrypt(
 
     let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &message)?;
 
-    let output = match version {
-        Version::V37 => "1".to_string(),
+    match version {
+        Version::V37 => Err(Error::NotSupportedCipher),
         Version::V38 => {
             let output = encode_v38(
                 target,
@@ -48,11 +48,9 @@ pub fn encrypt(
                 author_pub_key,
             )
             .map_err(|_| Error::InvalidCiphertext)?;
-            output
+            Ok(output)
         }
-    };
-
-    Ok(output)
+    }
 }
 
 impl From<ValueWriteError> for Error {
@@ -109,12 +107,10 @@ mod tests {
             Target::Public,
             Some(network),
             Some(author_id),
-            algr,
+            Some(algr),
             Some(&public_key_data),
             message.as_bytes(),
         )
         .unwrap();
-
-        assert_eq!(&output, "1");
     }
 }

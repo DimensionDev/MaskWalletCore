@@ -125,10 +125,10 @@ mod tests {
         let iv = [
             44, 67, 220, 0, 135, 88, 111, 139, 0, 72, 96, 128, 156, 163, 95, 183,
         ];
-        let key_iv = random_iv(16);
+        let key_iv = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
         let encoded_key = encode_aes_key_encrypted(&Target::Public, &iv, &key_iv).unwrap();
-        assert_eq!(encoded_key, "2");
+        assert_eq!(encoded_key, "7jLN2yGxMEVM28cIjVlJJ1PBSh6qt3qgUoDL579dssh4EQoxImWZfezILlxTMtoPEFzIN8T369jz2Pai2IzrI9coSAr+V46S91/4Bh2QnlSsWc6B+IZIc/hIWhFKBUeU+5bq/SvBYSVpE5/+C4sIk8beyHIl");
     }
 
     #[test]
