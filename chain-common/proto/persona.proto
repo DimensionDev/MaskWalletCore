@@ -9,10 +9,6 @@ message PersonaGenerationParam {
     string mnemonic = 1;
     string password = 2;
     string path = 3;
-    enum Curve { 
-        Secp256k1 = 0;
-        Ed25519 = 1;
-    }
     Curve curve = 4;
     EncryptOption option = 5;
 }

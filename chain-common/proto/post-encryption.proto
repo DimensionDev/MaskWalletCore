@@ -8,4 +8,13 @@ message PostEncryptionParam {
     string content = 1;
     string network = 2;
     string authorKey = 3;
+    optional string meta = 4;
+    string author = 5;
+    Curve authorPublicKeyAlgr = 6;
+    bytes authorPublicKeyData = 7; 
+    EncryptOption.Version version = 8;
+}
+
+message PostEncrypedResp { 
+    string content = 1;
 }

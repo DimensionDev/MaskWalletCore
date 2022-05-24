@@ -9,6 +9,7 @@ import "stored-key.proto";
 import "transaction.proto";
 import "validation.proto";
 import "persona.proto";
+import "post-encryption.proto";
 
 message MWRequest {
     oneof request {
@@ -36,6 +37,8 @@ message MWRequest {
         GenerateMnemonicParam param_generate_mnemonic = 25;
 
         PersonaGenerationParam param_generate_persona = 26;
+
+        PostEncryptionParam param_post_encryption = 27;
     }
 }
 
@@ -64,6 +67,8 @@ message MWResponse {
         GenerateMnemonicResp resp_generate_mnemonic = 24;
 
         PersonaGenerationResp resp_generate_persona = 25;
+
+        PostEncrypedResp resp_post_encryption = 26;
     }
 }
 

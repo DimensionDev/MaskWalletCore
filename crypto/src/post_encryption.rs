@@ -21,29 +21,6 @@ pub enum Target {
     Public,
 }
 
-#[derive(Debug)]
-struct Payload {
-    author_network: String,
-    author_id: String,
-    author_public_key_algorithm: u8,
-    author_public_key: Vec<u8>,
-    encryption: Vec<Vec<u8>>,
-    data: Vec<u8>,
-}
-
-impl Default for Payload {
-    fn default() -> Self {
-        Payload {
-            author_network: String::new(),
-            author_id: String::new(),
-            author_public_key_algorithm: 0,
-            author_public_key: Vec::new(),
-            encryption: Vec::new(),
-            data: Vec::new(),
-        }
-    }
-}
-
 pub fn encrypt(
     version: Version,
     target: Target,
@@ -78,24 +55,18 @@ pub fn encrypt(
     Ok(output)
 }
 
+impl From<ValueWriteError> for Error {
+    fn from(_: ValueWriteError) -> Error {
+        Error::InvalidCiphertext
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rmp::encode::*;
-
-    const IV: [u8; 16] = [
-        150, 13, 224, 121, 241, 237, 66, 179, 38, 88, 203, 177, 192, 239, 197, 189,
-    ];
     // content text: "sample text"
     const ENCODED_MESSAGE: [u8; 18] = [
         146, 0, 148, 1, 1, 192, 171, 115, 97, 109, 112, 108, 101, 32, 116, 101, 120, 116,
-    ];
-
-    const RANDOM_IV1: [u8; 16] = [
-        103, 255, 64, 75, 77, 251, 1, 164, 34, 237, 4, 16, 126, 175, 142, 35,
-    ];
-    const RANDOM_IV2: [u8; 16] = [
-        150, 164, 124, 165, 4, 65, 142, 140, 96, 64, 241, 15, 128, 231, 32, 186,
     ];
 
     #[test]
@@ -107,7 +78,7 @@ mod tests {
         write_sint(&mut buf, 1).unwrap();
         write_sint(&mut buf, 1).unwrap();
         write_nil(&mut buf).unwrap();
-        write_str(&mut buf, &"sample text").unwrap();
+        write_str(&mut buf, "sample text").unwrap();
         println!("{:?}", &buf[..]);
         assert_eq!(&buf[..], &ENCODED_MESSAGE);
     }
@@ -117,7 +88,7 @@ mod tests {
         let iv: [u8; 16] = [1; 16];
         let key: [u8; 32] = [2; 32];
         let content = "sample text";
-        let encrypted = aes_encrypt(&iv, &key, &content.as_bytes()).unwrap();
+        let encrypted = aes_encrypt(&iv, &key, content.as_bytes()).unwrap();
         let decrypted = aes_decrypt(&iv, &key, &encrypted).unwrap();
         assert_eq!(decrypted, content.as_bytes());
     }
