@@ -7,8 +7,8 @@ use super::Error;
 type Aes256GCM = AesGcm<Aes256, U16>;
 
 pub fn aes_encrypt(iv: &[u8], key: &[u8], content: &[u8]) -> Result<Vec<u8>, Error> {
-    let key = Key::from_slice(&key);
-    let nonce = Nonce::from_slice(&iv);
+    let key = Key::from_slice(key);
+    let nonce = Nonce::from_slice(iv);
     let cipher = Aes256GCM::new(key);
     cipher
         .encrypt(nonce, content)
@@ -17,7 +17,7 @@ pub fn aes_encrypt(iv: &[u8], key: &[u8], content: &[u8]) -> Result<Vec<u8>, Err
 
 pub fn aes_decrypt(iv: &[u8], key: &[u8], encrypted_content: &[u8]) -> Result<Vec<u8>, Error> {
     let nonce = Nonce::from_slice(iv);
-    let key = Key::from_slice(&key);
+    let key = Key::from_slice(key);
     let cipher = Aes256GCM::new(key);
 
     cipher

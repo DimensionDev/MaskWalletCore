@@ -5,7 +5,7 @@ use bitcoin::secp256k1::PublicKey;
 
 use base64::{decode_config, encode_config, STANDARD_NO_PAD, URL_SAFE_NO_PAD};
 
-const SHARED_KEY_ENCODED: &'static str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
+const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
 
 enum Index {
     AuthorPublicKey = 5,
@@ -22,7 +22,7 @@ pub fn encode_v38(
     encrypted: &[u8],
     author_pub_key: Option<&[u8]>,
 ) -> Result<String, Error> {
-    let aes_key_encrypted = encode_aes_key_encrypted(&target, &iv, &key)?;
+    let aes_key_encrypted = encode_aes_key_encrypted(&target, iv, key)?;
 
     let base64_config = STANDARD_NO_PAD;
     let encoded_iv = encode_config(&iv, base64_config);
@@ -33,7 +33,7 @@ pub fn encode_v38(
         &aes_key_encrypted,
         &encoded_iv,
         &encoded_encrypted,
-        &signature,
+        signature,
         network,
         author_id,
         author_pub_key,
@@ -53,7 +53,7 @@ fn encode_aes_key_encrypted(target: &Target, iv: &[u8], key: &[u8]) -> Result<St
             let ab_bytes = ab.as_bytes();
             let shared_key_bytes = decode_config(&SHARED_KEY_ENCODED, base64_url_config)
                 .map_err(|_| Error::InvalidCiphertext)?;
-            let encrypted_key = aes_encrypt(&iv, &shared_key_bytes, &ab_bytes)?;
+            let encrypted_key = aes_encrypt(iv, &shared_key_bytes, ab_bytes)?;
             let base64_config = STANDARD_NO_PAD;
             let encoded_key = encode_config(&encrypted_key, base64_config);
             Ok(encoded_key)
@@ -73,10 +73,10 @@ fn encode_fields(
 ) -> Result<String, Error> {
     let mut fields: [&str; 8] = [
         "\u{1F3BC}4/4",
-        &aes_key_encrypted,
-        &encoded_iv,
-        &encoded_encrypted,
-        &signature,
+        aes_key_encrypted,
+        encoded_iv,
+        encoded_encrypted,
+        signature,
         "",
         "",
         "",
@@ -86,10 +86,9 @@ fn encode_fields(
         Some(key_data) => {
             let base64_config = STANDARD_NO_PAD;
             let public_key =
-                PublicKey::from_slice(&key_data).map_err(|_| Error::InvalidPrivateKey)?;
+                PublicKey::from_slice(key_data).map_err(|_| Error::InvalidPrivateKey)?;
             let compressed_key = public_key.serialize();
-            let compressed = encode_config(&compressed_key, base64_config);
-            compressed
+            encode_config(&compressed_key, base64_config)
         }
         None => "".to_string(),
     };
@@ -119,7 +118,6 @@ fn encode_fields(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::number_util::random_iv;
     #[test]
     fn test_encode_aes_key() {
         let iv = [
@@ -139,7 +137,6 @@ mod tests {
         let signature = "_";
         let network = "twitter.com";
         let author_id = "yuan_brad";
-
         let public_key_data = [
             2, 210, 107, 119, 140, 57, 180, 37, 245, 126, 86, 79, 41, 128, 107, 64, 99, 141, 222,
             6, 87, 249, 95, 130, 198, 99, 1, 113, 41, 91, 239, 152, 212,
@@ -147,10 +144,10 @@ mod tests {
 
         let encoded_fields = encode_fields(
             Target::Public,
-            &aes_key_encrypted,
-            &encoded_iv,
-            &encoded_encrypted,
-            &signature,
+            aes_key_encrypted,
+            encoded_iv,
+            encoded_encrypted,
+            signature,
             Some(network),
             Some(author_id),
             Some(&public_key_data),

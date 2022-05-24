@@ -1,11 +1,9 @@
 use super::number_util::random_iv;
-use super::payload_encode_v37::encode_with_container as encode_v37;
+// use super::payload_encode_v37::encode_with_container as encode_v37;
 use super::payload_encode_v38::encode_v38;
 use super::Error;
 
 use super::aes_gcm::{aes_decrypt, aes_encrypt};
-
-use rmp::encode::*;
 
 use std::str;
 
@@ -30,38 +28,38 @@ pub fn encrypt(
     author_pub_key: Option<&[u8]>,
     message: &[u8],
 ) -> Result<String, Error> {
+    match algr {
+        Some(value) => {
+            if value != 2 {
+                return Err(Error::NotSupportedCurve);
+            }
+        }
+        _ => return Err(Error::NotSupportedCurve),
+    }
+
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);
 
-    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &message)?;
+    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, message)?;
 
     match version {
         Version::V37 => Err(Error::NotSupportedCipher),
-        Version::V38 => {
-            let output = encode_v38(
-                target,
-                network,
-                author_id,
-                &post_iv,
-                &post_key_iv,
-                &encrypted_message,
-                author_pub_key,
-            )
-            .map_err(|_| Error::InvalidCiphertext)?;
-            Ok(output)
-        }
-    }
-}
-
-impl From<ValueWriteError> for Error {
-    fn from(_: ValueWriteError) -> Error {
-        Error::InvalidCiphertext
+        Version::V38 => encode_v38(
+            target,
+            network,
+            author_id,
+            &post_iv,
+            &post_key_iv,
+            &encrypted_message,
+            author_pub_key,
+        ),
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rmp::encode::*;
     // content text: "sample text"
     const ENCODED_MESSAGE: [u8; 18] = [
         146, 0, 148, 1, 1, 192, 171, 115, 97, 109, 112, 108, 101, 32, 116, 101, 120, 116,
