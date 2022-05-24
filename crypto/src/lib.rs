@@ -1,4 +1,5 @@
 pub mod aes;
+pub mod aes_gcm;
 pub mod aes_params;
 pub mod curve;
 pub mod hash;
@@ -11,6 +12,8 @@ pub mod bip32;
 pub mod bip39;
 
 pub mod number_util;
+pub mod payload_encode_v37;
+pub mod payload_encode_v38;
 pub mod post_encryption;
 
 pub mod jwk;
