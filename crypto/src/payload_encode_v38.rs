@@ -13,7 +13,7 @@ impl From<bitcoin::secp256k1::Error> for Error {
 
 use base64::{decode_config, encode_config, STANDARD, URL_SAFE_NO_PAD};
 
-const SHARED_KEY_ENCODED: &'static str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
+const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
 const E2E_KEY: [u8; 2] = [40, 70];
 const E2E_IV: [u8; 1] = [33];
 
@@ -39,12 +39,12 @@ pub fn encode_v38(
     let base64_url_config = URL_SAFE_NO_PAD;
     let (aes_key_encrypted, ecdh_result): (String, Option<HashMap<String, EncryptionResultE2E>>) =
         match is_public {
-            true => (encode_aes_key_encrypted(&iv, &key)?, None),
+            true => (encode_aes_key_encrypted(iv, key)?, None),
             false => {
                 let local_key = local_key_data.ok_or(Error::InvalidLocalKey)?;
-                let post_key_encoded = encode_post_key(&key);
+                let post_key_encoded = encode_post_key(key);
                 let owners_aes_key_encrypted =
-                    encrypt_by_local_key(&post_key_encoded, &iv, &local_key)?;
+                    encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
                 let unwrapped_author_private_key =
                     author_private_key.ok_or(Error::InvalidPrivateKey)?;
                 let author_private_key_data =
@@ -66,7 +66,7 @@ pub fn encode_v38(
         &aes_key_encrypted,
         &encoded_iv,
         &encoded_encrypted,
-        &signature,
+        signature,
         network,
         author_id,
         author_pub_key,
@@ -84,7 +84,7 @@ fn encode_aes_key_encrypted(iv: &[u8], key: &[u8]) -> Result<String, Error> {
     let ab_bytes = ab.as_bytes();
     let shared_key_bytes = decode_config(&SHARED_KEY_ENCODED, base64_url_config)
         .map_err(|_| Error::InvalidCiphertext)?;
-    let encrypted_key = aes_encrypt(&iv, &shared_key_bytes, &ab_bytes)?;
+    let encrypted_key = aes_encrypt(iv, &shared_key_bytes, ab_bytes)?;
     let base64_config = STANDARD;
     let encoded_key = encode_config(&encrypted_key, base64_config);
     Ok(encoded_key)
@@ -95,7 +95,7 @@ fn encrypt_by_local_key(
     post_iv: &[u8],
     local_key_data: &[u8],
 ) -> Result<Vec<u8>, Error> {
-    aes_encrypt(&post_iv, &local_key_data, &encoded_post_key)
+    aes_encrypt(post_iv, local_key_data, encoded_post_key)
 }
 
 fn encode_fields(
@@ -110,10 +110,10 @@ fn encode_fields(
 ) -> Result<String, Error> {
     let mut fields: [&str; 8] = [
         "\u{1F3BC}4/4",
-        &aes_key_encrypted,
-        &encoded_iv,
-        &encoded_encrypted,
-        &signature,
+        aes_key_encrypted,
+        encoded_iv,
+        encoded_encrypted,
+        signature,
         "",
         "",
         "",
@@ -123,10 +123,9 @@ fn encode_fields(
         Some(key_data) => {
             let base64_config = STANDARD;
             let public_key =
-                PublicKey::from_slice(&key_data).map_err(|_| Error::InvalidPrivateKey)?;
+                PublicKey::from_slice(key_data).map_err(|_| Error::InvalidPrivateKey)?;
             let compressed_key = public_key.serialize();
-            let compressed = encode_config(&compressed_key, base64_config);
-            compressed
+            encode_config(&compressed_key, base64_config)
         }
         None => "".to_string(),
     };
@@ -175,11 +174,11 @@ fn add_receiver(
     for (profile_id, receiver_public_key) in target.iter() {
         let iv_to_be_published = random_iv(16);
         let (aes, iv) = derive_ecdh_and_extra_steps(
-            &receiver_public_key,
-            &author_private_key,
+            receiver_public_key,
+            author_private_key,
             &iv_to_be_published,
         )?;
-        let encrypted_post_key = aes_encrypt(&iv, &aes, &encoded_post_key)?;
+        let encrypted_post_key = aes_encrypt(&iv, &aes, encoded_post_key)?;
         let result = EncryptionResultE2E {
             target: profile_id.to_string(),
             iv_to_be_published: Some(iv_to_be_published),
@@ -196,7 +195,7 @@ fn derive_ecdh_and_extra_steps(
     iv: &[u8],
 ) -> Result<(Vec<u8>, [u8; 16]), Error> {
     use sha2::{Digest, Sha256};
-    let derive_result = derive_aes_by_ecdh(&public_key, &author_private_key)?;
+    let derive_result = derive_aes_by_ecdh(public_key, author_private_key)?;
     let mut _a = Vec::new();
     _a.extend(&derive_result);
     _a.extend(iv);
@@ -221,8 +220,8 @@ fn derive_ecdh_and_extra_steps(
 }
 
 fn derive_aes_by_ecdh(public_key: &[u8], private_key: &[u8]) -> Result<Vec<u8>, Error> {
-    let pub_key = PublicKey::from_slice(&public_key)?;
-    let sec_key = SecretKey::from_slice(&private_key)?;
+    let pub_key = PublicKey::from_slice(public_key)?;
+    let sec_key = SecretKey::from_slice(private_key)?;
     let shared_secret = ecdh::SharedSecret::new(&pub_key, &sec_key);
     Ok(shared_secret.as_ref().to_vec())
 }
@@ -252,7 +251,6 @@ mod tests {
         let signature = "_";
         let network = "twitter.com";
         let author_id = "yuan_brad";
-
         let public_key_data = [
             2, 210, 107, 119, 140, 57, 180, 37, 245, 126, 86, 79, 41, 128, 107, 64, 99, 141, 222,
             6, 87, 249, 95, 130, 198, 99, 1, 113, 41, 91, 239, 152, 212,

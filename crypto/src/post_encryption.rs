@@ -1,12 +1,10 @@
 use super::number_util::random_iv;
-use super::payload_encode_v37::encode_with_container as encode_v37;
+// use super::payload_encode_v37::encode_with_container as encode_v37;
 use super::payload_encode_v38::encode_v38;
 use super::Error;
 use std::collections::HashMap;
 
-use super::aes_gcm::{aes_decrypt, aes_encrypt};
-
-use rmp::encode::*;
+use super::aes_gcm::aes_encrypt;
 
 use std::str;
 
@@ -29,7 +27,7 @@ pub fn encrypt(
     is_public: bool,
     network: Option<&str>,
     author_id: Option<&str>,
-    algr: Option<u8>,
+    _algr: Option<u8>,
     author_pub_key: Option<&[u8]>,
     message: &[u8],
     local_key_data: Option<&[u8]>,
@@ -39,7 +37,7 @@ pub fn encrypt(
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);
 
-    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, &message)?;
+    let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, message)?;
 
     match version {
         Version::V37 => Err(Error::NotSupportedCipher),
@@ -62,15 +60,10 @@ pub fn encrypt(
     }
 }
 
-impl From<ValueWriteError> for Error {
-    fn from(_: ValueWriteError) -> Error {
-        Error::InvalidCiphertext
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rmp::encode::*;
     // content text: "sample text"
     const ENCODED_MESSAGE: [u8; 18] = [
         146, 0, 148, 1, 1, 192, 171, 115, 97, 109, 112, 108, 101, 32, 116, 101, 120, 116,

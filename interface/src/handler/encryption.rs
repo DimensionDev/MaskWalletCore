@@ -11,10 +11,7 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
         1 => Version::V38,
         _ => Version::V38,
     };
-    let algr = match param.author_public_key_algr {
-        Some(algr) => Some(algr as u8),
-        None => None,
-    };
+    let algr = param.author_public_key_algr.map(|f| f as u8);
     let result = encrypt(
         version,
         param.is_plublic,
@@ -22,7 +19,7 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
         param.author_user_id.as_deref(),
         algr,
         param.author_public_key_data.as_deref(),
-        &param.content.as_bytes(),
+        param.content.as_bytes(),
         param.local_key_data.as_deref(),
         param.target,
         param
@@ -38,7 +35,7 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
             let content = PostEncrypedResp {
                 content: encrypted_message,
                 results: ecdh_result
-                    .unwrap_or(HashMap::new())
+                    .unwrap_or_default()
                     .into_iter()
                     .map(|(k, v)| {
                         (
