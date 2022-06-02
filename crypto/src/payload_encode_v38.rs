@@ -408,6 +408,7 @@ mod tests {
             Some(author_private_key_str),
         )
         .unwrap();
+        println!("{:?}", e2e_result);
         assert_eq!(output, "🎼4/4|Bwpu5LcIkJkW2IWz1FJSXjso2l312ydbACk0owMXFXC2VUci0I7dK7smPEW/iAXU0v0b6pttFOdPsavNUJl+CSkjHaeKY4pBGdRPVLVX9wTFvha7233bTAh7H8MaOQKAcjMTTPSpiIfXV6z+adQ4ub/GBz13JEEcq1tBWGe14e6KJM0BAlavKA8W|CODYA3UXxijahpWzNNhYWw==|sicrktkUfaAkTjYtZHH9KzGlymq5mw==|_|Ay0N+38oQ+roPtmvcZpXs/Gw9/3jU0J2djv/JUXFjUiO|0|dHdpdHRlci5jb20veXVhbl9icmFk:||");
     }
 }

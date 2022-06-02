@@ -1,5 +1,4 @@
 use crypto::post_encryption::{encrypt, Version};
-use std::collections::HashMap;
 
 use chain_common::api::{
     mw_response::Response, E2eEncryptionResult, MwResponse, PostEncrypedResp, PostEncryptionParam,

@@ -16,6 +16,7 @@ pub enum Version {
     V38 = -38,
 }
 
+#[derive(Debug)]
 pub struct EncryptionResultE2E {
     pub target: String,
     pub encrypted_post_key: Vec<u8>,
@@ -63,6 +64,7 @@ pub fn encrypt(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::aes_gcm::aes_decrypt;
     use rmp::encode::*;
     // content text: "sample text"
     const ENCODED_MESSAGE: [u8; 18] = [
