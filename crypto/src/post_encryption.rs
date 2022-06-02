@@ -2,6 +2,7 @@ use super::number_util::random_iv;
 use super::payload_encode_v37::encode_with_container as encode_v37;
 use super::payload_encode_v38::encode_v38;
 use super::Error;
+use std::collections::HashMap;
 
 use super::aes_gcm::{aes_decrypt, aes_encrypt};
 
@@ -17,19 +18,24 @@ pub enum Version {
     V38 = -38,
 }
 
-pub enum Target {
-    Public,
+pub struct EncryptionResultE2E {
+    pub target: String,
+    pub encrypted_post_key: Vec<u8>,
+    pub iv_to_be_published: Option<Vec<u8>>,
 }
 
 pub fn encrypt(
     version: Version,
-    target: Target,
+    is_public: bool,
     network: Option<&str>,
     author_id: Option<&str>,
     algr: Option<u8>,
     author_pub_key: Option<&[u8]>,
     message: &[u8],
-) -> Result<String, Error> {
+    local_key_data: Option<&[u8]>,
+    target: HashMap<String, Vec<u8>>,
+    author_private_key: Option<&str>,
+) -> Result<(String, Option<HashMap<String, EncryptionResultE2E>>), Error> {
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);
 
@@ -39,13 +45,16 @@ pub fn encrypt(
         Version::V37 => Err(Error::NotSupportedCipher),
         Version::V38 => {
             let output = encode_v38(
-                target,
+                is_public,
                 network,
                 author_id,
                 &post_iv,
                 &post_key_iv,
                 &encrypted_message,
                 author_pub_key,
+                local_key_data,
+                target,
+                author_private_key,
             )
             .map_err(|_| Error::InvalidCiphertext)?;
             Ok(output)
@@ -104,12 +113,15 @@ mod tests {
         // let output = encrypt(
         let output = encrypt(
             Version::V38,
-            Target::Public,
+            true,
             Some(network),
             Some(author_id),
             Some(algr),
             Some(&public_key_data),
             message.as_bytes(),
+            None,
+            HashMap::new(),
+            None,
         )
         .unwrap();
     }

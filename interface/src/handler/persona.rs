@@ -1,9 +1,8 @@
 use std::convert::TryInto;
 
 use chain_common::api::{
-    encrypt_option::Version, mw_response::Response, Curve, AesJwkResp,
-    EncryptOption, JwkResp, MwResponse, MwResponseError, PersonaGenerationParam,
-    PersonaGenerationResp,
+    encrypt_option::Version, mw_response::Response, AesJwk, Curve, EncryptOption, Jwk, MwResponse,
+    MwResponseError, PersonaGenerationParam, PersonaGenerationResp,
 };
 
 use crypto::{jwk::AesJWK, jwk::JWK, pbkdf2, Error};
@@ -60,8 +59,8 @@ impl JWKWrapper {
         let private_key = self.as_private_key();
         let public_key = self.as_public_key();
 
-        let local_key_resp: Option<AesJwkResp> = match local_key {
-            Some(aes_jwk) => Some(AesJwkResp {
+        let local_key_resp: Option<AesJwk> = match local_key {
+            Some(aes_jwk) => Some(AesJwk {
                 alg: aes_jwk.alg,
                 ext: aes_jwk.ext,
                 k: aes_jwk.k,
@@ -80,8 +79,8 @@ impl JWKWrapper {
         }
     }
 
-    fn as_public_key(&self) -> JwkResp {
-        JwkResp {
+    fn as_public_key(&self) -> Jwk {
+        Jwk {
             crv: self.0.crv.clone(),
             ext: self.0.ext,
             x: self.0.x.clone(),
@@ -92,8 +91,8 @@ impl JWKWrapper {
         }
     }
 
-    fn as_private_key(&self) -> JwkResp {
-        JwkResp {
+    fn as_private_key(&self) -> Jwk {
+        Jwk {
             crv: self.0.crv.clone(),
             ext: self.0.ext,
             x: self.0.x.clone(),

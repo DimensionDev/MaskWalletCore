@@ -46,6 +46,8 @@ pub enum Error {
     NotSupportedCurve,
 
     NotSupportedCipher,
+
+    InvalidLocalKey,
 }
 
 impl Error {
@@ -64,6 +66,7 @@ impl Error {
             Error::NotSupportedPublicKeyType => "-3011".to_owned(),
             Error::NotSupportedCurve => "-3012".to_owned(),
             Error::NotSupportedCipher => "-3013".to_owned(),
+            Error::InvalidLocalKey => "-3014".to_owned(),
         }
     }
 
@@ -82,6 +85,9 @@ impl Error {
             Error::NotSupportedPublicKeyType => "Not supported public key type".to_owned(),
             Error::NotSupportedCurve => "Not supported curve".to_owned(),
             Error::NotSupportedCipher => "Not supported cipher type".to_owned(),
+            Error::InvalidLocalKey => {
+                "Invalid local key. Local key is required to encrypt private message".to_owned()
+            }
         }
     }
 }
