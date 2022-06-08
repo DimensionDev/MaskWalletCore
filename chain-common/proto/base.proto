@@ -70,3 +70,9 @@ message AesJWK {
     repeated string key_ops = 4;
     string kty = 5;
 }
+
+message E2EEncryptParam {
+    bytes localKeyData = 1;
+    map<string, bytes> target = 2;
+    bytes authorPrivateKey = 3;
+}

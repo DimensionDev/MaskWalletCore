@@ -33,7 +33,7 @@ pub fn encrypt(
     message: &[u8],
     local_key_data: Option<&[u8]>,
     target: HashMap<String, Vec<u8>>,
-    author_private_key: Option<&str>,
+    author_private_key: Option<&[u8]>,
 ) -> Result<(String, Option<HashMap<String, EncryptionResultE2E>>), Error> {
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);

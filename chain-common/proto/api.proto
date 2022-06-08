@@ -68,7 +68,7 @@ message MWResponse {
 
         PersonaGenerationResp resp_generate_persona = 25;
 
-        PostEncrypedResp resp_post_encryption = 26;
+        PostEncryptedResp resp_post_encryption = 26;
     }
 }
 

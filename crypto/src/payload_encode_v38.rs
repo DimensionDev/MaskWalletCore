@@ -33,7 +33,7 @@ pub fn encode_v38(
     author_pub_key: Option<&[u8]>,
     local_key_data: Option<&[u8]>,
     target: HashMap<String, Vec<u8>>,
-    author_private_key: Option<&str>,
+    author_private_key: Option<&[u8]>,
 ) -> Result<(String, Option<HashMap<String, EncryptionResultE2E>>), Error> {
     let base64_config = STANDARD;
     let base64_url_config = URL_SAFE_NO_PAD;
@@ -45,11 +45,7 @@ pub fn encode_v38(
                 let post_key_encoded = encode_post_key(key);
                 let owners_aes_key_encrypted =
                     encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
-                let unwrapped_author_private_key =
-                    author_private_key.ok_or(Error::InvalidPrivateKey)?;
-                let author_private_key_data =
-                    decode_config(&unwrapped_author_private_key, base64_url_config)
-                        .map_err(|_| Error::InvalidPrivateKey)?;
+                let author_private_key_data = author_private_key.ok_or(Error::InvalidPrivateKey)?;
                 let ecdh_result =
                     add_receiver(&author_private_key_data, &target, &post_key_encoded)?;
                 let owners_aes_key_encrypted_string =
@@ -405,7 +401,7 @@ mod tests {
             Some(&author_public_key),
             Some(&local_key),
             target,
-            Some(author_private_key_str),
+            Some(&author_private_key_data),
         )
         .unwrap();
         println!("{:?}", e2e_result);
