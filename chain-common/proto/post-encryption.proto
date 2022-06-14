@@ -14,7 +14,7 @@ message PostEncryptionParam {
     EncryptOption.Version version = 1;
     bool isPlublic = 2;
     string content = 3;
-    optional string network = 4;
+    string network = 4;
     optional bytes authorPublicKeyData = 5;
     optional string authorUserId = 6;
     optional PublicKeyAlgorithm authorPublicKeyAlgr = 7;
@@ -29,5 +29,7 @@ message E2EEncryptionResult {
 
 message PostEncryptedResp { 
     string content = 1;
-    map<string, E2EEncryptionResult> results = 2;
+    string postIdentifier = 2;
+    bytes postKey = 3;
+    map<string, E2EEncryptionResult> results = 4;
 }

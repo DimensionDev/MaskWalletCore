@@ -19,7 +19,7 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
     let result = encrypt(
         version,
         param.is_plublic,
-        param.network.as_deref(),
+        &param.network,
         param.author_user_id.as_deref(),
         algr,
         param.author_public_key_data.as_deref(),
@@ -30,11 +30,12 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
     );
 
     match result {
-        Ok((encrypted_message, ecdh_result)) => {
+        Ok(encryption_result) => {
             // TODO: finish implementation
             let content = PostEncryptedResp {
-                content: encrypted_message,
-                results: ecdh_result
+                content: encryption_result.output,
+                results: encryption_result
+                    .e2e_result
                     .unwrap_or_default()
                     .into_iter()
                     .map(|(k, v)| {
@@ -48,6 +49,8 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
                         )
                     })
                     .collect(),
+                post_identifier: encryption_result.post_identifier,
+                post_key: encryption_result.post_key,
             };
             Response::RespPostEncryption(content).into()
         }

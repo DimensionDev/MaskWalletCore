@@ -449,8 +449,8 @@ pub struct PostEncryptionParam {
     pub is_plublic: bool,
     #[prost(string, tag="3")]
     pub content: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="4")]
-    pub network: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="4")]
+    pub network: ::prost::alloc::string::String,
     #[prost(bytes="vec", optional, tag="5")]
     pub author_public_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
     #[prost(string, optional, tag="6")]
@@ -473,7 +473,11 @@ pub struct E2eEncryptionResult {
 pub struct PostEncryptedResp {
     #[prost(string, tag="1")]
     pub content: ::prost::alloc::string::String,
-    #[prost(map="string, message", tag="2")]
+    #[prost(string, tag="2")]
+    pub post_identifier: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="3")]
+    pub post_key: ::prost::alloc::vec::Vec<u8>,
+    #[prost(map="string, message", tag="4")]
     pub results: ::std::collections::HashMap<::prost::alloc::string::String, E2eEncryptionResult>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

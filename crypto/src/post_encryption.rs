@@ -2,6 +2,7 @@ use super::number_util::random_iv;
 // use super::payload_encode_v37::encode_with_container as encode_v37;
 use super::payload_encode_v38::encode_v38;
 use super::Error;
+use base64::{encode_config, STANDARD};
 use std::collections::HashMap;
 
 use super::aes_gcm::aes_encrypt;
@@ -23,10 +24,17 @@ pub struct EncryptionResultE2E {
     pub iv_to_be_published: Option<Vec<u8>>,
 }
 
+pub struct EncryptionResult {
+    pub output: String,
+    pub post_key: Vec<u8>,
+    pub post_identifier: String,
+    pub e2e_result: Option<HashMap<String, EncryptionResultE2E>>,
+}
+
 pub fn encrypt(
     version: Version,
     is_public: bool,
-    network: Option<&str>,
+    network: &str,
     author_id: Option<&str>,
     _algr: Option<u8>,
     author_pub_key: Option<&[u8]>,
@@ -34,31 +42,38 @@ pub fn encrypt(
     local_key_data: Option<&[u8]>,
     target: HashMap<String, Vec<u8>>,
     author_private_key: Option<&[u8]>,
-) -> Result<(String, Option<HashMap<String, EncryptionResultE2E>>), Error> {
+) -> Result<EncryptionResult, Error> {
     let post_iv = random_iv(IV_SIZE);
     let post_key_iv = random_iv(AES_KEY_SIZE);
 
     let encrypted_message = aes_encrypt(&post_iv, &post_key_iv, message)?;
 
-    match version {
+    let result = match version {
         Version::V37 => Err(Error::NotSupportedCipher),
-        Version::V38 => {
-            let output = encode_v38(
-                is_public,
-                network,
-                author_id,
-                &post_iv,
-                &post_key_iv,
-                &encrypted_message,
-                author_pub_key,
-                local_key_data,
-                target,
-                author_private_key,
-            )
-            .map_err(|_| Error::InvalidCiphertext)?;
-            Ok(output)
-        }
-    }
+        Version::V38 => encode_v38(
+            is_public,
+            network,
+            author_id,
+            &post_iv,
+            &post_key_iv,
+            &encrypted_message,
+            author_pub_key,
+            local_key_data,
+            target,
+            author_private_key,
+        )
+        .map_err(|_| Error::InvalidCiphertext),
+    }?;
+
+    let encoded_post_iv = encode_config(&post_iv, STANDARD).replace("/", "|");
+    let post_identifier = format!("post_iv:{}/{}", &network, &encoded_post_iv);
+
+    Ok(EncryptionResult {
+        output: result.0,
+        post_key: post_key_iv,
+        post_identifier: post_identifier,
+        e2e_result: result.1,
+    })
 }
 
 #[cfg(test)]
@@ -106,10 +121,10 @@ mod tests {
             6, 87, 249, 95, 130, 198, 99, 1, 113, 41, 91, 239, 152, 212,
         ];
         // let output = encrypt(
-        let output = encrypt(
+        let encryption_result = encrypt(
             Version::V38,
             true,
-            Some(network),
+            network,
             Some(author_id),
             Some(algr),
             Some(&public_key_data),

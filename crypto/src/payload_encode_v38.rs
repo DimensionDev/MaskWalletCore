@@ -25,7 +25,7 @@ enum Index {
 
 pub fn encode_v38(
     is_public: bool,
-    network: Option<&str>,
+    network: &str,
     author_id: Option<&str>,
     iv: &[u8],
     key: &[u8],
@@ -36,7 +36,6 @@ pub fn encode_v38(
     author_private_key: Option<&[u8]>,
 ) -> Result<(String, Option<HashMap<String, EncryptionResultE2E>>), Error> {
     let base64_config = STANDARD;
-    let base64_url_config = URL_SAFE_NO_PAD;
     let (aes_key_encrypted, ecdh_result): (String, Option<HashMap<String, EncryptionResultE2E>>) =
         match is_public {
             true => (encode_aes_key_encrypted(iv, key)?, None),
@@ -47,7 +46,7 @@ pub fn encode_v38(
                     encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
                 let author_private_key_data = author_private_key.ok_or(Error::InvalidPrivateKey)?;
                 let ecdh_result =
-                    add_receiver(&author_private_key_data, &target, &post_key_encoded)?;
+                    add_receiver(author_private_key_data, &target, &post_key_encoded)?;
                 let owners_aes_key_encrypted_string =
                     encode_config(&owners_aes_key_encrypted, base64_config);
                 (owners_aes_key_encrypted_string, Some(ecdh_result))
@@ -100,7 +99,7 @@ fn encode_fields(
     encoded_iv: &str,
     encoded_encrypted: &str,
     signature: &str,
-    network: Option<&str>,
+    network: &str,
     author_id: Option<&str>,
     author_pub_key: Option<&[u8]>,
 ) -> Result<String, Error> {
@@ -136,8 +135,8 @@ fn encode_fields(
         }
     }
 
-    let identity = match (network, author_id) {
-        (Some(network), Some(author_id)) => {
+    let identity = match author_id {
+        Some(author_id) => {
             let profile_identifier = format!("{}/{}", network, author_id);
             let base64_config = STANDARD;
             encode_config(&profile_identifier, base64_config)
@@ -258,7 +257,7 @@ mod tests {
             &encoded_iv,
             &encoded_encrypted,
             &signature,
-            Some(network),
+            network,
             Some(author_id),
             Some(&public_key_data),
         )
@@ -393,7 +392,7 @@ mod tests {
 
         let (output, e2e_result) = encode_v38(
             is_public,
-            Some(network),
+            network,
             Some(author_id),
             &iv,
             &aes_key,
