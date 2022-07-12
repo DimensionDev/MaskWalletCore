@@ -378,6 +378,6 @@ mod tests {
             .into_iter()
             .map(|r#type| r#type as i32)
             .collect();
-        assert_eq!(types, vec![0, 1, 2]);
+        assert_eq!(types, vec![1, 0, 2]);
     }
 }
