@@ -41,12 +41,11 @@ impl Signer {
                 while s[0] == 0 {
                     s.remove(0);
                 }
-                let mut v = v_id.to_i32();
-                let chain_id_i32 = chain_id as i32;
+                let mut v = v_id.to_i32() as u64;
                 if transaction.uses_replay_protection() {
                     // Embed chainID in V param, for replay protection, legacy (EIP155)
-                    if chain_id_i32 != 0 {
-                        v += 35 + chain_id_i32 * 2;
+                    if chain_id != 0 {
+                        v += 35 + chain_id * 2;
                     } else {
                         v += 27;
                     }
@@ -240,5 +239,13 @@ mod tests {
         .unwrap();
         let output = Signer::sign(&private_key, &input).unwrap();
         assert_eq!(output.v, 37);
+    }
+
+    #[test]
+    fn test_aurora_chain_id() {
+        let aurora_chain_id = 1313161554 as u64;
+        let mut v = 0 as u64;
+        v += 35 + aurora_chain_id * 2;
+        assert_eq!(v, 2626323143);
     }
 }
