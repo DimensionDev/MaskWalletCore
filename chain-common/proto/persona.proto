@@ -9,36 +9,15 @@ message PersonaGenerationParam {
     string mnemonic = 1;
     string password = 2;
     string path = 3;
-    enum Curve { 
-        Secp256k1 = 0;
-        Ed25519 = 1;
-    }
     Curve curve = 4;
     EncryptOption option = 5;
 }
 
 message PersonaGenerationResp { 
     string identifier = 1;
-    JWKResp privateKey = 2;
-    JWKResp publicKey = 3;
-    optional AesJWKResp localKey = 4;
+    JWK privateKey = 2;
+    JWK publicKey = 3;
+    optional AesJWK localKey = 4;
     EncryptOption option = 5;
 }
 
-message JWKResp {
-    string crv = 1;
-    bool ext = 3;
-    string x = 4;
-    string y = 5;
-    repeated string key_ops = 6;
-    string kty = 7;
-    optional string d = 8;
-}
-
-message AesJWKResp {
-    string alg = 1;
-    bool ext = 2;
-    string k = 3;
-    repeated string key_ops = 4;
-    string kty = 5;
-}

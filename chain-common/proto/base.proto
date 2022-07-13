@@ -40,10 +40,39 @@ message StoredKeyAccountInfo {
     string extendedPublicKey = 5;
 }
 
+enum Curve { 
+    Secp256k1 = 0;
+    Ed25519 = 1;
+}
+
 message EncryptOption { 
     enum Version { 
         V37 = 0;
         V38 = 1;
     }
     Version version = 1;
+}
+
+message JWK {
+    string crv = 1;
+    bool ext = 3;
+    string x = 4;
+    string y = 5;
+    repeated string key_ops = 6;
+    string kty = 7;
+    optional string d = 8;
+}
+
+message AesJWK {
+    string alg = 1;
+    bool ext = 2;
+    string k = 3;
+    repeated string key_ops = 4;
+    string kty = 5;
+}
+
+message E2EEncryptParam {
+    bytes localKeyData = 1;
+    map<string, bytes> target = 2;
+    bytes authorPrivateKey = 3;
 }

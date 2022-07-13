@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+enum PublicKeyAlgorithm { 
+    Ed25519Algr = 0;
+    Secp256p1Algr = 1;
+    Secp256k1Algr = 2;
+}
+
+message PostEncryptionParam {
+    EncryptOption.Version version = 1;
+    bool isPlublic = 2;
+    string content = 3;
+    string network = 4;
+    optional bytes authorPublicKeyData = 5;
+    optional string authorUserId = 6;
+    optional PublicKeyAlgorithm authorPublicKeyAlgr = 7;
+    optional E2EEncryptParam param = 8;
+}
+
+message E2EEncryptionResult {
+    optional bytes iv = 1;
+    bytes encryptedPostKeyData = 2;
+    optional bytes ephemeralPublicKeyData = 3;
+}
+
+message PostEncryptedResp { 
+    string content = 1;
+    string postIdentifier = 2;
+    bytes postKey = 3;
+    map<string, E2EEncryptionResult> results = 4;
+}

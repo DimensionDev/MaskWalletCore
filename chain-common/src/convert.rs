@@ -2,8 +2,7 @@ use std::convert::{From, TryFrom};
 use std::str::FromStr;
 
 use crate::generated::api::{
-    encrypt_option::Version, mw_response::Response, persona_generation_param::Curve, MwResponse,
-    MwResponseError,
+    encrypt_option::Version, mw_response::Response, Curve, MwResponse, MwResponseError,
 };
 use crypto::Error as CryptoError;
 
@@ -13,6 +12,13 @@ impl From<CryptoError> for MwResponseError {
             error_code: err.get_code(),
             error_msg: err.get_message(),
         }
+    }
+}
+
+impl From<CryptoError> for MwResponse {
+    fn from(err: CryptoError) -> Self {
+        let resp_error: MwResponseError = err.into();
+        resp_error.into()
     }
 }
 
@@ -42,6 +48,14 @@ impl From<Result<Response, MwResponseError>> for MwResponse {
             Err(error) => MwResponse {
                 response: Some(Response::Error(error)),
             },
+        }
+    }
+}
+
+impl From<Response> for MwResponse {
+    fn from(response: Response) -> Self {
+        Self {
+            response: Some(response),
         }
     }
 }

@@ -1,5 +1,6 @@
 mod account;
 mod common;
+mod encryption;
 mod persona;
 mod sign;
 mod stored_key;
@@ -37,5 +38,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGenerateMnemonic(_) => common::generate_mnemonic(),
 
         ParamGeneratePersona(param) => persona::generate_persona(&param),
+
+        ParamPostEncryption(param) => encryption::encode(param),
     }
 }

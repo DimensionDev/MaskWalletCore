@@ -48,6 +48,45 @@ pub mod encrypt_option {
         V38 = 1,
     }
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Jwk {
+    #[prost(string, tag="1")]
+    pub crv: ::prost::alloc::string::String,
+    #[prost(bool, tag="3")]
+    pub ext: bool,
+    #[prost(string, tag="4")]
+    pub x: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub y: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="6")]
+    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="7")]
+    pub kty: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="8")]
+    pub d: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AesJwk {
+    #[prost(string, tag="1")]
+    pub alg: ::prost::alloc::string::String,
+    #[prost(bool, tag="2")]
+    pub ext: bool,
+    #[prost(string, tag="3")]
+    pub k: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="4")]
+    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="5")]
+    pub kty: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct E2eEncryptParam {
+    #[prost(bytes="vec", tag="1")]
+    pub local_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(map="string, bytes", tag="2")]
+    pub target: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::vec::Vec<u8>>,
+    #[prost(bytes="vec", tag="3")]
+    pub author_private_key: ::prost::alloc::vec::Vec<u8>,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Coin {
@@ -74,6 +113,12 @@ pub enum StoredKeyExportType {
     PrivateKeyExportType = 0,
     MnemonicExportType = 1,
     KeyStoreJsonExportType = 2,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum Curve {
+    Secp256k1 = 0,
+    Ed25519 = 1,
 }
 /// Create a new account to the StoredKey at specific derivation path. Fail if the StoredKey is not a Hd StoredKey
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -378,66 +423,73 @@ pub struct PersonaGenerationParam {
     pub password: ::prost::alloc::string::String,
     #[prost(string, tag="3")]
     pub path: ::prost::alloc::string::String,
-    #[prost(enumeration="persona_generation_param::Curve", tag="4")]
+    #[prost(enumeration="Curve", tag="4")]
     pub curve: i32,
     #[prost(message, optional, tag="5")]
     pub option: ::core::option::Option<EncryptOption>,
-}
-/// Nested message and enum types in `PersonaGenerationParam`.
-pub mod persona_generation_param {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-    #[repr(i32)]
-    pub enum Curve {
-        Secp256k1 = 0,
-        Ed25519 = 1,
-    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PersonaGenerationResp {
     #[prost(string, tag="1")]
     pub identifier: ::prost::alloc::string::String,
     #[prost(message, optional, tag="2")]
-    pub private_key: ::core::option::Option<JwkResp>,
+    pub private_key: ::core::option::Option<Jwk>,
     #[prost(message, optional, tag="3")]
-    pub public_key: ::core::option::Option<JwkResp>,
+    pub public_key: ::core::option::Option<Jwk>,
     #[prost(message, optional, tag="4")]
-    pub local_key: ::core::option::Option<AesJwkResp>,
+    pub local_key: ::core::option::Option<AesJwk>,
     #[prost(message, optional, tag="5")]
     pub option: ::core::option::Option<EncryptOption>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct JwkResp {
-    #[prost(string, tag="1")]
-    pub crv: ::prost::alloc::string::String,
-    #[prost(bool, tag="3")]
-    pub ext: bool,
+pub struct PostEncryptionParam {
+    #[prost(enumeration="encrypt_option::Version", tag="1")]
+    pub version: i32,
+    #[prost(bool, tag="2")]
+    pub is_plublic: bool,
+    #[prost(string, tag="3")]
+    pub content: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
-    pub x: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
-    pub y: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="6")]
-    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag="7")]
-    pub kty: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="8")]
-    pub d: ::core::option::Option<::prost::alloc::string::String>,
+    pub network: ::prost::alloc::string::String,
+    #[prost(bytes="vec", optional, tag="5")]
+    pub author_public_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(string, optional, tag="6")]
+    pub author_user_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(enumeration="PublicKeyAlgorithm", optional, tag="7")]
+    pub author_public_key_algr: ::core::option::Option<i32>,
+    #[prost(message, optional, tag="8")]
+    pub param: ::core::option::Option<E2eEncryptParam>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AesJwkResp {
+pub struct E2eEncryptionResult {
+    #[prost(bytes="vec", optional, tag="1")]
+    pub iv: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    #[prost(bytes="vec", tag="2")]
+    pub encrypted_post_key_data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", optional, tag="3")]
+    pub ephemeral_public_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PostEncryptedResp {
     #[prost(string, tag="1")]
-    pub alg: ::prost::alloc::string::String,
-    #[prost(bool, tag="2")]
-    pub ext: bool,
-    #[prost(string, tag="3")]
-    pub k: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="4")]
-    pub key_ops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag="5")]
-    pub kty: ::prost::alloc::string::String,
+    pub content: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub post_identifier: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="3")]
+    pub post_key: ::prost::alloc::vec::Vec<u8>,
+    #[prost(map="string, message", tag="4")]
+    pub results: ::std::collections::HashMap<::prost::alloc::string::String, E2eEncryptionResult>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum PublicKeyAlgorithm {
+    Ed25519Algr = 0,
+    Secp256p1Algr = 1,
+    Secp256k1Algr = 2,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -482,11 +534,13 @@ pub mod mw_request {
         ParamGenerateMnemonic(super::GenerateMnemonicParam),
         #[prost(message, tag="26")]
         ParamGeneratePersona(super::PersonaGenerationParam),
+        #[prost(message, tag="27")]
+        ParamPostEncryption(super::PostEncryptionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -529,6 +583,8 @@ pub mod mw_response {
         RespGenerateMnemonic(super::GenerateMnemonicResp),
         #[prost(message, tag="25")]
         RespGeneratePersona(super::PersonaGenerationResp),
+        #[prost(message, tag="26")]
+        RespPostEncryption(super::PostEncryptedResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
