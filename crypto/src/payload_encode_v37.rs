@@ -1,17 +1,7 @@
 use rmp::encode::*;
 
+use super::payload_index_v37::Index;
 use super::Error;
-
-#[allow(dead_code)]
-enum Index {
-    Version = 0,
-    AuthorNetwork = 1,
-    AuthorID = 2,
-    AuthorPublicKeyAlgorithm = 3,
-    AuthorPublicKey = 4,
-    Encryption = 5,
-    Data = 6,
-}
 
 pub fn encode_with_container(
     network: &str,
