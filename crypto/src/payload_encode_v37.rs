@@ -2,6 +2,7 @@ use rmp::encode::*;
 
 use super::Error;
 
+#[allow(dead_code)]
 enum Index {
     Version = 0,
     AuthorNetwork = 1,

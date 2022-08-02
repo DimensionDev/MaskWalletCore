@@ -24,6 +24,7 @@ pub struct EncryptionResultE2E {
     pub iv_to_be_published: Option<Vec<u8>>,
 }
 
+#[derive(Debug)]
 pub struct EncryptionResult {
     pub output: String,
     pub post_key: Vec<u8>,
@@ -31,6 +32,7 @@ pub struct EncryptionResult {
     pub e2e_result: Option<HashMap<String, EncryptionResultE2E>>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn encrypt(
     version: Version,
     is_public: bool,
@@ -71,7 +73,7 @@ pub fn encrypt(
     Ok(EncryptionResult {
         output: result.0,
         post_key: post_key_iv,
-        post_identifier: post_identifier,
+        post_identifier,
         e2e_result: result.1,
     })
 }
@@ -134,5 +136,7 @@ mod tests {
             None,
         )
         .unwrap();
+
+        println!("{:?}", encryption_result);
     }
 }
