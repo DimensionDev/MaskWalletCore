@@ -17,7 +17,7 @@ const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
 const E2E_KEY: [u8; 2] = [40, 70];
 const E2E_IV: [u8; 1] = [33];
 
-enum Index {
+pub enum Index {
     AuthorPublicKey = 5,
     PublicShared = 6,
     AuthorIdentifier = 7,

@@ -1,6 +1,6 @@
 use std::str::from_utf8;
 
-use super::payload_index_v37::*;
+use super::payload_encode_v37::Index;
 use super::Error;
 use rmp::decode::*;
 

@@ -19,8 +19,8 @@ pub mod post_encryption;
 pub mod jwk;
 pub mod pbkdf2;
 
-mod payload_index_v37;
 mod payload_decode_v37;
+mod payload_decode_v38;
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
