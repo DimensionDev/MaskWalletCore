@@ -23,6 +23,7 @@ enum Index {
     AuthorIdentifier = 7,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn encode_v38(
     is_public: bool,
     network: &str,
@@ -93,6 +94,7 @@ fn encrypt_by_local_key(
     aes_encrypt(post_iv, local_key_data, encoded_post_key)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn encode_fields(
     is_public: bool,
     aes_key_encrypted: &str,
@@ -253,10 +255,10 @@ mod tests {
 
         let encoded_fields = encode_fields(
             true,
-            &aes_key_encrypted,
-            &encoded_iv,
-            &encoded_encrypted,
-            &signature,
+            aes_key_encrypted,
+            encoded_iv,
+            encoded_encrypted,
+            signature,
             network,
             Some(author_id),
             Some(&public_key_data),
@@ -278,8 +280,9 @@ mod tests {
             2, 170, 10, 30, 27, 232, 4, 43, 63, 50, 63, 249, 34, 255, 147, 179, 179, 85, 203, 103,
             115, 52, 111, 166, 140, 56, 20, 223, 54, 25, 143, 49, 28,
         ];
-        assert_eq!(PublicKey::from_slice(&public_key).is_ok(), true);
-        assert_eq!(SecretKey::from_slice(&private_key).is_ok(), true);
+
+        assert!(PublicKey::from_slice(&public_key).is_ok());
+        assert!(SecretKey::from_slice(&private_key).is_ok());
         let shared_secret = derive_aes_by_ecdh(&public_key, &private_key).unwrap();
         let encrypted = aes_encrypt(&test_iv, &shared_secret, test_message.as_bytes()).unwrap();
         let decrypted = aes_decrypt(&test_iv, &shared_secret, &encrypted).unwrap();
