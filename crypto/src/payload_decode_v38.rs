@@ -27,7 +27,7 @@ fn decode_post_e2e_v38(
     author_private_key: Option<&[u8]>,
     post_content: &str,
 ) -> Result<(), ParseError> {
-    let parsed_fields = parse_fields(post_content)?;
+    let parsed_fields = check_and_parse_fields(post_content)?;
     let parsed_enctypted_info = parse_and_decode_fields_to_encrypt_info(parsed_fields)?;
 
     Ok(())
@@ -57,7 +57,7 @@ fn parse_post_identifier(formated: &str) -> Result<(String, String), ParseError>
     }
 }
 
-fn parse_fields(given_content: &str) -> Result<Vec<&str>, ParseError> {
+fn check_and_parse_fields(given_content: &str) -> Result<Vec<&str>, ParseError> {
     let prefix = "\u{1F3BC}4/4";
     if !given_content.starts_with(prefix) {
         return Err(ParseError::InvalidField);
@@ -176,14 +176,17 @@ mod tests {
 
     #[test]
     fn test_decode_fields() {
-        let public_fields =
-            parse_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|12adad|1|dad:||");
-        let privte_fields =
-            parse_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|01131|0|dad:||");
+        let public_fields = check_and_parse_fields(
+            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|12adad|1|dad:||",
+        );
+        let privte_fields = check_and_parse_fields(
+            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|01131|0|dad:||",
+        );
         let faild_public_fields =
-            parse_fields("11dd|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
-        let faild_fields =
-            parse_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
+            check_and_parse_fields("11dd|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
+        let faild_fields = check_and_parse_fields(
+            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||",
+        );
 
         assert!(public_fields.is_ok());
         assert!(privte_fields.is_ok());
@@ -195,7 +198,7 @@ mod tests {
     fn test_base64_decode_encoded_encryped() {
         let base64_url_config = URL_SAFE_NO_PAD;
         let encrypted_result = "🎼4/4|dPsavNUJl+CSkjHaeKY4pBGdRPVLVX9wTFvha7233bTAh7H8MaOQKAcjMTTPSpiIfXV6z+adQ4ub/GBz13JEEcq1tBWGe14e6KJM0BAlavKA8W|CODYA3UXxijahpWzNNhYWw==|sicrktkUfaAkTjYtZHH9KzGlymq5mw==|_|Ay0N+38oQ+roPtmvcZpXs/Gw9/3jU0J2djv/JUXFjUiO|0|dHdpdHRlci5jb20veXVhbl9icmFk:||";
-        let parsed_field = parse_fields(encrypted_result).expect("parse failed");
+        let parsed_field = check_and_parse_fields(encrypted_result).expect("parse failed");
         let encryped_info = parse_and_decode_fields_to_encrypt_info(parsed_field)
             .expect("parse_fields_to_encrypt_info failed");
 
