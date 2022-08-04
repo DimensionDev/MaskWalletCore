@@ -13,7 +13,7 @@ impl From<bitcoin::secp256k1::Error> for Error {
 
 use base64::{decode_config, encode_config, STANDARD, URL_SAFE_NO_PAD};
 
-const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
+pub(crate) const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
 const E2E_KEY: [u8; 2] = [40, 70];
 const E2E_IV: [u8; 1] = [33];
 
@@ -41,15 +41,13 @@ pub fn encode_v38(
         match is_public {
             true => (encode_aes_key_encrypted(iv, key)?, None),
             false => {
-                let local_key = local_key_data.ok_or(Error::InvalidLocalKey)?;
-                let post_key_encoded = encode_post_key(key);
-                let owners_aes_key_encrypted =
-                    encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
+                let (post_key_encoded, owners_aes_key_encrypted_string) =
+                    eocode_post_key_and_aes_key(local_key_data, iv, key)?;
+
                 let author_private_key_data = author_private_key.ok_or(Error::InvalidPrivateKey)?;
                 let ecdh_result =
                     add_receiver(author_private_key_data, &target, &post_key_encoded)?;
-                let owners_aes_key_encrypted_string =
-                    encode_config(&owners_aes_key_encrypted, base64_config);
+
                 (owners_aes_key_encrypted_string, Some(ecdh_result))
             }
         };
@@ -152,7 +150,21 @@ fn encode_fields(
     Ok(result)
 }
 
-fn encode_post_key(post_key: &[u8]) -> Vec<u8> {
+pub(crate) fn eocode_post_key_and_aes_key(
+    local_key_data: Option<&[u8]>,
+    iv: &[u8],
+    key: &[u8],
+) -> Result<(Vec<u8>, String), Error> {
+    let base64_config = STANDARD;
+    let local_key = local_key_data.ok_or(Error::InvalidLocalKey)?;
+    let post_key_encoded = encode_post_key(key);
+    let owners_aes_key_encrypted = encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
+    let owners_aes_key_encrypted_string = encode_config(&owners_aes_key_encrypted, base64_config);
+
+    Ok((post_key_encoded, owners_aes_key_encrypted_string))
+}
+
+pub(crate) fn encode_post_key(post_key: &[u8]) -> Vec<u8> {
     let base64_url_config = URL_SAFE_NO_PAD;
     let encoded_post_key = encode_config(&post_key, base64_url_config);
     let result = format!(
