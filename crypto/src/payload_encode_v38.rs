@@ -150,7 +150,7 @@ fn encode_fields(
     Ok(result)
 }
 
-pub(crate) fn eocode_post_key_and_aes_key(
+fn eocode_post_key_and_aes_key(
     local_key_data: Option<&[u8]>,
     iv: &[u8],
     key: &[u8],
@@ -164,7 +164,7 @@ pub(crate) fn eocode_post_key_and_aes_key(
     Ok((post_key_encoded, owners_aes_key_encrypted_string))
 }
 
-pub(crate) fn encode_post_key(post_key: &[u8]) -> Vec<u8> {
+fn encode_post_key(post_key: &[u8]) -> Vec<u8> {
     let base64_url_config = URL_SAFE_NO_PAD;
     let encoded_post_key = encode_config(&post_key, base64_url_config);
     let result = format!(
