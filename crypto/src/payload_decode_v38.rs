@@ -1,13 +1,21 @@
-use base64::{decode_config, STANDARD};
+use base64::{decode_config, STANDARD, URL_SAFE_NO_PAD};
+use serde::{Deserialize, Serialize};
 
-use super::payload_encode_v38::Index;
+use crate::aes_gcm::aes_decrypt;
+use crate::encryption_constants::SHARED_KEY_ENCODED;
+use crate::payload_encode_v38::Index;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 enum ParseError {
-    InvalidField,
-    InvalidAuthorPubKey,
-    InvalidIdentity,
-    InvalidPostIdentifier,
+    Fields,
+    AuthorPubKey,
+    Identity,
+    PostIdentifier,
+    AesKey,
+    PostKey,
+    PostMessage,
+    LocalKeyIsNil,
 }
 
 struct EncrtyptionParam {
@@ -18,79 +26,164 @@ struct EncrtyptionParam {
     signature: String,
     network: Option<String>,
     author_id: Option<String>,
-    author_pub_key: Option<Vec<u8>>,
+    author_serialized_pub_key: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct JWKFormtaObject {
+    alg: String,
+    ext: bool,
+    k: String,
+    key_ops: Vec<String>,
+    kty: String,
 }
 
 fn decode_post_e2e_v38(
-    post_identifier: &str,
+    post_identifier: Option<&str>,
     local_key_data: Option<&[u8]>,
     author_private_key: Option<&[u8]>,
     post_content: &str,
-) -> Result<(), ParseError> {
-    let parsed_fields = check_and_parse_fields(post_content)?;
-    let parsed_enctypted_info = parse_and_decode_fields_to_encrypt_info(parsed_fields)?;
+) -> Result<String, ParseError> {
+    let parsed_enctypted_info = parse_and_decode_fields_to_encrypt_info(post_content)?;
+    let encrypted_text = decode_config(&parsed_enctypted_info.encoded_encrypted, STANDARD)
+        .map_err(|_| ParseError::Fields)?;
 
-    Ok(())
+    let decoded_iv = decode_config(parsed_enctypted_info.encoded_iv, STANDARD)
+        .map_err(|_| ParseError::Fields)?;
+    let network_and_post_iv = parse_post_identifier(post_identifier)?;
+    match network_and_post_iv {
+        None => {}
+        Some((_, post_iv_from_identifier)) => {
+            if decoded_iv != post_iv_from_identifier {
+                return Err(ParseError::Fields);
+            }
+        }
+    }
+
+    // use decoded_iv and post_key to decrypt text content
+    let post_key = match parsed_enctypted_info.is_public {
+        true => decode_aes_key_encrypted_with_local_key(
+            &parsed_enctypted_info.aes_key_encrypted,
+            local_key_data,
+            &decoded_iv,
+        )?,
+        false => decode_aes_key_encrypted(&decoded_iv, &parsed_enctypted_info.aes_key_encrypted)
+            .map_err(|_| ParseError::PostKey)?,
+    };
+
+    let base64_encrypted_text =
+        String::from_utf8(encrypted_text).map_err(|_| ParseError::Fields)?;
+    let encrypted_text_buf =
+        decode_config(&base64_encrypted_text, STANDARD).map_err(|_| ParseError::Fields)?;
+
+    let decoded_message = aes_decrypt(&decoded_iv, &post_key, &encrypted_text_buf)
+        .map_err(|_| ParseError::PostMessage)?;
+
+    String::from_utf8(decoded_message).map_err(|_| ParseError::PostMessage)
 }
 
-fn parse_post_identifier(formated: &str) -> Result<(String, String), ParseError> {
-    let prefix = "post_iv:";
+fn decode_aes_key_encrypted(iv: &[u8], encrypted_ase_key: &str) -> Result<Vec<u8>, ParseError> {
+    let base64_url_config = URL_SAFE_NO_PAD;
+    let base64_config = STANDARD;
 
-    match formated.starts_with(prefix) {
-        false => Err(ParseError::InvalidPostIdentifier),
-        true => {
-            let mut network_and_encode_iv = formated
-                .split(prefix)
-                .find(|x| x.contains('/'))
-                .map(|x| x.split('/'))
-                .ok_or(ParseError::InvalidField)?;
+    let base64_decoded_ase_key =
+        decode_config(encrypted_ase_key, base64_config).map_err(|_| ParseError::AesKey)?;
+    let shared_key_bytes =
+        decode_config(&SHARED_KEY_ENCODED, base64_url_config).map_err(|_| ParseError::AesKey)?;
+    let decrypted_key = aes_decrypt(iv, &shared_key_bytes, &base64_decoded_ase_key)
+        .map_err(|_| ParseError::AesKey)?;
 
-            let network = network_and_encode_iv
-                .next()
-                .ok_or(ParseError::InvalidPostIdentifier)?;
-            let encode_iv = network_and_encode_iv
-                .next()
-                .ok_or(ParseError::InvalidPostIdentifier)?;
-
-            Ok((network.to_owned(), encode_iv.to_owned()))
+    let ab = serde_json::from_slice::<JWKFormtaObject>(&decrypted_key);
+    match ab {
+        Ok(decrypted_object) => {
+            let encoded_aes_key = decrypted_object.k;
+            let decoded_aes_key = decode_config(encoded_aes_key, base64_url_config)
+                .map_err(|_| ParseError::PostKey)?;
+            Ok(decoded_aes_key)
         }
+        Err(_) => Err(ParseError::PostKey),
     }
 }
 
-fn check_and_parse_fields(given_content: &str) -> Result<Vec<&str>, ParseError> {
+fn decode_aes_key_encrypted_with_local_key(
+    aes_key_encrypted: &str,
+    local_key_data: Option<&[u8]>,
+    iv: &[u8],
+) -> Result<Vec<u8>, ParseError> {
+    let owners_aes_key_decoded =
+        decode_config(aes_key_encrypted, STANDARD).map_err(|_| ParseError::PostKey)?;
+    let local_key_data = local_key_data.ok_or(ParseError::LocalKeyIsNil)?;
+    let encoded_post_key = aes_decrypt(iv, local_key_data, &owners_aes_key_decoded)
+        .map_err(|_| ParseError::PostKey)?;
+    let jwk_object = serde_json::from_slice::<JWKFormtaObject>(&encoded_post_key)
+        .map_err(|_| ParseError::PostKey)?;
+
+    decode_config(jwk_object.k, URL_SAFE_NO_PAD).map_err(|_| ParseError::PostKey)
+}
+
+fn parse_post_identifier(formatted: Option<&str>) -> Result<Option<(String, Vec<u8>)>, ParseError> {
+    let prefix = "post_iv:";
+
+    match formatted {
+        None => Ok(None),
+        Some(formatted) => match formatted.starts_with(prefix) {
+            false => Err(ParseError::PostIdentifier),
+            true => {
+                let mut network_and_encode_iv = formatted
+                    .split(prefix)
+                    .find(|x| x.contains('/'))
+                    .map(|x| x.split('/'))
+                    .ok_or(ParseError::Fields)?;
+
+                let network = network_and_encode_iv
+                    .next()
+                    .ok_or(ParseError::PostIdentifier)?;
+                let post_iv = network_and_encode_iv
+                    .next()
+                    .ok_or(ParseError::PostIdentifier)?
+                    .replace("|", "/");
+
+                let post_iv =
+                    decode_config(&post_iv, STANDARD).map_err(|_| ParseError::PostIdentifier)?;
+
+                Ok(Option::Some((network.to_owned(), post_iv)))
+            }
+        },
+    }
+}
+
+fn parse_post_fields(given_content: &str) -> Result<Vec<&str>, ParseError> {
     let prefix = "\u{1F3BC}4/4";
     if !given_content.starts_with(prefix) {
-        return Err(ParseError::InvalidField);
+        return Err(ParseError::Fields);
     }
 
     if !given_content.ends_with(":||") {
-        return Err(ParseError::InvalidField);
+        return Err(ParseError::Fields);
     }
 
     let compace_fields = given_content.split(":||").next().unwrap_or("");
     if compace_fields.is_empty() {
-        return Err(ParseError::InvalidField);
+        return Err(ParseError::Fields);
     }
 
     let fields = compace_fields.split('|').collect::<Vec<&str>>();
-    if fields.len() != 8 {
-        return Err(ParseError::InvalidField);
+    if fields.len() as usize != 8 {
+        return Err(ParseError::Fields);
+    }
+
+    let is_public = fields[Index::PublicShared as usize];
+    if !["0", "1"].contains(&is_public) {
+        return Err(ParseError::Fields);
     }
 
     Ok(fields)
 }
 
 fn parse_and_decode_fields_to_encrypt_info(
-    fields: Vec<&str>,
+    given_content: &str,
 ) -> Result<EncrtyptionParam, ParseError> {
-    if fields[0] != "\u{1F3BC}4/4" {
-        return Err(ParseError::InvalidField);
-    }
-
-    let is_public = fields[Index::PublicShared as usize];
-    if !["0", "1"].contains(&is_public) {
-        return Err(ParseError::InvalidField);
-    }
+    let fields = parse_post_fields(given_content)?;
 
     let aes_key_encrypted = fields[1].to_owned();
 
@@ -100,9 +193,8 @@ fn parse_and_decode_fields_to_encrypt_info(
         true => (Option::None, Option::None),
         false => {
             let decoded_identity =
-                decode_config(identity, STANDARD).map_err(|_| ParseError::InvalidIdentity)?;
-            let string =
-                String::from_utf8(decoded_identity).map_err(|_| ParseError::InvalidIdentity)?;
+                decode_config(identity, STANDARD).map_err(|_| ParseError::Identity)?;
+            let string = String::from_utf8(decoded_identity).map_err(|_| ParseError::Identity)?;
             let mut splits = string.split('/');
 
             let network = splits.next();
@@ -119,11 +211,12 @@ fn parse_and_decode_fields_to_encrypt_info(
     let pub_key_serialized = match pub_key.is_empty() {
         true => Option::None,
         false => {
-            let key =
-                decode_config(pub_key, STANDARD).map_err(|_| ParseError::InvalidAuthorPubKey)?;
+            let key = decode_config(pub_key, STANDARD).map_err(|_| ParseError::AuthorPubKey)?;
             Option::Some(key)
         }
     };
+
+    let is_public = fields[Index::PublicShared as usize];
 
     Ok(EncrtyptionParam {
         is_public: is_public == "1",
@@ -133,73 +226,96 @@ fn parse_and_decode_fields_to_encrypt_info(
         signature: fields[4].to_owned(),
         network,
         author_id,
-        author_pub_key: pub_key_serialized,
+        author_serialized_pub_key: pub_key_serialized,
     })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::super::Error;
+    use base64::encode_config;
+
     use super::*;
-    use crate::payload_encode_v38::*;
-    use base64::URL_SAFE_NO_PAD;
 
-    // use
-
-    const IV_SIZE: usize = 16;
-    const AES_KEY_SIZE: usize = 32;
+    use crate::encryption_constants::{AES_KEY_SIZE, IV_SIZE};
+    use crate::number_util::random_iv;
+    use crate::payload_encode_v38::{encode_aes_key_encrypted, eocode_post_key_and_aes_key};
 
     const PUB_KEY_SIZE: usize = 33;
 
-    #[test]
-    fn test_decode_v37() -> Result<(), Error> {
-        todo!()
-    }
-
-    #[test]
-    fn test_decode_post_iv() {
-        todo!()
-    }
+    // #[test]
+    // fn test_get_encrypted_message() {
+    //     todo!()
+    // }
 
     #[test]
     fn test_get_post_identifier_and_post_iv() {
-        let post_identifier = "post_iv:eth/randomiv";
-        let (network, iv) =
-            parse_post_identifier(post_identifier).expect("Invalid post identifier");
+        let post_iv = random_iv(IV_SIZE);
+        let iv_str = encode_config(&post_iv, STANDARD);
+        let post_identifier = format!("post_iv:eth/{}", iv_str);
+        let decoded = parse_post_identifier(Some(&post_identifier))
+            .expect("Invalid post identifier")
+            .unwrap();
+        let (network, iv) = decoded;
         assert_eq!(network, "eth");
-        assert_eq!(iv, "randomiv");
+        assert_eq!(&iv, &post_iv)
     }
+
     #[test]
-    fn test_get_encrypted_message() {
-        todo!()
+    fn test_decode_aes_key_encrypted_public() {
+        let iv = random_iv(IV_SIZE);
+        let key = random_iv(AES_KEY_SIZE);
+        let encoded_aes_key = encode_aes_key_encrypted(&iv, &key).unwrap();
+
+        let decoded_key = decode_aes_key_encrypted(&iv, &encoded_aes_key);
+        // let ad = Vec::from_iter(key.into_iter());
+        assert!(decoded_key.is_ok());
+        assert_eq!(decoded_key.unwrap(), key);
+    }
+
+    #[test]
+    fn test_decode_aes_key_encrypted() {
+        let iv = random_iv(IV_SIZE);
+        let key = random_iv(AES_KEY_SIZE);
+        let local_key_data = random_iv(AES_KEY_SIZE);
+        let (_, owners_aes_key_encrypted_string) =
+            eocode_post_key_and_aes_key(Some(&local_key_data), &iv, &key).unwrap();
+
+        let result = decode_aes_key_encrypted_with_local_key(
+            &owners_aes_key_encrypted_string,
+            Some(&local_key_data),
+            &iv,
+        );
+
+        match result {
+            Err(err) => panic!("decoding failed {err:?}"),
+            Ok(result) => {
+                assert_eq!(result, key);
+            }
+        }
     }
 
     #[test]
     fn test_decode_fields() {
-        let public_fields = check_and_parse_fields(
-            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|12adad|1|dad:||",
-        );
-        let privte_fields = check_and_parse_fields(
-            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|01131|0|dad:||",
-        );
+        let public_fields =
+            parse_post_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|12adad|1|dad:||");
+        let privte_fields =
+            parse_post_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|01131|0|dad:||");
         let faild_public_fields =
-            check_and_parse_fields("11dd|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
-        let faild_fields = check_and_parse_fields(
-            "\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||",
-        );
+            parse_post_fields("11dd|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
+        let faild_fields =
+            parse_post_fields("\u{1F3BC}4/4|13add|1333dad|1318dadss_dad|juudad|1qe1dda|1q|dad:||");
 
         assert!(public_fields.is_ok());
         assert!(privte_fields.is_ok());
         assert!(faild_public_fields.is_err());
-        assert!(faild_fields.is_ok());
+        assert!(faild_fields.is_err());
     }
 
     #[test]
-    fn test_base64_decode_encoded_encryped() {
+    fn test_decode_base64_encoded_encryped() {
         let base64_url_config = URL_SAFE_NO_PAD;
         let encrypted_result = "🎼4/4|dPsavNUJl+CSkjHaeKY4pBGdRPVLVX9wTFvha7233bTAh7H8MaOQKAcjMTTPSpiIfXV6z+adQ4ub/GBz13JEEcq1tBWGe14e6KJM0BAlavKA8W|CODYA3UXxijahpWzNNhYWw==|sicrktkUfaAkTjYtZHH9KzGlymq5mw==|_|Ay0N+38oQ+roPtmvcZpXs/Gw9/3jU0J2djv/JUXFjUiO|0|dHdpdHRlci5jb20veXVhbl9icmFk:||";
-        let parsed_field = check_and_parse_fields(encrypted_result).expect("parse failed");
-        let encryped_info = parse_and_decode_fields_to_encrypt_info(parsed_field)
+        let encryped_info = parse_and_decode_fields_to_encrypt_info(encrypted_result)
             .expect("parse_fields_to_encrypt_info failed");
 
         let network = "twitter.com";
@@ -226,7 +342,7 @@ mod tests {
 
         // skip flag u8
         assert_eq!(
-            encryped_info.author_pub_key.unwrap()[1..],
+            encryped_info.author_serialized_pub_key.unwrap()[1..],
             author_public_key[1..PUB_KEY_SIZE]
         );
 
