@@ -19,6 +19,7 @@ pub mod post_encryption;
 pub mod jwk;
 pub mod pbkdf2;
 
+mod encryption_constants;
 mod payload_decode_v37;
 mod payload_decode_v38;
 

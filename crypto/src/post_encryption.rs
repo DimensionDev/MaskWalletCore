@@ -6,11 +6,9 @@ use base64::{encode_config, STANDARD};
 use std::collections::HashMap;
 
 use super::aes_gcm::aes_encrypt;
+use crate::encryption_constants::{AES_KEY_SIZE, IV_SIZE};
 
 use std::str;
-
-const IV_SIZE: usize = 16;
-const AES_KEY_SIZE: usize = 32;
 
 pub enum Version {
     V37 = -37,
