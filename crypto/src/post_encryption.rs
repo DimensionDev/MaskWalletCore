@@ -6,11 +6,9 @@ use base64::{encode_config, STANDARD};
 use std::collections::HashMap;
 
 use super::aes_gcm::aes_encrypt;
+use crate::encryption_constants::{AES_KEY_SIZE, IV_SIZE};
 
 use std::str;
-
-const IV_SIZE: usize = 16;
-const AES_KEY_SIZE: usize = 32;
 
 pub enum Version {
     V37 = -37,
@@ -24,6 +22,7 @@ pub struct EncryptionResultE2E {
     pub iv_to_be_published: Option<Vec<u8>>,
 }
 
+#[derive(Debug)]
 pub struct EncryptionResult {
     pub output: String,
     pub post_key: Vec<u8>,
@@ -31,6 +30,7 @@ pub struct EncryptionResult {
     pub e2e_result: Option<HashMap<String, EncryptionResultE2E>>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn encrypt(
     version: Version,
     is_public: bool,
@@ -71,7 +71,7 @@ pub fn encrypt(
     Ok(EncryptionResult {
         output: result.0,
         post_key: post_key_iv,
-        post_identifier: post_identifier,
+        post_identifier,
         e2e_result: result.1,
     })
 }
@@ -134,5 +134,7 @@ mod tests {
             None,
         )
         .unwrap();
+
+        println!("{:?}", encryption_result);
     }
 }

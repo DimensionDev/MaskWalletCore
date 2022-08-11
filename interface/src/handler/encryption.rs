@@ -32,26 +32,30 @@ pub fn encode(param: PostEncryptionParam) -> MwResponse {
     match result {
         Ok(encryption_result) => {
             // TODO: finish implementation
+
+            let encryption_results = encryption_result
+                .e2e_result
+                .unwrap_or_default()
+                .into_iter()
+                .map(|(k, v)| {
+                    (
+                        k,
+                        E2eEncryptionResult {
+                            iv: v.iv_to_be_published,
+                            encrypted_post_key_data: v.encrypted_post_key,
+                            ephemeral_public_key_data: None,
+                        },
+                    )
+                })
+                .collect();
+
             let content = PostEncryptedResp {
                 content: encryption_result.output,
-                results: encryption_result
-                    .e2e_result
-                    .unwrap_or_default()
-                    .into_iter()
-                    .map(|(k, v)| {
-                        (
-                            k,
-                            E2eEncryptionResult {
-                                iv: v.iv_to_be_published,
-                                encrypted_post_key_data: v.encrypted_post_key,
-                                ephemeral_public_key_data: None,
-                            },
-                        )
-                    })
-                    .collect(),
+                results: encryption_results,
                 post_identifier: encryption_result.post_identifier,
                 post_key: encryption_result.post_key,
             };
+
             Response::RespPostEncryption(content).into()
         }
 

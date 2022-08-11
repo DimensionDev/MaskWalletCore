@@ -5,24 +5,26 @@ use super::Error;
 use bitcoin::secp256k1::{ecdh, PublicKey, SecretKey};
 use std::collections::HashMap;
 
+use base64::{decode_config, encode_config, STANDARD, URL_SAFE_NO_PAD};
+
+use crate::encryption_constants::SHARED_KEY_ENCODED;
+
 impl From<bitcoin::secp256k1::Error> for Error {
     fn from(_err: bitcoin::secp256k1::Error) -> Error {
         Error::InvalidPrivateKey
     }
 }
 
-use base64::{decode_config, encode_config, STANDARD, URL_SAFE_NO_PAD};
-
-const SHARED_KEY_ENCODED: &str = "3Bf8BJ3ZPSMUM2jg2ThODeLuRRD_-_iwQEaeLdcQXpg";
 const E2E_KEY: [u8; 2] = [40, 70];
 const E2E_IV: [u8; 1] = [33];
 
-enum Index {
+pub enum Index {
     AuthorPublicKey = 5,
     PublicShared = 6,
     AuthorIdentifier = 7,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn encode_v38(
     is_public: bool,
     network: &str,
@@ -40,15 +42,13 @@ pub fn encode_v38(
         match is_public {
             true => (encode_aes_key_encrypted(iv, key)?, None),
             false => {
-                let local_key = local_key_data.ok_or(Error::InvalidLocalKey)?;
-                let post_key_encoded = encode_post_key(key);
-                let owners_aes_key_encrypted =
-                    encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
+                let (post_key_encoded, owners_aes_key_encrypted_string) =
+                    eocode_post_key_and_aes_key(local_key_data, iv, key)?;
+
                 let author_private_key_data = author_private_key.ok_or(Error::InvalidPrivateKey)?;
                 let ecdh_result =
                     add_receiver(author_private_key_data, &target, &post_key_encoded)?;
-                let owners_aes_key_encrypted_string =
-                    encode_config(&owners_aes_key_encrypted, base64_config);
+
                 (owners_aes_key_encrypted_string, Some(ecdh_result))
             }
         };
@@ -69,7 +69,7 @@ pub fn encode_v38(
     Ok((encoded_fields, ecdh_result))
 }
 
-fn encode_aes_key_encrypted(iv: &[u8], key: &[u8]) -> Result<String, Error> {
+pub(crate) fn encode_aes_key_encrypted(iv: &[u8], key: &[u8]) -> Result<String, Error> {
     let base64_url_config = URL_SAFE_NO_PAD;
     let encoded_aes_key = encode_config(&key, base64_url_config);
     let ab = format!(
@@ -93,6 +93,7 @@ fn encrypt_by_local_key(
     aes_encrypt(post_iv, local_key_data, encoded_post_key)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn encode_fields(
     is_public: bool,
     aes_key_encrypted: &str,
@@ -148,6 +149,20 @@ fn encode_fields(
     let joined_fields = fields.join("|");
     let result = format!("{}:||", joined_fields);
     Ok(result)
+}
+
+pub(crate) fn eocode_post_key_and_aes_key(
+    local_key_data: Option<&[u8]>,
+    iv: &[u8],
+    key: &[u8],
+) -> Result<(Vec<u8>, String), Error> {
+    let base64_config = STANDARD;
+    let local_key = local_key_data.ok_or(Error::InvalidLocalKey)?;
+    let post_key_encoded = encode_post_key(key);
+    let owners_aes_key_encrypted = encrypt_by_local_key(&post_key_encoded, iv, local_key)?;
+    let owners_aes_key_encrypted_string = encode_config(&owners_aes_key_encrypted, base64_config);
+
+    Ok((post_key_encoded, owners_aes_key_encrypted_string))
 }
 
 fn encode_post_key(post_key: &[u8]) -> Vec<u8> {
@@ -253,10 +268,10 @@ mod tests {
 
         let encoded_fields = encode_fields(
             true,
-            &aes_key_encrypted,
-            &encoded_iv,
-            &encoded_encrypted,
-            &signature,
+            aes_key_encrypted,
+            encoded_iv,
+            encoded_encrypted,
+            signature,
             network,
             Some(author_id),
             Some(&public_key_data),
@@ -278,8 +293,9 @@ mod tests {
             2, 170, 10, 30, 27, 232, 4, 43, 63, 50, 63, 249, 34, 255, 147, 179, 179, 85, 203, 103,
             115, 52, 111, 166, 140, 56, 20, 223, 54, 25, 143, 49, 28,
         ];
-        assert_eq!(PublicKey::from_slice(&public_key).is_ok(), true);
-        assert_eq!(SecretKey::from_slice(&private_key).is_ok(), true);
+
+        assert!(PublicKey::from_slice(&public_key).is_ok());
+        assert!(SecretKey::from_slice(&private_key).is_ok());
         let shared_secret = derive_aes_by_ecdh(&public_key, &private_key).unwrap();
         let encrypted = aes_encrypt(&test_iv, &shared_secret, test_message.as_bytes()).unwrap();
         let decrypted = aes_decrypt(&test_iv, &shared_secret, &encrypted).unwrap();
