@@ -1,5 +1,6 @@
 mod account;
 mod common;
+mod decryption;
 mod encryption;
 mod persona;
 mod sign;
@@ -40,5 +41,7 @@ pub fn dispatch_request(request: mw_request::Request) -> MwResponse {
         ParamGeneratePersona(param) => persona::generate_persona(&param),
 
         ParamPostEncryption(param) => encryption::encode(param),
+
+        ParamPostDecryption(param) => decryption::decode_post(param),
     }
 }

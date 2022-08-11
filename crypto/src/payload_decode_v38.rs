@@ -2,12 +2,12 @@ use base64::{decode_config, STANDARD, URL_SAFE_NO_PAD};
 use serde::{Deserialize, Serialize};
 
 use crate::aes_gcm::aes_decrypt;
-use crate::encryption_constants::SHARED_KEY_ENCODED;
+use crate::encryption_constants::{IV_SIZE, SHARED_KEY_ENCODED};
 use crate::payload_encode_v38::Index;
 
 #[allow(dead_code)]
 #[derive(Debug)]
-enum ParseError {
+pub enum ParseError {
     Fields,
     AuthorPubKey,
     Identity,
@@ -16,8 +16,11 @@ enum ParseError {
     PostKey,
     PostMessage,
     LocalKeyIsNil,
+    IvIsInvalid,
 }
 
+#[allow(dead_code)]
+#[derive(Debug)]
 struct EncrtyptionParam {
     is_public: bool,
     aes_key_encrypted: String,
@@ -30,7 +33,7 @@ struct EncrtyptionParam {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct JWKFormtaObject {
+struct JWKFormatObject {
     alg: String,
     ext: bool,
     k: String,
@@ -38,10 +41,9 @@ struct JWKFormtaObject {
     kty: String,
 }
 
-fn decode_post_e2e_v38(
+pub fn decode_payload_v38(
     post_identifier: Option<&str>,
     local_key_data: Option<&[u8]>,
-    author_private_key: Option<&[u8]>,
     post_content: &str,
 ) -> Result<String, ParseError> {
     let parsed_enctypted_info = parse_and_decode_fields_to_encrypt_info(post_content)?;
@@ -50,6 +52,10 @@ fn decode_post_e2e_v38(
 
     let decoded_iv = decode_config(parsed_enctypted_info.encoded_iv, STANDARD)
         .map_err(|_| ParseError::Fields)?;
+    if decoded_iv.len() != IV_SIZE {
+        return Err(ParseError::IvIsInvalid);
+    }
+
     let network_and_post_iv = parse_post_identifier(post_identifier)?;
     match network_and_post_iv {
         None => {}
@@ -62,12 +68,12 @@ fn decode_post_e2e_v38(
 
     // use decoded_iv and post_key to decrypt text content
     let post_key = match parsed_enctypted_info.is_public {
-        true => decode_aes_key_encrypted_with_local_key(
+        false => decode_aes_key_encrypted_with_local_key(
             &parsed_enctypted_info.aes_key_encrypted,
             local_key_data,
             &decoded_iv,
         )?,
-        false => decode_aes_key_encrypted(&decoded_iv, &parsed_enctypted_info.aes_key_encrypted)
+        true => decode_aes_key_encrypted(&decoded_iv, &parsed_enctypted_info.aes_key_encrypted)
             .map_err(|_| ParseError::PostKey)?,
     };
 
@@ -93,7 +99,7 @@ fn decode_aes_key_encrypted(iv: &[u8], encrypted_ase_key: &str) -> Result<Vec<u8
     let decrypted_key = aes_decrypt(iv, &shared_key_bytes, &base64_decoded_ase_key)
         .map_err(|_| ParseError::AesKey)?;
 
-    let ab = serde_json::from_slice::<JWKFormtaObject>(&decrypted_key);
+    let ab = serde_json::from_slice::<JWKFormatObject>(&decrypted_key);
     match ab {
         Ok(decrypted_object) => {
             let encoded_aes_key = decrypted_object.k;
@@ -115,7 +121,7 @@ fn decode_aes_key_encrypted_with_local_key(
     let local_key_data = local_key_data.ok_or(ParseError::LocalKeyIsNil)?;
     let encoded_post_key = aes_decrypt(iv, local_key_data, &owners_aes_key_decoded)
         .map_err(|_| ParseError::PostKey)?;
-    let jwk_object = serde_json::from_slice::<JWKFormtaObject>(&encoded_post_key)
+    let jwk_object = serde_json::from_slice::<JWKFormatObject>(&encoded_post_key)
         .map_err(|_| ParseError::PostKey)?;
 
     decode_config(jwk_object.k, URL_SAFE_NO_PAD).map_err(|_| ParseError::PostKey)
@@ -236,16 +242,11 @@ mod tests {
 
     use super::*;
 
-    use crate::encryption_constants::{AES_KEY_SIZE, IV_SIZE};
     use crate::number_util::random_iv;
     use crate::payload_encode_v38::{encode_aes_key_encrypted, eocode_post_key_and_aes_key};
+    use crate::encryption_constants::AES_KEY_SIZE;
 
     const PUB_KEY_SIZE: usize = 33;
-
-    // #[test]
-    // fn test_get_encrypted_message() {
-    //     todo!()
-    // }
 
     #[test]
     fn test_get_post_identifier_and_post_iv() {
@@ -358,5 +359,23 @@ mod tests {
         );
 
         assert_eq!(encryped_info.aes_key_encrypted, "dPsavNUJl+CSkjHaeKY4pBGdRPVLVX9wTFvha7233bTAh7H8MaOQKAcjMTTPSpiIfXV6z+adQ4ub/GBz13JEEcq1tBWGe14e6KJM0BAlavKA8W");
+    }
+
+    #[test]
+    fn test_decode_proccess() {
+        let ownersAESKeyEncrypted: [u8; 138] = [
+            144, 174, 122, 212, 72, 176, 255, 251, 188, 174, 28, 233, 204, 151, 80, 93, 36, 109,
+            165, 126, 119, 100, 64, 93, 55, 94, 37, 149, 89, 113, 222, 62, 245, 197, 232, 114, 255,
+            100, 89, 118, 11, 128, 59, 223, 17, 148, 137, 1, 215, 188, 44, 12, 211, 86, 246, 197,
+            59, 183, 149, 125, 172, 106, 225, 119, 222, 221, 214, 135, 53, 104, 255, 122, 113, 71,
+            62, 77, 164, 13, 18, 104, 245, 100, 241, 139, 50, 193, 151, 200, 82, 143, 94, 68, 56,
+            246, 42, 75, 223, 44, 208, 251, 9, 195, 249, 131, 84, 175, 78, 237, 23, 26, 34, 33,
+            115, 248, 238, 80, 144, 64, 120, 103, 23, 251, 177, 78, 222, 231, 250, 67, 214, 25,
+            214, 99, 187, 76, 2, 197, 220, 30,
+        ];
+
+        let content_text = "🎼4/4|kK561Eiw//u8rhzpzJdQXSRtpX53ZEBdN14llVlx3j71xehy/2RZdguAO98RlIkB17wsDNNW9sU7t5V9rGrhd97d1oc1aP96cUc+TaQNEmj1ZPGLMsGXyFKPXkQ49ipL3yzQ+wnD+YNUr07tFxoiIXP47lCQQHhnF/uxTt7n+kPWGdZju0wCxdwe|tAnANz4j+aOOGkSAMTXbrA==|F8rREysE4XdmNXqvD5GKrbHA2k9IOR9s8dNW2QAA2MPOVw==|_|Asbei5hqEcr1HoHONBdPQugbBvw/EYZej6O+IKZeF8m2|0|dHdpdHRlci5jb20vZm94X3dlMTA=:||";
+        let fields = parse_and_decode_fields_to_encrypt_info(content_text).unwrap();
+        println!("{:?}", fields);
     }
 }

@@ -10,6 +10,7 @@ import "transaction.proto";
 import "validation.proto";
 import "persona.proto";
 import "post-encryption.proto";
+import "post-decryption.proto";
 
 message MWRequest {
     oneof request {
@@ -39,6 +40,8 @@ message MWRequest {
         PersonaGenerationParam param_generate_persona = 26;
 
         PostEncryptionParam param_post_encryption = 27;
+
+        PostDecryptionParam param_post_decryption = 28;
     }
 }
 
@@ -69,6 +72,8 @@ message MWResponse {
         PersonaGenerationResp resp_generate_persona = 25;
 
         PostEncryptedResp resp_post_encryption = 26;
+
+        PostDecryptionResp resp_post_decryption = 27;
     }
 }
 

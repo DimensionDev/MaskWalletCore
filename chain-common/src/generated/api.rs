@@ -488,8 +488,22 @@ pub enum PublicKeyAlgorithm {
     Secp256k1Algr = 2,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PostDecryptionParam {
+    #[prost(string, tag="1")]
+    pub post_content: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="2")]
+    pub post_identifier: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(bytes="vec", optional, tag="3")]
+    pub local_key_data: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PostDecryptionResp {
+    #[prost(string, tag="1")]
+    pub content_text: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwRequest {
-    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27")]
+    #[prost(oneof="mw_request::Request", tags="1, 2, 3, 4, 5, 10, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28")]
     pub request: ::core::option::Option<mw_request::Request>,
 }
 /// Nested message and enum types in `MWRequest`.
@@ -536,11 +550,13 @@ pub mod mw_request {
         ParamGeneratePersona(super::PersonaGenerationParam),
         #[prost(message, tag="27")]
         ParamPostEncryption(super::PostEncryptionParam),
+        #[prost(message, tag="28")]
+        ParamPostDecryption(super::PostDecryptionParam),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MwResponse {
-    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26")]
+    #[prost(oneof="mw_response::Response", tags="1, 2, 3, 4, 5, 6, 11, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27")]
     pub response: ::core::option::Option<mw_response::Response>,
 }
 /// Nested message and enum types in `MWResponse`.
@@ -585,6 +601,8 @@ pub mod mw_response {
         RespGeneratePersona(super::PersonaGenerationResp),
         #[prost(message, tag="26")]
         RespPostEncryption(super::PostEncryptedResp),
+        #[prost(message, tag="27")]
+        RespPostDecryption(super::PostDecryptionResp),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

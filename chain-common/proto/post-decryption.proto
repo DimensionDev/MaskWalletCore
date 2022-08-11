@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api;
+
+import "base.proto";
+
+message PostDecryptionParam {
+    string postContent = 1;
+    optional string postIdentifier = 2;
+    optional bytes localKeyData = 3;
+}
+
+message PostDecryptionResp {
+    string contentText = 1;
+}

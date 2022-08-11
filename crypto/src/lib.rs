@@ -21,7 +21,7 @@ pub mod pbkdf2;
 
 mod encryption_constants;
 mod payload_decode_v37;
-mod payload_decode_v38;
+pub mod payload_decode_v38;
 
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum Error {
@@ -52,6 +52,8 @@ pub enum Error {
     NotSupportedCipher,
 
     InvalidLocalKey,
+
+    DecryptContentFailed,
 }
 
 impl Error {
@@ -71,6 +73,7 @@ impl Error {
             Error::NotSupportedCurve => "-3012".to_owned(),
             Error::NotSupportedCipher => "-3013".to_owned(),
             Error::InvalidLocalKey => "-3014".to_owned(),
+            Error::DecryptContentFailed => "-3015".to_owned(),
         }
     }
 
@@ -92,6 +95,8 @@ impl Error {
             Error::InvalidLocalKey => {
                 "Invalid local key. Local key is required to encrypt private message".to_owned()
             }
+
+            Error::DecryptContentFailed => "Failed to decrypt post content".to_owned(),
         }
     }
 }
