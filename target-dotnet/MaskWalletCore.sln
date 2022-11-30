@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaskWalletCore", "src\MaskWalletCore.csproj", "{B5FD990D-F2A5-4518-9E0C-1E78A2B3301B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaskWalletCoreTest", "test\MaskWalletCoreTest.csproj", "{9BDFB79F-2B4B-4950-9C92-B6AEC5EB4D10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5FD990D-F2A5-4518-9E0C-1E78A2B3301B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5FD990D-F2A5-4518-9E0C-1E78A2B3301B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5FD990D-F2A5-4518-9E0C-1E78A2B3301B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5FD990D-F2A5-4518-9E0C-1E78A2B3301B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BDFB79F-2B4B-4950-9C92-B6AEC5EB4D10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BDFB79F-2B4B-4950-9C92-B6AEC5EB4D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BDFB79F-2B4B-4950-9C92-B6AEC5EB4D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BDFB79F-2B4B-4950-9C92-B6AEC5EB4D10}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
